@@ -26,10 +26,10 @@ jobs:
     - name: Upload processor.jar
       uses: actions/upload-artifact@v2
       with:
-        name: processor
+        name: processor.jar
         path: processor/build/libs/*.jar
     - name: Upload annotations.jar
       uses: actions/upload-artifact@v2
       with:
-        name: annotations
+        name: annotations.jar
         path: annotations/build/libs/*.jar
