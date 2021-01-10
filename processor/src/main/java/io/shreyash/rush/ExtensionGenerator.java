@@ -32,8 +32,9 @@ public class ExtensionGenerator {
    * args[1]: the path to simple_component_build_info.json
    * args[2]: the path to ExternalComponentAsset.dir: "${local.build.dir}/ExternalComponents"
    * args[3]: the path to "${AndroidRuntime-class.dir}"
-   * args[4]: the path to /build/classes/BuildServer/files
+   * args[4]: the path to dependency dir
    * args[5]: the path to external componentsTemp directory
+   * args[6]: use FQCN
    */
   public static void main(String[] args) throws IOException, JSONException {
     String simple_component_json = readFile(args[0], Charset.defaultCharset());

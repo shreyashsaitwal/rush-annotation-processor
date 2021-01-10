@@ -12,8 +12,14 @@ public class ExtensionFieldInfo {
     StringBuilder sb = new StringBuilder("{");
     sb.append("\"methods\": [");
     if (!functions.isEmpty()) {
-      functions.values().forEach(func -> {
-        sb.append("{");
+      int count = 0;
+      for (Function func : functions.values()) {
+        if (count == 0) {
+          sb.append("{");
+        } else {
+          sb.append(", {");
+        }
+        count++;
         sb.append("\"deprecated:\" : \"" + func.isDeprecated() + "\",");
         sb.append("\"name:\" : \"" + func.getName() + "\",");
         sb.append("\"description:\" : \"" + func.getDescription() + "\",");
@@ -22,39 +28,65 @@ public class ExtensionFieldInfo {
         }
         sb.append("\"params\" : [");
         if (!func.getParams().isEmpty()) {
-          func.getParams().forEach(param -> {
-            sb.append("{");
+          int count2 = 0;
+          for (FunctionParam param : func.getParams()) {
+            if (count2 == 0) {
+              sb.append("{");
+            } else {
+              sb.append(", {");
+            }
+            count2++;
             sb.append("\"name\" : \"" + param.getName() + "\",");
-            sb.append("\"type\" : \"" + param.getType() + "\",");
-            sb.append("},");
-          });
+            sb.append("\"type\" : \"" + param.getType() + "\"");
+            sb.append("}");
+          }
         }
-        sb.append("],},");
-      });
+        sb.append("] }");
+      }
     }
+
     sb.append("], \"events\" : [");
     if (!events.isEmpty()) {
-      events.values().forEach(event -> {
-        sb.append("{");
+      int count = 0;
+      for (Event event : events.values()) {
+        if (count == 0) {
+          sb.append("{");
+        } else {
+          sb.append(", {");
+        }
+        count++;
         sb.append("\"deprecated:\" : \"" + event.isDeprecated() + "\",");
         sb.append("\"name:\" : \"" + event.getName() + "\",");
         sb.append("\"description:\" : \"" + event.getDescription() + "\",");
         sb.append("\"params\" : [");
         if (!event.getParams().isEmpty()) {
-          event.getParams().forEach(param -> {
-            sb.append("{");
+          int count2 = 0;
+          for (EventParam param : event.getParams()) {
+            if (count2 == 0) {
+              sb.append("{");
+            } else {
+              sb.append(", {");
+            }
+            count2++;
             sb.append("\"name\" : \"" + param.getName() + "\",");
-            sb.append("\"type\" : \"" + param.getType() + "\",");
-            sb.append("},");
-          });
+            sb.append("\"type\" : \"" + param.getType() + "\"");
+            sb.append("}");
+          }
         }
-        sb.append("],},");
-      });
+        sb.append("] }");
+      }
     }
+
     sb.append("], \"blockProperties\" : [");
     if (!blockProps.isEmpty()) {
-      blockProps.values().forEach(prop -> {
-        sb.append("{");
+      int count = 0;
+      for (BlockProperty prop : blockProps.values()) {
+        if (count == 0) {
+          sb.append("{");
+        } else {
+          sb.append(", {");
+        }
+        count++;
         sb.append("\"deprecated:\" : \"" + prop.isDeprecated() + "\",");
         sb.append("\"name:\" : \"" + prop.getName() + "\",");
         sb.append("\"description:\" : \"" + prop.getDescription() + "\",");
@@ -74,26 +106,41 @@ public class ExtensionFieldInfo {
         if (prop.isAlwaysSend()) {
           sb.append("\"alwaysSend\" : \"" + prop.isAlwaysSend() + "\",");
         }
-        sb.append("\"type:\" : \"" + prop.getType() + "\",");
-        sb.append("},");
-      });
+        sb.append("\"type:\" : \"" + prop.getType() + "\"");
+        sb.append("}");
+      }
     }
+
     sb.append("], \"properties\" : [");
-    props.values().forEach(prop -> {
-      sb.append("{");
-      sb.append("\"editorType:\" : \"" + prop.getEditorType() + "\",");
-      sb.append("\"name:\" : \"" + prop.getName() + "\",");
-      sb.append("\"defaultValue:\" : \"" + prop.getDefaultVal() + "\",");
-      if (prop.isAlwaysSend()) {
-        sb.append("\"alwaysSend\" : \"" + prop.isAlwaysSend() + "\",");
+    if (!props.values().isEmpty()) {
+      int count = 0;
+      for (Property prop: props.values()) {
+        if (count == 0) {
+            sb.append("{");
+          } else {
+            sb.append(", {");
+          }
+          count++;
+        sb.append("\"editorType:\" : \"" + prop.getEditorType() + "\",");
+        sb.append("\"name:\" : \"" + prop.getName() + "\",");
+        sb.append("\"defaultValue:\" : \"" + prop.getDefaultVal() + "\",");
+        if (prop.isAlwaysSend()) {
+          sb.append("\"alwaysSend\" : \"" + prop.isAlwaysSend() + "\",");
+        }
+        sb.append("\"editorArgs:\" : [");
+        int count2 = 0;
+        for (String arg : prop.getArgs()) {
+          if (count2 == 0) {
+            sb.append("\"" + arg + "\"");
+          } else {
+            sb.append(",\"" + arg + "\"");
+          }
+          count2++;
+        }
+        sb.append("] }");
       }
-      sb.append("\"editorType:\" : [");
-      for (String arg : prop.getArgs()) {
-        sb.append("\"" + arg + "\",");
-      }
-      sb.append("], },");
-    });
-    sb.append("], }");
+    }
+    sb.append("] }");
 
     return sb.toString();
   }
