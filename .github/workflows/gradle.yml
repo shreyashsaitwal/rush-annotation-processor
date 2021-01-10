@@ -26,8 +26,10 @@ jobs:
     - name: Upload processor.jar
       uses: actions/upload-artifact@v2
       with:
-        path: processor/build/libs/*.jar
+        name: processor
+        path: processor/build/libs/processor.jar
     - name: Upload annotations.jar
       uses: actions/upload-artifact@v2
       with:
-        path: annotations/build/libs/*.jar
+        name: annotations
+        path: annotations/build/libs/annotations-v186a.jar
