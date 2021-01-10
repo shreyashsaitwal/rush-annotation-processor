@@ -2,7 +2,7 @@ package io.shreyash.rush.model;
 
 import java.util.HashMap;
 
-public class ExtensionInfo {
+public class ExtensionFieldInfo {
   private final HashMap<String, Function> functions = new HashMap<>();
   private final HashMap<String, Event> events = new HashMap<>();
   private final HashMap<String, BlockProperty> blockProps = new HashMap<>();

@@ -1,6 +1,5 @@
 package io.shreyash.rush.model;
 
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import io.shreyash.rush.util.ConvertToYailType;
 
@@ -18,9 +17,9 @@ public class BlockProperty {
   private boolean alwaysSend = false;
 
   private final Element element;
-  private final ExtensionInfo ext;
+  private final ExtensionFieldInfo ext;
 
-  public BlockProperty(Element element, ExtensionInfo ext) {
+  public BlockProperty(Element element, ExtensionFieldInfo ext) {
     this.element = element;
     this.ext = ext;
   }

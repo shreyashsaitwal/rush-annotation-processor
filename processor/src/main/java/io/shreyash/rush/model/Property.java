@@ -13,9 +13,9 @@ public class Property {
   private boolean alwaysSend;
 
   private final Element element;
-  private final ExtensionInfo ext;
+  private final ExtensionFieldInfo ext;
 
-  public Property(Element element, ExtensionInfo ext) {
+  public Property(Element element, ExtensionFieldInfo ext) {
     this.element = element;
     this.ext = ext;
   }

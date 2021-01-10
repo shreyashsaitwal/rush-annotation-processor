@@ -22,13 +22,13 @@ import java.util.Set;
 @SupportedAnnotationTypes("com.google.appinventor.components.annotations.*")
 public class ExtensionProcessor extends AbstractProcessor {
 
-  private ExtensionInfo extensionInfo;
+  private ExtensionFieldInfo extensionFieldInfo;
   private int pass = 0;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    this.extensionInfo = new ExtensionInfo();
+    this.extensionFieldInfo = new ExtensionFieldInfo();
   }
 
   @Override
@@ -45,7 +45,7 @@ public class ExtensionProcessor extends AbstractProcessor {
 
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
         Event event = new Event(el).build();
-        extensionInfo.addEvent(event);
+        extensionFieldInfo.addEvent(event);
       }
     }
 
@@ -56,7 +56,7 @@ public class ExtensionProcessor extends AbstractProcessor {
 
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
         Function func = new Function(el).build();
-        extensionInfo.addFunction(func);
+        extensionFieldInfo.addFunction(func);
       }
     }
 
@@ -68,13 +68,13 @@ public class ExtensionProcessor extends AbstractProcessor {
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
         BlockProperty prop = null;
         try {
-          prop = new BlockProperty(el, extensionInfo).build();
+          prop = new BlockProperty(el, extensionFieldInfo).build();
         } catch (IllegalAccessException e) {
           this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         } finally {
           assert prop != null;
           if (prop.getName() != null) {
-            extensionInfo.addBlockProp(prop);
+            extensionFieldInfo.addBlockProp(prop);
           }
         }
       }
@@ -88,13 +88,13 @@ public class ExtensionProcessor extends AbstractProcessor {
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
         Property prop = null;
         try {
-          prop = new Property(el, extensionInfo).build();
+          prop = new Property(el, extensionFieldInfo).build();
         } catch (IllegalAccessException e) {
           this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         } finally {
           assert prop != null;
           if (prop.getName() != null) {
-            extensionInfo.addProp(prop);
+            extensionFieldInfo.addProp(prop);
           }
         }
       }
@@ -103,7 +103,7 @@ public class ExtensionProcessor extends AbstractProcessor {
     try {
       FileObject compJson = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "", "extInfo.json");
       Writer writer = compJson.openWriter();
-      writer.write(extensionInfo.getJson());
+      writer.write(extensionFieldInfo.getJson());
       writer.close();
     } catch (IOException e) {
       processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
