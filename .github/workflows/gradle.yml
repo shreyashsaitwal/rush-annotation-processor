@@ -1,0 +1,35 @@
+# This workflow will build a Java project with Gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.7
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.7
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew build
+    - name: Upload processor.jar
+      uses: actions/upload-artifact@v2
+      with:
+        name: processor
+        path: processor/build/libs/*.jar
+    - name: Upload annotations.jar
+      uses: actions/upload-artifact@v2
+      with:
+        name: annotations
+        path: annotations/build/libs/*.jar
