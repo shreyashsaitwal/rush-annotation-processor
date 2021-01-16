@@ -22,7 +22,7 @@ public class ExtensionGenerator {
   private static String externalComponentsTempDirPath;
   private static boolean useFQCN = false;
 
-  private static Map<String, List<ExtensionInfo>> externalComponentsByPackage =
+  private static final Map<String, List<ExtensionInfo>> externalComponentsByPackage =
       new TreeMap<>();
 
   /**
@@ -39,14 +39,17 @@ public class ExtensionGenerator {
   public static void main(String[] args) throws IOException, JSONException {
     String simple_component_json = readFile(args[0], Charset.defaultCharset());
     String simple_component_build_info_json = readFile(args[1], Charset.defaultCharset());
+
     externalComponentsDirPath = args[2];
     androidRuntimeClassDirPath = args[3];
     buildServerClassDirPath = args[4];
     externalComponentsTempDirPath = args[5];
     useFQCN = Boolean.parseBoolean(args[6]);
+
     JSONArray simpleComponentDescriptors = new JSONArray(simple_component_json);
     JSONArray simpleComponentBuildInfos = new JSONArray(simple_component_build_info_json);
     Map<String, JSONObject> buildInfos = buildInfoAsMap(simpleComponentBuildInfos);
+
     for (int i = 0; i < simpleComponentDescriptors.length(); i++) {
       JSONObject componentDescriptor = (JSONObject) simpleComponentDescriptors.get(i);
       if(componentDescriptor.get("external").toString().equals("true")) {
@@ -65,10 +68,10 @@ public class ExtensionGenerator {
    * Container class to store information about an extension.
    */
   private static class ExtensionInfo {
-    private String type;
-    private String packageName;
-    private JSONObject descriptor;
-    private JSONObject buildInfo;
+    private final String type;
+    private final String packageName;
+    private final JSONObject descriptor;
+    private final JSONObject buildInfo;
 
     ExtensionInfo(JSONObject descriptor, JSONObject buildInfo) {
       this.descriptor = descriptor;
@@ -159,7 +162,7 @@ public class ExtensionGenerator {
         for (int j = 0; j < librariesNeeded.length(); ++j) {
           // Copy Library files for Unjar and Jaring
           String library = librariesNeeded.getString(j);
-          copyFile(buildServerClassDirPath + File.separator + library,
+          copyFile(library,
               extensionTempDirPath + File.separator + library);
         }
         //empty the libraries meta-data to avoid redundancy

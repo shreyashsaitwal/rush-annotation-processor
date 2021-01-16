@@ -22,10 +22,10 @@ public class Function {
 
   public Function build() {
     ExecutableElement executableElement = ((ExecutableElement) element);
-    this.name = executableElement.getSimpleName().toString();
-    this.description = executableElement.getAnnotation(SimpleFunction.class).description();
-    this.deprecated = executableElement.getAnnotation(Deprecated.class) != null;
-    this.returnType = ConvertToYailType.convert(executableElement.getReturnType().toString());
+    name = executableElement.getSimpleName().toString();
+    description = executableElement.getAnnotation(SimpleFunction.class).description();
+    deprecated = executableElement.getAnnotation(Deprecated.class) != null;
+    returnType = ConvertToYailType.convert(executableElement.getReturnType().toString());
 
     for (VariableElement param : executableElement.getParameters()) {
       params.add(new FunctionParam(param));

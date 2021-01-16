@@ -22,22 +22,22 @@ public class Property {
 
   public Property build() throws IllegalAccessException {
     ExecutableElement executableElement = (ExecutableElement) element;
-    this.name = executableElement.getSimpleName().toString();
+    name = executableElement.getSimpleName().toString();
 
-    if (!ext.getBlockProps().containsKey(this.name)) {
-      throw new IllegalAccessException("Unable to find corresponding @SimpleProperty annotation for designer property \"" + this.name + "\".");
+    if (!ext.getBlockProps().containsKey(name)) {
+      throw new IllegalAccessException("Unable to find corresponding @SimpleProperty annotation for designer property \"" + name + "\".");
     } else {
-      this.defaultVal = executableElement.getAnnotation(DesignerProperty.class).defaultValue();
-      this.editorType = executableElement.getAnnotation(DesignerProperty.class).defaultValue();
-      this.args = executableElement.getAnnotation(DesignerProperty.class).editorArgs();
-      this.alwaysSend = executableElement.getAnnotation(DesignerProperty.class).alwaysSend();
+      defaultVal = executableElement.getAnnotation(DesignerProperty.class).defaultValue();
+      editorType = executableElement.getAnnotation(DesignerProperty.class).defaultValue();
+      args = executableElement.getAnnotation(DesignerProperty.class).editorArgs();
+      alwaysSend = executableElement.getAnnotation(DesignerProperty.class).alwaysSend();
 
-      if (!this.defaultVal.equals("")) {
-        ext.getBlockProps().get(this.name).setDefaultVal(this.defaultVal);
+      if (!defaultVal.equals("")) {
+        ext.getBlockProps().get(name).setDefaultVal(defaultVal);
       }
 
-      if (this.alwaysSend) {
-        ext.getBlockProps().get(this.name).setAlwaysSend(true);
+      if (alwaysSend) {
+        ext.getBlockProps().get(name).setAlwaysSend(true);
       }
     }
 

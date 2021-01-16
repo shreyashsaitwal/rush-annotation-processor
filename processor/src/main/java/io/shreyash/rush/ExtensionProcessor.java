@@ -1,9 +1,14 @@
 package io.shreyash.rush;
 
-import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.auto.service.AutoService;
 import io.shreyash.rush.model.*;
 import io.shreyash.rush.util.CheckName;
+import io.shreyash.rush.util.InfoFilesGenerator;
+import org.xml.sax.SAXException;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -11,10 +16,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Set;
 
 @AutoService(Processor.class)
@@ -23,7 +26,7 @@ import java.util.Set;
 public class ExtensionProcessor extends AbstractProcessor {
 
   private ExtensionFieldInfo extensionFieldInfo;
-  private int pass = 0;
+  private boolean isFirstRound = true;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -33,10 +36,10 @@ public class ExtensionProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    if (pass > 0) {
+    if (!isFirstRound) {
       return true;
     }
-    pass++;
+    isFirstRound = false;
 
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleEvent.class)) {
       if (!CheckName.isPascalCase(el)) {
@@ -100,12 +103,16 @@ public class ExtensionProcessor extends AbstractProcessor {
       }
     }
 
+    String root = processingEnv.getOptions().get("root");
+    String version = processingEnv.getOptions().get("version");
+    String org = processingEnv.getOptions().get("org");
+    String output = processingEnv.getOptions().get("output");
+
+    InfoFilesGenerator generator = new InfoFilesGenerator(root, version, org, extensionFieldInfo, output);
     try {
-      FileObject compJson = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "", "extInfo.json");
-      Writer writer = compJson.openWriter();
-      writer.write(extensionFieldInfo.getJson());
-      writer.close();
-    } catch (IOException e) {
+      generator.generateBuildInfoJson();
+      generator.generateSimpleCompJson();
+    } catch (IOException | ParserConfigurationException | SAXException e) {
       processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
     }
 

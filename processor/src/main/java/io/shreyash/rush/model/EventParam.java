@@ -5,7 +5,13 @@ import io.shreyash.rush.util.ConvertToYailType;
 import javax.lang.model.element.VariableElement;
 
 public class EventParam {
-  private String name;
+  private final String name;
+  private final String type;
+
+  public EventParam(VariableElement param) {
+    name = param.getSimpleName().toString();
+    type = ConvertToYailType.convert(param.asType().toString());
+  }
 
   public String getName() {
     return name;
@@ -13,12 +19,5 @@ public class EventParam {
 
   public String getType() {
     return type;
-  }
-
-  private String type;
-
-  public EventParam(VariableElement param) {
-    this.name = param.getSimpleName().toString();
-    this.type = ConvertToYailType.convert(param.asType().toString());
   }
 }

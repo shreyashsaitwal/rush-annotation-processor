@@ -32,45 +32,45 @@ public class BlockProperty {
       if (paramSize != 1) {
         throw new IllegalAccessException("The number of parameters allowed on the setter property \"" + element.getSimpleName() + "\" is: 1.");
       } else {
-        this.accessType = AccessType.WRITE;
-        this.type = ConvertToYailType.convert(executableElement.getParameters().get(0).asType().toString());
+        accessType = AccessType.WRITE;
+        type = ConvertToYailType.convert(executableElement.getParameters().get(0).asType().toString());
       }
     } else {
       if (paramSize != 0) {
         throw new IllegalAccessException("The number of parameters allowed on the getter property \"" + element.getSimpleName() + "\" is: 0.");
       } else {
-        this.accessType = AccessType.READ;
-        this.type = ConvertToYailType.convert(executableElement.getReturnType().toString());
+        accessType = AccessType.READ;
+        type = ConvertToYailType.convert(executableElement.getReturnType().toString());
       }
     }
 
-    this.name = executableElement.getSimpleName().toString();
-    this.description = executableElement.getAnnotation(SimpleProperty.class).description();
-    this.accessType = executableElement.getAnnotation(SimpleProperty.class).userVisible() ? this.accessType : AccessType.INVISIBLE;
-    this.deprecated = executableElement.getAnnotation(Deprecated.class) != null;
+    name = executableElement.getSimpleName().toString();
+    description = executableElement.getAnnotation(SimpleProperty.class).description();
+    accessType = executableElement.getAnnotation(SimpleProperty.class).userVisible() ? accessType : AccessType.INVISIBLE;
+    deprecated = executableElement.getAnnotation(Deprecated.class) != null;
 
     if (ext.getBlockProps().containsKey(executableElement.getSimpleName().toString())) {
       BlockProperty priorProp = ext.getBlockProps().get(executableElement.getSimpleName().toString());
-      if (!priorProp.getType().equals(this.type)) {
-        if (this.accessType.equals(AccessType.READ)) {
-          priorProp.setType(this.type);
+      if (!priorProp.getType().equals(type)) {
+        if (accessType.equals(AccessType.READ)) {
+          priorProp.setType(type);
         } else {
-          throw new IllegalAccessException("Inconsistent types \"" + priorProp.getType() + "\" and \"" + this.type + "\" for property \"" + this.name + "\".");
+          throw new IllegalAccessException("Inconsistent types \"" + priorProp.getType() + "\" and \"" + type + "\" for property \"" + name + "\".");
         }
       }
 
-      if (priorProp.getDescription().isEmpty() && !this.getDescription().isEmpty()) {
-        priorProp.setDescription(this.description);
+      if (priorProp.getDescription().isEmpty() && !getDescription().isEmpty()) {
+        priorProp.setDescription(description);
 
       }
 
-      if (priorProp.getAccessType().equals(AccessType.INVISIBLE) || this.accessType.equals(AccessType.INVISIBLE)) {
-        this.accessType = AccessType.INVISIBLE;
-      } else if (!priorProp.getAccessType().equals(this.accessType)) {
-        this.accessType = AccessType.READ_WRITE;
+      if (priorProp.getAccessType().equals(AccessType.INVISIBLE) || accessType.equals(AccessType.INVISIBLE)) {
+        accessType = AccessType.INVISIBLE;
+      } else if (!priorProp.getAccessType().equals(accessType)) {
+        accessType = AccessType.READ_WRITE;
       }
 
-      ext.removeBlockProp(this.name);
+      ext.removeBlockProp(name);
     }
     return this;
   }

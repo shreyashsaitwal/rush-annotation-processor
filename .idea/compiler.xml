@@ -1,27 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <annotationProcessing>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$PROJECT_DIR$/processor/build/libs/processor.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service/1.0-rc7/894e4af172edf98872bf87f5a90912f86f3e9158/auto-service-1.0-rc7.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto/auto-common/0.10/c8f153ebe04a17183480ab4016098055fb474364/auto-common-0.10.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/29.0-jre/801142b4c3d0f0770dd29abea50906cacfddd447/guava-29.0-jre.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.json/json/20200518/41a767de4bde8f01d53856b905c49b2db8862f13/json-20200518.jar" />
-          <entry name="$PROJECT_DIR$/annotations/build/libs/annotations-v186a.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/2.11.1/8c43bf8f99b841d23aadda6044329dad9b63c185/checker-qual-2.11.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.3.4/dac170e4594de319655ffb62f41cbd6dbb5e601e/error_prone_annotations-2.3.4.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service-annotations/1.0-rc7/8849037b03b10cd3d71cce67f8b99aed183971cb/auto-service-annotations-1.0-rc7.jar" />
-        </processorPath>
-        <module name="ExtensionProcessor.test-ext.main" />
-      </profile>
-    </annotationProcessing>
     <bytecodeTargetLevel target="1.8" />
   </component>
 </project>

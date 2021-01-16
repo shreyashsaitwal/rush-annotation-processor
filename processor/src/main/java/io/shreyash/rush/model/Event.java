@@ -20,9 +20,9 @@ public class Event {
 
   public Event build() {
     ExecutableElement executableElement = ((ExecutableElement) element);
-    this.name = executableElement.getSimpleName().toString();
-    this.description = executableElement.getAnnotation(SimpleEvent.class).description();
-    this.deprecated = executableElement.getAnnotation(Deprecated.class) != null;
+    name = executableElement.getSimpleName().toString();
+    description = executableElement.getAnnotation(SimpleEvent.class).description();
+    deprecated = executableElement.getAnnotation(Deprecated.class) != null;
 
     for (VariableElement param : executableElement.getParameters()) {
       params.add(new EventParam(param));
