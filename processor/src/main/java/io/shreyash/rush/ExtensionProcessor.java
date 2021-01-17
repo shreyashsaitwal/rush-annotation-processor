@@ -5,6 +5,8 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.auto.service.AutoService;
+
+import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import io.shreyash.rush.model.*;
 import io.shreyash.rush.util.CheckName;
 import io.shreyash.rush.util.InfoFilesGenerator;
@@ -105,14 +107,14 @@ public class ExtensionProcessor extends AbstractProcessor {
 
     String root = processingEnv.getOptions().get("root");
     String version = processingEnv.getOptions().get("version");
-    String org = processingEnv.getOptions().get("org");
+    String type = processingEnv.getOptions().get("type");
     String output = processingEnv.getOptions().get("output");
 
-    InfoFilesGenerator generator = new InfoFilesGenerator(root, version, org, extensionFieldInfo, output);
+    InfoFilesGenerator generator = new InfoFilesGenerator(root, version, type, extensionFieldInfo, output);
     try {
       generator.generateBuildInfoJson();
       generator.generateSimpleCompJson();
-    } catch (IOException | ParserConfigurationException | SAXException e) {
+    } catch (IOException | ParserConfigurationException | SAXException | YamlReadingException e) {
       processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
     }
 

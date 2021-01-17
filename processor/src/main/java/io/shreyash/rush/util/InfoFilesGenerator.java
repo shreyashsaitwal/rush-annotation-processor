@@ -53,7 +53,7 @@ public class InfoFilesGenerator {
     String name = yml.string("name");
     String verName = yml.yamlMapping("version").string("name");
     String helpStr = yml.string("description");
-    String helpUrl = yml.string("helpUrl");
+    String helpUrl = yml.string("homepage");
     String icon = yml.yamlMapping("assets").string("icon");
     int minSdk = yml.integer("min_sdk");
 
@@ -90,8 +90,9 @@ public class InfoFilesGenerator {
    * @throws IOException
    * @throws ParserConfigurationException
    * @throws SAXException
+   * @throws YamlReadingException
    */
-  public void generateBuildInfoJson() throws IOException, ParserConfigurationException, SAXException {
+  public void generateBuildInfoJson() throws IOException, ParserConfigurationException, SAXException, YamlReadingException {
     JSONArray buildInfoJson = new JSONArray();
     JSONObject obj = new JSONObject();
 
@@ -138,7 +139,7 @@ public class InfoFilesGenerator {
     JSONArray permissions = new JSONArray();
     if (nodes.getLength() != 0) {
       for (int i = 0; i < nodes.getLength(); i++) {
-        permissions.put("\"" + generateXmlElement(nodes.item(i), "manifest") + "\"");
+        permissions.put(generateXmlElement(nodes.item(i), "manifest"));
       }
     }
     obj.put("permissions", permissions);
@@ -201,7 +202,7 @@ public class InfoFilesGenerator {
     if (node.getNodeName().equals("uses-permission")) {
       Node permission = node.getAttributes().getNamedItem("android:name");
       if (permission != null) {
-        return "<" + permission.getNodeValue() + "/>";
+        return permission.getNodeValue();
       } else {
         throw new DOMException((short) 1, "No permission android:name attribute found in <uses-permission>");
       }
@@ -219,20 +220,20 @@ public class InfoFilesGenerator {
         for (int i = 0; i < attributes.getLength(); i++) {
           if (attributes.item(i).getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attribute = (Attr) attributes.item(i);
-            sb.append(attribute.getNodeName() + " = \\\"" + attribute.getNodeValue() + "\\\" ");
+            sb.append(attribute.getNodeName() + " = \"" + attribute.getNodeValue() + "\" ");
           }
         }
       }
 
       if (element.hasChildNodes()) {
-        sb.append(" >\\n");
+        sb.append(" >\n");
         NodeList children = element.getChildNodes();
         for (int j = 0; j < children.getLength(); j++) {
           sb.append(generateXmlElement(children.item(j), element.getNodeName()));
         }
-        sb.append("</" + tagName + ">\\n");
+        sb.append("</" + tagName + ">\n");
       } else {
-        sb.append("/>\\n");
+        sb.append("/>\n");
       }
 
     }
@@ -262,7 +263,7 @@ public class InfoFilesGenerator {
       NodeList elements = doc.getElementsByTagName(val);
       if (elements.getLength() != 0) {
         for (int i = 0; i < elements.getLength(); i++) {
-          arr.put("\"" + generateXmlElement(elements.item(i), "application") + "\"");
+          arr.put(generateXmlElement(elements.item(i), "application"));
         }
       }
       buildInfoJson.put(key, arr);
@@ -277,7 +278,7 @@ public class InfoFilesGenerator {
       NodeList elements = doc.getElementsByTagName(el);
       if (elements.getLength() != 0) {
         for (int i = 0; i < elements.getLength(); i++) {
-          arr.put("\"" + generateXmlElement(elements.item(i), "application") + "\"");
+          arr.put(generateXmlElement(elements.item(i), "application"));
         }
       }
       buildInfoJson.put("metadata", arr);
