@@ -29,14 +29,14 @@ import java.util.HashMap;
 public class InfoFilesGenerator {
   private final String projectRootPath;
   private final String extVersion;
-  private final String org;
+  private final String type;
   private final ExtensionFieldInfo extensionFieldInfos;
   private final String outputPath;
 
-  public InfoFilesGenerator(String projectRootPath, String extVersion, String org, ExtensionFieldInfo extensionFieldInfos, String outputPath) {
+  public InfoFilesGenerator(String projectRootPath, String extVersion, String type, ExtensionFieldInfo extensionFieldInfos, String outputPath) {
     this.projectRootPath = projectRootPath;
     this.extVersion = extVersion;
-    this.org = org;
+    this.type = type;
     this.extensionFieldInfos = extensionFieldInfos;
     this.outputPath = outputPath;
   }
@@ -51,7 +51,6 @@ public class InfoFilesGenerator {
 
     YamlMapping yml = getRushYml();
     String name = yml.string("name");
-    String type = org + name;
     String verName = yml.yamlMapping("version").string("name");
     String helpStr = yml.string("description");
     String helpUrl = yml.string("helpUrl");
@@ -97,9 +96,8 @@ public class InfoFilesGenerator {
     JSONObject obj = new JSONObject();
 
     YamlMapping yml = getRushYml();
-    String type = org + yml.string("name");
     int minSdk = yml.integer("min_sdk");
-    obj.put(type, type);
+    obj.put("type", type);
     obj.put("androidMinSdk", new JSONArray().put(minSdk));
 
     // TODO: Put native libraries
