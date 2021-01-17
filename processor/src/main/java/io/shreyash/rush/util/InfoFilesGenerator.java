@@ -51,11 +51,50 @@ public class InfoFilesGenerator {
 
     YamlMapping yml = getRushYml();
     String name = yml.string("name");
-    String verName = yml.yamlMapping("version").string("name");
-    String helpStr = yml.string("description");
-    String helpUrl = yml.string("homepage");
-    String icon = yml.yamlMapping("assets").string("icon");
-    int minSdk = yml.integer("min_sdk");
+
+    String verName;
+    if (yml.yamlMapping("version").string("name") != null) {
+      verName = yml.yamlMapping("version").string("name");
+    } else {
+      verName = "";
+    }
+
+    String helpStr;
+    if (yml.string("homepage") != null) {
+      helpStr = yml.string("description");
+    } else {
+      helpStr = "";
+    }
+
+    String helpUrl;
+    if (yml.string("homepage") != null) {
+      helpUrl = yml.string("homepage");
+    } else {
+      helpUrl = "";
+    }
+
+    String icon;
+    if (yml.yamlMapping("assets").string("icon") != null) {
+      icon = yml.yamlMapping("assets").string("icon");
+    } else {
+      icon = "";
+    }
+
+    int minSdk;
+    if (yml.integer("min_sdk") != -1) {
+      minSdk = yml.integer("min_sdk");
+    } else {
+      minSdk = 7;
+    }
+
+    String license;
+    if (Paths.get(projectRootPath, "LICENSE").toFile().exists()) {
+      license = Paths.get(projectRootPath, "LICENSE").toString();
+    } else if (yml.string("licence_url") != null) {
+      license = yml.string("licence_url");
+    } else {
+      license = "";
+    }
 
     JSONObject obj = new JSONObject();
     obj.put("type", type);
@@ -64,8 +103,9 @@ public class InfoFilesGenerator {
     obj.put("version", extVersion);
     obj.put("helpString", helpStr);
     obj.put("helpUrl", helpUrl);
-    obj.put("icon", icon);
+    obj.put("iconName", icon);
     obj.put("androidMinSdk", minSdk);
+    obj.put("licenseName", license);
     obj.put("external", "true");
     obj.put("dateBuilt", ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE));
     obj.put("categoryString", "EXTENSION");
