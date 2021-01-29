@@ -1,14 +1,14 @@
-package io.shreyash.rush.model;
+package io.shreyash.rush.blocks;
 
 import io.shreyash.rush.util.ConvertToYailType;
 
 import javax.lang.model.element.VariableElement;
 
-public class EventParam {
+public class FunctionParam {
   private final String name;
   private final String type;
 
-  public EventParam(VariableElement param) {
+  public FunctionParam(VariableElement param) {
     name = param.getSimpleName().toString();
     type = ConvertToYailType.convert(param.asType().toString());
   }

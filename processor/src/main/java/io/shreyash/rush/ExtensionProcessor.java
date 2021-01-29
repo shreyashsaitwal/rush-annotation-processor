@@ -7,7 +7,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.auto.service.AutoService;
 
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
-import io.shreyash.rush.model.*;
+import io.shreyash.rush.blocks.*;
 import io.shreyash.rush.util.CheckName;
 import io.shreyash.rush.util.InfoFilesGenerator;
 import org.xml.sax.SAXException;

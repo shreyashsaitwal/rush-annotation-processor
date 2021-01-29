@@ -1,4 +1,4 @@
-package io.shreyash.rush.model;
+package io.shreyash.rush.blocks;
 
 public enum AccessType {
   READ, WRITE, READ_WRITE, INVISIBLE

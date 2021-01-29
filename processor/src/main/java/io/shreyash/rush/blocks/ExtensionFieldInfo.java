@@ -1,4 +1,4 @@
-package io.shreyash.rush.model;
+package io.shreyash.rush.blocks;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

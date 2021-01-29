@@ -5,7 +5,7 @@ import com.amihaiemil.eoyaml.YamlMapping;
 import com.amihaiemil.eoyaml.YamlNode;
 import com.amihaiemil.eoyaml.YamlSequence;
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
-import io.shreyash.rush.model.ExtensionFieldInfo;
+import io.shreyash.rush.blocks.ExtensionFieldInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

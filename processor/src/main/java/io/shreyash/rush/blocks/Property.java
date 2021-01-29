@@ -1,4 +1,4 @@
-package io.shreyash.rush.model;
+package io.shreyash.rush.blocks;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 
