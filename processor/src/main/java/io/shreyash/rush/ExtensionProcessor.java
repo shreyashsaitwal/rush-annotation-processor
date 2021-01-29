@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Set;
 
 @AutoService(Processor.class)
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("com.google.appinventor.components.annotations.*")
 public class ExtensionProcessor extends AbstractProcessor {
 
@@ -43,65 +43,75 @@ public class ExtensionProcessor extends AbstractProcessor {
     }
     isFirstRound = false;
 
-    for (Element el : roundEnv.getElementsAnnotatedWith(SimpleEvent.class)) {
-      if (!CheckName.isPascalCase(el)) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "The name of the simple event \"" + el.getSimpleName() + "\" should be in Pascal case.\nExample: MyAwesomeEvent");
-      }
+    final Messager messager = processingEnv.getMessager();
 
+    // Process all SimpleEvents
+    for (Element el : roundEnv.getElementsAnnotatedWith(SimpleEvent.class)) {
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
+        if (!CheckName.isPascalCase(el)) {
+          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleEvent " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
+        }
         Event event = new Event(el).build();
         extensionFieldInfo.addEvent(event);
+      } else {
+        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @SimpleEvent.");
       }
     }
 
+    // Process all SimpleFunctions
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleFunction.class)) {
-      if (!CheckName.isPascalCase(el)) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "The name of the simple function \"" + el.getSimpleName() + "\" should be in Pascal case.\nExample: MyAwesomeFunction");
-      }
-
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
+        if (!CheckName.isPascalCase(el)) {
+          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleFunction " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
+        }
         Function func = new Function(el).build();
         extensionFieldInfo.addFunction(func);
+      } else {
+        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @SimpleFunction.");
       }
     }
 
+    // Process all SimpleProps
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleProperty.class)) {
-      if (!CheckName.isPascalCase(el)) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "The name of the simple property \"" + el.getSimpleName() + "\" should be in Pascal case.\nExample: MyAwesomeProperty");
-      }
-
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
+        if (!CheckName.isPascalCase(el)) {
+          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleProperty " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
+        }
         BlockProperty prop = null;
         try {
           prop = new BlockProperty(el, extensionFieldInfo).build();
         } catch (IllegalAccessException e) {
-          this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+          messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         } finally {
           assert prop != null;
           if (prop.getName() != null) {
             extensionFieldInfo.addBlockProp(prop);
           }
         }
+      } else {
+        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @SimpleProperty.");
       }
     }
 
+    // Process all DesignerProps
     for (Element el : roundEnv.getElementsAnnotatedWith(DesignerProperty.class)) {
-      if (!CheckName.isPascalCase(el)) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "The name of the designer property \"" + el.getSimpleName() + "\" should be in Pascal case.\nExample: MyAwesomeDesignerProperty");
-      }
-
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
+        if (!CheckName.isPascalCase(el)) {
+          messager.printMessage(Diagnostic.Kind.WARNING, "@DesignerProperty " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
+        }
         Property prop = null;
         try {
           prop = new Property(el, extensionFieldInfo).build();
         } catch (IllegalAccessException e) {
-          this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+          messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         } finally {
           assert prop != null;
           if (prop.getName() != null) {
             extensionFieldInfo.addProp(prop);
           }
         }
+      } else {
+        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @DesignerProperty.");
       }
     }
 
@@ -115,7 +125,7 @@ public class ExtensionProcessor extends AbstractProcessor {
       generator.generateBuildInfoJson();
       generator.generateSimpleCompJson();
     } catch (IOException | ParserConfigurationException | SAXException | YamlReadingException e) {
-      processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+      messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
     }
 
     return false;

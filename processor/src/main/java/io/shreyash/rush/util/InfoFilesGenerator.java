@@ -60,7 +60,7 @@ public class InfoFilesGenerator {
     }
 
     String helpStr;
-    if (yml.string("homepage") != null) {
+    if (yml.string("description") != null) {
       helpStr = yml.string("description");
     } else {
       helpStr = "";
@@ -146,13 +146,12 @@ public class InfoFilesGenerator {
     // Put libraries
     JSONArray deps = new JSONArray();
     YamlSequence ymlDeps = yml.yamlSequence("dependencies");
-    if (ymlDeps != null && !ymlDeps.values().isEmpty()) {
+    if (!ymlDeps.values().isEmpty()) {
       for (YamlNode dep : ymlDeps.values()) {
-        // TODO: Once the dep management is added, remove this check
-        if (dep.type().equals(com.amihaiemil.eoyaml.Node.MAPPING)) {
-          deps.put(dep.asMapping().string("path"));
+        if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
+          deps.put(dep.asScalar().value());
         } else {
-          throw new YamlReadingException();
+          throw new YamlReadingException("ERR One or more invalid values found in dependencies sequence in rush.yml");
         }
       }
     }
@@ -161,34 +160,41 @@ public class InfoFilesGenerator {
     // Put assets
     JSONArray assets = new JSONArray();
     YamlSequence ymlAssets = yml.yamlMapping("assets").yamlSequence("other");
-    if (ymlAssets != null && !ymlAssets.values().isEmpty()) {
-      for (Object asset : ymlAssets.values().toArray()) {
-        assets.put(asset.toString());
+    if (!ymlAssets.values().isEmpty()) {
+      for (YamlNode asset : ymlAssets.values()) {
+        if (asset.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
+          assets.put(asset.asScalar().value());
+        } else {
+          throw new YamlReadingException("ERR One or more invalid values found in assets/other sequence in rush.yml");
+        }
       }
     }
     obj.put("assets", assets);
 
-    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-    Document doc = builder.parse(Paths.get(projectRootPath, "AndroidManifest.xml").toFile());
+    File manifest = Paths.get(projectRootPath, "AndroidManifest.xml").toFile();
+    if (manifest.exists()) {
+      DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      Document doc = builder.parse(manifest);
 
-    // Put application elements
-    putApplicationElements(obj, doc);
+      // Put application elements
+      putApplicationElements(obj, doc);
 
-    // Put permissions
-    NodeList nodes = doc.getElementsByTagName("uses-permission");
-    JSONArray permissions = new JSONArray();
-    if (nodes.getLength() != 0) {
-      for (int i = 0; i < nodes.getLength(); i++) {
-        permissions.put(generateXmlElement(nodes.item(i), "manifest"));
+      // Put permissions
+      NodeList nodes = doc.getElementsByTagName("uses-permission");
+      JSONArray permissions = new JSONArray();
+      if (nodes.getLength() != 0) {
+        for (int i = 0; i < nodes.getLength(); i++) {
+          permissions.put(generateXmlElement(nodes.item(i), "manifest"));
+        }
       }
-    }
-    obj.put("permissions", permissions);
+      obj.put("permissions", permissions);
 
-    buildInfoJson.put(obj);
-    FileWriter writer = new FileWriter(Paths.get(outputPath, "simple_components_build_info.json").toFile());
-    buildInfoJson.write(writer);
-    writer.flush();
-    writer.close();
+      buildInfoJson.put(obj);
+      FileWriter writer = new FileWriter(Paths.get(outputPath, "simple_components_build_info.json").toFile());
+      buildInfoJson.write(writer);
+      writer.flush();
+      writer.close();
+    }
   }
 
   /**
@@ -203,28 +209,11 @@ public class InfoFilesGenerator {
       if (Paths.get(projectRootPath, "rush.yaml").toFile().exists()) {
         rushYml = Paths.get(projectRootPath, "rush.yaml").toFile();
       } else {
-        throw new FileNotFoundException("Extension processor is unable to find rush.yml metadata file.");
+        throw new FileNotFoundException("ERR Unable to find rush.yml file.");
       }
     }
 
     return Yaml.createYamlInput(rushYml).readYamlMapping();
-  }
-
-  /**
-   * Checks if the doc is a valid AndroidManifest.xml
-   * Note: The checks aren't exhaustive.
-   *
-   * @param doc        The AndroidManifest.xml of this extension
-   * @param extPackage The package name of the extension
-   * @return true if the manifest file is valid
-   */
-  private boolean isXmlValid(Document doc, String extPackage) {
-    Element root = doc.getDocumentElement();
-    if (!root.getNodeName().equals("manifest")) {
-      return false;
-    } else {
-      return root.getAttribute("package").equals(extPackage);
-    }
   }
 
   /**
@@ -244,7 +233,7 @@ public class InfoFilesGenerator {
       if (permission != null) {
         return permission.getNodeValue();
       } else {
-        throw new DOMException((short) 1, "No permission android:name attribute found in <uses-permission>");
+        throw new DOMException((short) 1, "ERR No android:name attribute found in <uses-permission>");
       }
     }
 

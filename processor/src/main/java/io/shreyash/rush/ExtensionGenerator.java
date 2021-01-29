@@ -1,14 +1,10 @@
 package io.shreyash.rush;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.io.File;
 
 import org.json.JSONException;
 import org.json.JSONArray;
@@ -93,7 +89,6 @@ public class ExtensionGenerator {
   private static void generateAllExtensions() throws IOException, JSONException {
     for (Map.Entry<String, List<ExtensionInfo>> entry : externalComponentsByPackage.entrySet()) {
       String name = useFQCN && entry.getValue().size() == 1 ? entry.getValue().get(0).type : entry.getKey();
-      System.out.println("\nRush : Generating files for extension [" + name + "].");
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExtensionInfo info : entry.getValue()) {
         copyIcon(name, info.descriptor);
@@ -120,7 +115,7 @@ public class ExtensionGenerator {
     sb.append(']');
     String components = sb.toString();
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
-    ensureDirectory(extensionDirPath, "ERR : Unable to create build directory for [" + packageName + "].");
+    ensureDirectory(extensionDirPath, "ERR Unable to create build directory for [" + packageName + "].");
     FileWriter jsonWriter = null;
     try {
       jsonWriter = new FileWriter(extensionDirPath + File.separator + "components.json");
@@ -160,26 +155,25 @@ public class ExtensionGenerator {
         for (int j = 0; j < librariesNeeded.length(); ++j) {
           // Copy Library files for Unjar and Jaring
           String library = librariesNeeded.getString(j);
-          copyFile(library,
+          copyFile(buildServerClassDirPath + File.separator + library,
               extensionTempDirPath + File.separator + library);
         }
         //empty the libraries meta-data to avoid redundancy
         componentBuildInfo.put("libraries", new JSONArray());
       } catch(JSONException e) {
         // bad
-        throw new IllegalStateException("ERR : An unexpected error occurred while parsing simple_components.json",
+        throw new IllegalStateException("ERR An unexpected error occurred while parsing simple_components.json",
             e);
       }
       buildInfos.put(componentBuildInfo);
     }
 
     // Create component_build_info.json
-    ensureDirectory(extensionFileDirPath, "ERR : Unable to create path for component_build_info.json");
+    ensureDirectory(extensionFileDirPath, "ERR Unable to create path for component_build_info.json");
     FileWriter extensionBuildInfoFile = null;
     try {
       extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_infos.json");
       extensionBuildInfoFile.write(buildInfos.toString());
-      System.out.println("Rush : Created build info file for [" + packageName + "].");
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -214,11 +208,8 @@ public class ExtensionGenerator {
     File image = Paths.get(sourceDir.getPath(), "assets", icon).toFile();
     if (image.exists()) {
       File dstIcon = new File(externalComponentsDirPath + File.separator + packageName + File.separator + icon);
-      ensureDirectory(dstIcon.getParent(), "ERR : Unable to copy extension icon [" + icon + "] to it's destination directory.");
-      System.out.println("Rush : Copying extension icon file [" + image.getAbsolutePath() + "].");
+      ensureDirectory(dstIcon.getParent(), "ERR Unable to copy extension icon [" + icon + "] to it's destination directory.");
       copyFile(image.getAbsolutePath(), dstIcon.getAbsolutePath());
-    } else {
-      System.out.println("Rush : Unable to find extension icon file [" + icon + "].");
     }
   }
 
@@ -232,11 +223,8 @@ public class ExtensionGenerator {
     File licenseFile = new File(license);
     if(licenseFile.exists()) {
       File destinationLicense = new File(externalComponentsDirPath + File.separator + packageName + File.separator + license);
-      ensureDirectory(destinationLicense.getParent(), "ERR : Unable to copy LICENSE file to it's destination directory.");
-      System.out.println("Rush : Copying local LICENSE file.");
+      ensureDirectory(destinationLicense.getParent(), "ERR Unable to copy LICENSE file to it's destination directory.");
       copyFile(licenseFile.getAbsolutePath(), destinationLicense.getAbsolutePath());
-    } else {
-      System.out.println("Rush : No LICENSE file or a valid license_url found.");
     }
   }
 
@@ -267,7 +255,7 @@ public class ExtensionGenerator {
       if (!asset.isEmpty()) {
         if (!copyFile(assetSrcDir.getAbsolutePath() + File.separator + asset,
             assetDestDir.getAbsolutePath() + File.separator + asset)) {
-          throw new IllegalStateException("ERR : Unable to copy asset [" + asset + "] to destination.");
+          throw new IllegalStateException("ERR Unable to copy asset [" + asset + "] to destination.");
         }
       }
     }
@@ -282,7 +270,6 @@ public class ExtensionGenerator {
     FileWriter extensionPropertiesFile = new FileWriter(extensionDirPath + File.separator + "extension.properties");
     try {
       extensionPropertiesFile.write(extensionPropertiesString.toString());
-      System.out.println("Rush : Created extension properties file.");
     } catch (IOException e) {
       e.printStackTrace();
     } finally {
@@ -349,7 +336,7 @@ public class ExtensionGenerator {
         }
       } else if (fileEntry.isDirectory()) {
         String newDestPath=destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
-        ensureDirectory(newDestPath, "ERR : Unable to create temporary path for extension build.");
+        ensureDirectory(newDestPath, "ERR Unable to create temporary path for extension build.");
         copyRelatedExternalClasses(fileEntry.getAbsolutePath(), extensionPackage, newDestPath);
       }
     }
@@ -405,10 +392,10 @@ public class ExtensionGenerator {
   private static void ensureFreshDirectory(String path) throws IOException {
     File file = new File(path);
     if (file.exists() && !deleteRecursively(file)) {
-      throw new IOException("ERR : Unable to delete the assets directory for the extension.");
+      throw new IOException("ERR Unable to delete the assets directory for the extension.");
     }
     if (!file.mkdirs()) {
-      throw new IOException("ERR : Unable to delete the assets directory for the extension.");
+      throw new IOException("ERR Unable to delete the assets directory for the extension.");
     }
   }
 
