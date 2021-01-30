@@ -1,13 +1,19 @@
 package io.shreyash.rush.blocks;
 
 import com.google.appinventor.components.annotations.SimpleProperty;
+import io.shreyash.rush.util.CheckName;
 import io.shreyash.rush.util.ConvertToYailType;
 
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
+import javax.tools.Diagnostic;
 
 public class BlockProperty {
+  private final Element element;
+  private final ExtensionFieldInfo ext;
+  private final Messager messager;
   private String name;
   private String description;
   private String type;
@@ -16,28 +22,29 @@ public class BlockProperty {
   private String defaultVal = "";
   private boolean alwaysSend = false;
 
-  private final Element element;
-  private final ExtensionFieldInfo ext;
-
-  public BlockProperty(Element element, ExtensionFieldInfo ext) {
+  public BlockProperty(Element element, ExtensionFieldInfo ext, Messager messager) {
     this.element = element;
     this.ext = ext;
+    this.messager = messager;
   }
 
-  public BlockProperty build() throws IllegalAccessException {
+  public BlockProperty build() {
+    if (!CheckName.isPascalCase(element)) {
+      messager.printMessage(Diagnostic.Kind.WARNING, "Property '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
+    }
     ExecutableElement executableElement = ((ExecutableElement) element);
     int paramSize = executableElement.getParameters().size();
 
     if (executableElement.getReturnType().getKind() == TypeKind.VOID) {
       if (paramSize != 1) {
-        throw new IllegalAccessException("The number of parameters allowed on the setter property \"" + element.getSimpleName() + "\" is: 1.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the setter property '" + element.getSimpleName() + "' is: 1.");
       } else {
         accessType = AccessType.WRITE;
         type = ConvertToYailType.convert(executableElement.getParameters().get(0).asType().toString());
       }
     } else {
       if (paramSize != 0) {
-        throw new IllegalAccessException("The number of parameters allowed on the getter property \"" + element.getSimpleName() + "\" is: 0.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the getter property '" + element.getSimpleName() + "' is: 0.");
       } else {
         accessType = AccessType.READ;
         type = ConvertToYailType.convert(executableElement.getReturnType().toString());
@@ -55,13 +62,12 @@ public class BlockProperty {
         if (accessType.equals(AccessType.READ)) {
           priorProp.setType(type);
         } else {
-          throw new IllegalAccessException("Inconsistent types \"" + priorProp.getType() + "\" and \"" + type + "\" for property \"" + name + "\".");
+          messager.printMessage(Diagnostic.Kind.ERROR, "Inconsistent types '" + priorProp.getType() + "' and '" + type + "' for property '" + name + "'.");
         }
       }
 
       if (priorProp.getDescription().isEmpty() && !getDescription().isEmpty()) {
         priorProp.setDescription(description);
-
       }
 
       if (priorProp.getAccessType().equals(AccessType.INVISIBLE) || accessType.equals(AccessType.INVISIBLE)) {
@@ -83,8 +89,16 @@ public class BlockProperty {
     return description;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public String getType() {
     return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
   public boolean isDeprecated() {
@@ -99,20 +113,12 @@ public class BlockProperty {
     return defaultVal;
   }
 
-  public boolean isAlwaysSend() {
-    return alwaysSend;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setType(String type) {
-    this.type = type;
-  }
-
   public void setDefaultVal(String defaultVal) {
     this.defaultVal = defaultVal;
+  }
+
+  public boolean isAlwaysSend() {
+    return alwaysSend;
   }
 
   public void setAlwaysSend(boolean alwaysSend) {

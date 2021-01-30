@@ -1,29 +1,28 @@
 package io.shreyash.rush;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import org.json.JSONException;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 public class ExtensionGenerator {
 
+  private static final Map<String, List<ExtensionInfo>> externalComponentsByPackage =
+      new TreeMap<>();
   private static String externalComponentsDirPath;
   private static String androidRuntimeClassDirPath;
   private static String buildServerClassDirPath;
   private static String externalComponentsTempDirPath;
   private static boolean useFQCN = false;
 
-  private static final Map<String, List<ExtensionInfo>> externalComponentsByPackage =
-      new TreeMap<>();
-
   /**
    * The definitions of the arguments used by this script
-   *
+   * <p>
    * args[0]: the path to simple_component.json
    * args[1]: the path to simple_component_build_info.json
    * args[2]: the path to ExternalComponentAsset.dir: "${local.build.dir}/ExternalComponents"
@@ -48,7 +47,7 @@ public class ExtensionGenerator {
 
     for (int i = 0; i < simpleComponentDescriptors.length(); i++) {
       JSONObject componentDescriptor = (JSONObject) simpleComponentDescriptors.get(i);
-      if(componentDescriptor.get("external").toString().equals("true")) {
+      if (componentDescriptor.get("external").toString().equals("true")) {
         ExtensionInfo info = new ExtensionInfo(componentDescriptor, buildInfos.get(componentDescriptor.getString("type")));
         if (!externalComponentsByPackage.containsKey(info.packageName)) {
           externalComponentsByPackage.put(info.packageName, new ArrayList<ExtensionInfo>());
@@ -58,23 +57,6 @@ public class ExtensionGenerator {
     }
 
     generateAllExtensions();
-  }
-
-  /**
-   * Container class to store information about an extension.
-   */
-  private static class ExtensionInfo {
-    private final String type;
-    private final String packageName;
-    private final JSONObject descriptor;
-    private final JSONObject buildInfo;
-
-    ExtensionInfo(JSONObject descriptor, JSONObject buildInfo) {
-      this.descriptor = descriptor;
-      this.buildInfo = buildInfo;
-      this.type = descriptor.optString("type");
-      this.packageName = type.substring(0, type.lastIndexOf('.'));
-    }
   }
 
   private static Map<String, JSONObject> buildInfoAsMap(JSONArray buildInfos) throws JSONException {
@@ -120,7 +102,7 @@ public class ExtensionGenerator {
     try {
       jsonWriter = new FileWriter(extensionDirPath + File.separator + "components.json");
       jsonWriter.write(components);
-    } catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     } finally {
       if (jsonWriter != null) {
@@ -131,7 +113,7 @@ public class ExtensionGenerator {
     try {
       jsonWriter = new FileWriter(extensionDirPath + File.separator + "component.json");
       jsonWriter.write(infos.get(0).descriptor.toString(1));
-    } catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     } finally {
       if (jsonWriter != null) {
@@ -140,11 +122,10 @@ public class ExtensionGenerator {
     }
   }
 
-
   private static void generateExternalComponentBuildFiles(String packageName, List<ExtensionInfo> extensions) throws IOException {
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
-    String  extensionFileDirPath = extensionDirPath + File.separator + "files";
+    String extensionFileDirPath = extensionDirPath + File.separator + "files";
     copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempDirPath);
 
     JSONArray buildInfos = new JSONArray();
@@ -160,7 +141,7 @@ public class ExtensionGenerator {
         }
         //empty the libraries meta-data to avoid redundancy
         componentBuildInfo.put("libraries", new JSONArray());
-      } catch(JSONException e) {
+      } catch (JSONException e) {
         // bad
         throw new IllegalStateException("ERR An unexpected error occurred while parsing simple_components.json",
             e);
@@ -187,7 +168,7 @@ public class ExtensionGenerator {
     try {
       extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_info.json");
       extensionBuildInfoFile.write(buildInfos.get(0).toString());
-    } catch (IOException|JSONException e) {
+    } catch (IOException | JSONException e) {
       e.printStackTrace();
     } finally {
       if (extensionBuildInfoFile != null) {
@@ -216,12 +197,12 @@ public class ExtensionGenerator {
   private static void copyLicense(String packageName, JSONObject componentDescriptor)
       throws IOException, JSONException {
     String license = componentDescriptor.getString("licenseName");
-    if("".equals(license) || license.startsWith("http:") || license.startsWith("https:")) {
+    if ("".equals(license) || license.startsWith("http:") || license.startsWith("https:")) {
       // License will be loaded from the web
       return;
     }
     File licenseFile = new File(license);
-    if(licenseFile.exists()) {
+    if (licenseFile.exists()) {
       File destinationLicense = new File(externalComponentsDirPath + File.separator + packageName + File.separator + license);
       ensureDirectory(destinationLicense.getParent(), "ERR Unable to copy LICENSE file to it's destination directory.");
       copyFile(licenseFile.getAbsolutePath(), destinationLicense.getAbsolutePath());
@@ -281,10 +262,10 @@ public class ExtensionGenerator {
   /**
    * Read a file and returns its content
    *
-   * @param path the path of the file to be read
+   * @param path     the path of the file to be read
    * @param encoding the encoding system
    */
-  private static String readFile(String path, Charset encoding) throws IOException{
+  private static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
   }
@@ -294,7 +275,7 @@ public class ExtensionGenerator {
    *
    * @param srcPath absolute path to source file
    * @param dstPath absolute path to destination file
-   * @return  {@code true} if the copy succeeds, {@code false} otherwise
+   * @return {@code true} if the copy succeeds, {@code false} otherwise
    */
   private static Boolean copyFile(String srcPath, String dstPath) {
     try {
@@ -302,13 +283,12 @@ public class ExtensionGenerator {
       FileOutputStream out = new FileOutputStream(dstPath);
       byte[] buf = new byte[1024];
       int len;
-      while ((len = in.read(buf)) > 0 ) {
+      while ((len = in.read(buf)) > 0) {
         out.write(buf, 0, len);
       }
       in.close();
       out.close();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       return false;
     }
@@ -318,9 +298,9 @@ public class ExtensionGenerator {
   /**
    * Copy a compiled classes related to a given extension in his package folder
    *
-   * @param srcPath the folder in which to check compiled classes
+   * @param srcPath          the folder in which to check compiled classes
    * @param extensionPackage the classpath of the extension
-   * @param destPath where the compiled classes will be copied
+   * @param destPath         where the compiled classes will be copied
    */
   private static void copyRelatedExternalClasses(final String srcPath, String extensionPackage,
                                                  final String destPath) throws IOException {
@@ -329,13 +309,13 @@ public class ExtensionGenerator {
     if (files == null) {
       return;
     }
-    for (File fileEntry : files){
+    for (File fileEntry : files) {
       if (fileEntry.isFile()) {
         if (isRelatedExternalClass(fileEntry.getAbsolutePath(), extensionPackage)) {
           copyFile(fileEntry.getAbsolutePath(), destPath + File.separator + fileEntry.getName());
         }
       } else if (fileEntry.isDirectory()) {
-        String newDestPath=destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
+        String newDestPath = destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
         ensureDirectory(newDestPath, "ERR Unable to create temporary path for extension build.");
         copyRelatedExternalClasses(fileEntry.getAbsolutePath(), extensionPackage, newDestPath);
       }
@@ -346,12 +326,13 @@ public class ExtensionGenerator {
    * Returns true if a class is related to an external component
    * Current implementation returns true for all files in the same package as that of the external component
    * A better implementation is possible but might be more complex
+   *
    * @param testClassAbsolutePath absolute path of the class file
-   * @param extensionPackage package of the external component
+   * @param extensionPackage      package of the external component
    * @return {@code true} if the Java class file at {@code testClassAbsolutePath} is a member of
    * {@code extensionPackage}, {@code false} otherwise
    */
-  private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage ) {
+  private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage) {
     if (!testClassAbsolutePath.endsWith(".class")) {  // Ignore things that aren't class files...
       return false;
     }
@@ -371,7 +352,7 @@ public class ExtensionGenerator {
     String componentPackage = classAbsolutePath.substring(classAbsolutePath.indexOf(parentPath) + parentPath.length());
     componentPackage = componentPackage.substring(0, componentPackage.lastIndexOf(File.separator));
     componentPackage = componentPackage.replace(File.separator, ".");
-    return  componentPackage;
+    return componentPackage;
   }
 
   private static boolean deleteRecursively(File dirOrFile) {
@@ -403,6 +384,23 @@ public class ExtensionGenerator {
     File file = new File(path);
     if (!file.exists() && !file.mkdirs()) {
       throw new IOException(errorMessage);
+    }
+  }
+
+  /**
+   * Container class to store information about an extension.
+   */
+  private static class ExtensionInfo {
+    private final String type;
+    private final String packageName;
+    private final JSONObject descriptor;
+    private final JSONObject buildInfo;
+
+    ExtensionInfo(JSONObject descriptor, JSONObject buildInfo) {
+      this.descriptor = descriptor;
+      this.buildInfo = buildInfo;
+      this.type = descriptor.optString("type");
+      this.packageName = type.substring(0, type.lastIndexOf('.'));
     }
   }
 }

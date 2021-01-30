@@ -1,12 +1,11 @@
 package io.shreyash.rush;
 
+import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.auto.service.AutoService;
-
-import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import io.shreyash.rush.blocks.*;
 import io.shreyash.rush.util.CheckName;
 import io.shreyash.rush.util.InfoFilesGenerator;
@@ -48,26 +47,20 @@ public class ExtensionProcessor extends AbstractProcessor {
     // Process all SimpleEvents
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleEvent.class)) {
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        if (!CheckName.isPascalCase(el)) {
-          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleEvent " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
-        }
-        Event event = new Event(el).build();
+        Event event = new Event(el, messager).build();
         extensionFieldInfo.addEvent(event);
       } else {
-        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @SimpleEvent.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleEvent.");
       }
     }
 
     // Process all SimpleFunctions
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleFunction.class)) {
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        if (!CheckName.isPascalCase(el)) {
-          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleFunction " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
-        }
-        Function func = new Function(el).build();
+        Function func = new Function(el, messager).build();
         extensionFieldInfo.addFunction(func);
       } else {
-        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @SimpleFunction.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleFunction.");
       }
     }
 
@@ -75,43 +68,26 @@ public class ExtensionProcessor extends AbstractProcessor {
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleProperty.class)) {
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
         if (!CheckName.isPascalCase(el)) {
-          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleProperty " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
+          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleProperty '" + el.getSimpleName() + "' should follow PascalCase naming convention.");
         }
-        BlockProperty prop = null;
-        try {
-          prop = new BlockProperty(el, extensionFieldInfo).build();
-        } catch (IllegalAccessException e) {
-          messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-        } finally {
-          assert prop != null;
-          if (prop.getName() != null) {
-            extensionFieldInfo.addBlockProp(prop);
-          }
+        BlockProperty prop = new BlockProperty(el, extensionFieldInfo, messager).build();
+        if (prop.getName() != null) {
+          extensionFieldInfo.addBlockProp(prop);
         }
       } else {
-        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @SimpleProperty.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleProperty.");
       }
     }
 
     // Process all DesignerProps
     for (Element el : roundEnv.getElementsAnnotatedWith(DesignerProperty.class)) {
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        if (!CheckName.isPascalCase(el)) {
-          messager.printMessage(Diagnostic.Kind.WARNING, "@DesignerProperty " + el.getSimpleName() + "'s name should follow PascalCase naming convention.");
-        }
-        Property prop = null;
-        try {
-          prop = new Property(el, extensionFieldInfo).build();
-        } catch (IllegalAccessException e) {
-          messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-        } finally {
-          assert prop != null;
-          if (prop.getName() != null) {
-            extensionFieldInfo.addProp(prop);
-          }
+        Property prop = new Property(el, extensionFieldInfo, messager).build();
+        if (prop.getName() != null) {
+          extensionFieldInfo.addProp(prop);
         }
       } else {
-        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Private element " + el.getSimpleName() + " can't be annotated with @DesignerProperty.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @DesignerProperty.");
       }
     }
 

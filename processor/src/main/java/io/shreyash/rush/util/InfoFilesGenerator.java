@@ -146,7 +146,7 @@ public class InfoFilesGenerator {
     // Put libraries
     JSONArray deps = new JSONArray();
     YamlSequence ymlDeps = yml.yamlSequence("dependencies");
-    if (!ymlDeps.values().isEmpty()) {
+    if (ymlDeps != null && !ymlDeps.values().isEmpty()) {
       for (YamlNode dep : ymlDeps.values()) {
         if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
           deps.put(dep.asScalar().value());
@@ -160,7 +160,7 @@ public class InfoFilesGenerator {
     // Put assets
     JSONArray assets = new JSONArray();
     YamlSequence ymlAssets = yml.yamlMapping("assets").yamlSequence("other");
-    if (!ymlAssets.values().isEmpty()) {
+    if (ymlAssets != null && !ymlAssets.values().isEmpty()) {
       for (YamlNode asset : ymlAssets.values()) {
         if (asset.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
           assets.put(asset.asScalar().value());

@@ -1,9 +1,5 @@
 package io.shreyash.rush.util;
 
-import javax.annotation.processing.Messager;
-import javax.lang.model.element.Element;
-import javax.tools.Diagnostic;
-
 public class ConvertToYailType {
   public static String convert(String type) {
     switch (type) {
