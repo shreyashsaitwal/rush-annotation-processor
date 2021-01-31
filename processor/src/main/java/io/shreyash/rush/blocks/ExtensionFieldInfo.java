@@ -1,7 +1,7 @@
 package io.shreyash.rush.blocks;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import shaded.org.json.JSONArray;
+import shaded.org.json.JSONObject;
 
 import java.util.HashMap;
 

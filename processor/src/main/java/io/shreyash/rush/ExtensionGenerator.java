@@ -1,8 +1,8 @@
 package io.shreyash.rush;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import shaded.org.json.JSONArray;
+import shaded.org.json.JSONException;
+import shaded.org.json.JSONObject;
 
 import java.io.*;
 import java.nio.charset.Charset;

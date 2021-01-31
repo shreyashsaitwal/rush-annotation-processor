@@ -6,9 +6,9 @@ import com.amihaiemil.eoyaml.YamlNode;
 import com.amihaiemil.eoyaml.YamlSequence;
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import io.shreyash.rush.blocks.ExtensionFieldInfo;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import shaded.org.json.JSONArray;
+import shaded.org.json.JSONException;
+import shaded.org.json.JSONObject;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -171,7 +171,7 @@ public class InfoFilesGenerator {
     }
     obj.put("assets", assets);
 
-    File manifest = Paths.get(projectRootPath, "AndroidManifest.xml").toFile();
+    File manifest = Paths.get(projectRootPath, "src", "AndroidManifest.xml").toFile();
     if (manifest.exists()) {
       DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Document doc = builder.parse(manifest);
@@ -188,13 +188,12 @@ public class InfoFilesGenerator {
         }
       }
       obj.put("permissions", permissions);
-
-      buildInfoJson.put(obj);
-      FileWriter writer = new FileWriter(Paths.get(outputPath, "simple_components_build_info.json").toFile());
-      buildInfoJson.write(writer);
-      writer.flush();
-      writer.close();
     }
+    buildInfoJson.put(obj);
+    FileWriter writer = new FileWriter(Paths.get(outputPath, "simple_components_build_info.json").toFile());
+    buildInfoJson.write(writer);
+    writer.flush();
+    writer.close();
   }
 
   /**
