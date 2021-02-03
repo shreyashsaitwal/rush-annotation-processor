@@ -1,7 +1,13 @@
 package io.shreyash.rush.util;
 
+import javax.annotation.processing.Messager;
+import javax.tools.Diagnostic;
+
 public class ConvertToYailType {
-  public static String convert(String type) {
+  public static String convert(String type, Messager messager) {
+    if (type.startsWith(("java.util.List"))) {
+      return "list";
+    }
     switch (type) {
       case "float":
       case "int":
@@ -18,7 +24,6 @@ public class ConvertToYailType {
         return type;
 
       case "com.google.appinventor.components.runtime.util.YailList":
-      case "java.util.List":
         return "list";
 
       case "com.google.appinventor.components.runtime.util.YailDictionary":
@@ -38,6 +43,7 @@ public class ConvertToYailType {
 
       // TODO: Component type
       default:
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Cannot to convert Java type '" + type + "' to YAIL type.");
         return null;
     }
   }

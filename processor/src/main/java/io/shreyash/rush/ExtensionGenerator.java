@@ -19,18 +19,8 @@ public class ExtensionGenerator {
   private static String buildServerClassDirPath;
   private static String externalComponentsTempDirPath;
   private static boolean useFQCN = false;
+  private static String rootDir;
 
-  /**
-   * The definitions of the arguments used by this script
-   * <p>
-   * args[0]: the path to simple_component.json
-   * args[1]: the path to simple_component_build_info.json
-   * args[2]: the path to ExternalComponentAsset.dir: "${local.build.dir}/ExternalComponents"
-   * args[3]: the path to "${AndroidRuntime-class.dir}"
-   * args[4]: the path to dependency dir
-   * args[5]: the path to external componentsTemp directory
-   * args[6]: use FQCN
-   */
   public static void main(String[] args) throws IOException, JSONException {
     String simple_component_json = readFile(args[0], Charset.defaultCharset());
     String simple_component_build_info_json = readFile(args[1], Charset.defaultCharset());
@@ -40,6 +30,7 @@ public class ExtensionGenerator {
     buildServerClassDirPath = args[4];
     externalComponentsTempDirPath = args[5];
     useFQCN = Boolean.parseBoolean(args[6]);
+    rootDir = args[7];
 
     JSONArray simpleComponentDescriptors = new JSONArray(simple_component_json);
     JSONArray simpleComponentBuildInfos = new JSONArray(simple_component_build_info_json);
@@ -184,9 +175,7 @@ public class ExtensionGenerator {
       // Icon will be loaded from the web
       return;
     }
-    String packagePath = packageName.replace('.', File.separatorChar);
-    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
-    File image = Paths.get(sourceDir.getPath(), "assets", icon).toFile();
+    File image = Paths.get(rootDir, "assets", icon).toFile();
     if (image.exists()) {
       File dstIcon = new File(externalComponentsDirPath + File.separator + packageName + File.separator + icon);
       ensureDirectory(dstIcon.getParent(), "ERR Unable to copy extension icon [" + icon + "] to it's destination directory.");
@@ -201,9 +190,9 @@ public class ExtensionGenerator {
       // License will be loaded from the web
       return;
     }
-    File licenseFile = new File(license);
+    File licenseFile = Paths.get(rootDir, "LICENSE").toFile();
     if (licenseFile.exists()) {
-      File destinationLicense = new File(externalComponentsDirPath + File.separator + packageName + File.separator + license);
+      File destinationLicense = new File(externalComponentsDirPath + File.separator + packageName + File.separator + "aiwebres" + File.separator + "LICENSE");
       ensureDirectory(destinationLicense.getParent(), "ERR Unable to copy LICENSE file to it's destination directory.");
       copyFile(licenseFile.getAbsolutePath(), destinationLicense.getAbsolutePath());
     }
@@ -217,9 +206,7 @@ public class ExtensionGenerator {
     }
 
     // Get asset source directory
-    String packagePath = packageName.replace('.', File.separatorChar);
-    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
-    File assetSrcDir = new File(sourceDir, "assets");
+    File assetSrcDir = new File(rootDir, "assets");
     if (!assetSrcDir.exists() || !assetSrcDir.isDirectory()) {
       return;
     }

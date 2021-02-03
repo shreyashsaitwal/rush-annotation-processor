@@ -40,14 +40,14 @@ public class BlockProperty {
         messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the setter property '" + element.getSimpleName() + "' is: 1.");
       } else {
         accessType = AccessType.WRITE;
-        type = ConvertToYailType.convert(executableElement.getParameters().get(0).asType().toString());
+        type = ConvertToYailType.convert(executableElement.getParameters().get(0).asType().toString(), messager);
       }
     } else {
       if (paramSize != 0) {
         messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the getter property '" + element.getSimpleName() + "' is: 0.");
       } else {
         accessType = AccessType.READ;
-        type = ConvertToYailType.convert(executableElement.getReturnType().toString());
+        type = ConvertToYailType.convert(executableElement.getReturnType().toString(), messager);
       }
     }
 

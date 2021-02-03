@@ -75,22 +75,15 @@ public class InfoFilesGenerator {
 
     String icon;
     if (yml.yamlMapping("assets").string("icon") != null) {
-      icon = yml.yamlMapping("assets").string("icon");
+      icon = "aiwebres/" + yml.yamlMapping("assets").string("icon");
     } else {
       icon = "";
     }
 
-    int minSdk;
-    if (yml.integer("min_sdk") != -1) {
-      minSdk = yml.integer("min_sdk");
-    } else {
-      minSdk = 7;
-    }
+    int minSdk = Math.max(yml.integer("min_sdk"), 7);
 
     String license;
-    if (Paths.get(projectRootPath, "LICENSE").toFile().exists()) {
-      license = Paths.get(projectRootPath, "LICENSE").toString();
-    } else if (yml.string("licence_url") != null) {
+    if (yml.string("licence_url") != null) {
       license = yml.string("licence_url");
     } else {
       license = "";
@@ -110,7 +103,7 @@ public class InfoFilesGenerator {
     obj.put("dateBuilt", ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE));
     obj.put("categoryString", "EXTENSION");
     obj.put("showOnPalette", "true");
-    obj.put("onVisible", "true");
+    obj.put("nonVisible", "true");
     obj.put("events", extensionFieldInfos.getEventJson());
     obj.put("methods", extensionFieldInfos.getFuncJson());
     obj.put("properties", extensionFieldInfos.getPropsJson());
