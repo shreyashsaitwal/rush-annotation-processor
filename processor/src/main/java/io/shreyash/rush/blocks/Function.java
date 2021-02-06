@@ -33,13 +33,19 @@ public class Function {
     name = executableElement.getSimpleName().toString();
     description = executableElement.getAnnotation(SimpleFunction.class).description();
     deprecated = executableElement.getAnnotation(Deprecated.class) != null;
-    returnType = ConvertToYailType.convert(executableElement.getReturnType().toString(), messager);
+    if (!executableElement.getReturnType().toString().equals("void")) {
+      try {
+        returnType = ConvertToYailType.convert(executableElement.getReturnType().toString());
+      } catch (IllegalStateException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleFunction '" + executableElement.getSimpleName() + "': Can't convert return type '" + executableElement.getReturnType() + "' to YAIL type.");
+      }
+    }
 
     for (VariableElement param : executableElement.getParameters()) {
       if (!CheckName.isCamelCase(param)) {
         messager.printMessage(Diagnostic.Kind.WARNING, "Parameter '" + param.getSimpleName() + "' of Function '" + element.getSimpleName() + "' should follow camelCase naming convention.");
       }
-      params.add(new FunctionParam(param, messager));
+      params.add(new FunctionParam(param, messager, name));
     }
 
     return this;

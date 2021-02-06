@@ -1,13 +1,10 @@
 package io.shreyash.rush;
 
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.auto.service.AutoService;
 import io.shreyash.rush.blocks.*;
-import io.shreyash.rush.util.CheckName;
 import io.shreyash.rush.util.InfoFilesGenerator;
 import org.xml.sax.SAXException;
 
@@ -43,57 +40,72 @@ public class ExtensionProcessor extends AbstractProcessor {
     isFirstRound = false;
 
     final Messager messager = processingEnv.getMessager();
+    final String org = processingEnv.getOptions().get("org");
+    final String extName = processingEnv.getOptions().get("extName");
 
     // Process all SimpleEvents
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleEvent.class)) {
+      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Annotation @SimpleEvent can't be used on element '" + el.getSimpleName() + "'. It can only be used on members of class '" + org + "." + extName + "'.");
+        continue;
+      }
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
         Event event = new Event(el, messager).build();
         extensionFieldInfo.addEvent(event);
       } else {
-        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleEvent.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleEvent.");
       }
     }
 
     // Process all SimpleFunctions
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleFunction.class)) {
+      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Annotation @SimpleFunction can't be used on element '" + el.getSimpleName() + "'. It can only be used on members of class '" + org + "." + extName + "'.");
+        continue;
+      }
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
         Function func = new Function(el, messager).build();
         extensionFieldInfo.addFunction(func);
       } else {
-        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleFunction.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleFunction.");
       }
     }
 
     // Process all SimpleProps
-    for (Element el : roundEnv.getElementsAnnotatedWith(SimpleProperty.class)) {
+    for (Element el : roundEnv.getElementsAnnotatedWith(com.google.appinventor.components.annotations.SimpleProperty.class)) {
+      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Annotation @SimpleProperty can't be used on element '" + el.getSimpleName() + "'. It can only be used on members of class '" + org + "." + extName + "'.");
+        continue;
+      }
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        if (!CheckName.isPascalCase(el)) {
-          messager.printMessage(Diagnostic.Kind.WARNING, "@SimpleProperty '" + el.getSimpleName() + "' should follow PascalCase naming convention.");
-        }
-        BlockProperty prop = new BlockProperty(el, extensionFieldInfo, messager).build();
+        Property prop = new Property(el, extensionFieldInfo, messager).build();
         if (prop.getName() != null) {
           extensionFieldInfo.addBlockProp(prop);
         }
       } else {
-        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleProperty.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Private element '" + el.getSimpleName() + "' can't be annotated with @SimpleProperty.");
       }
     }
 
     // Process all DesignerProps
-    for (Element el : roundEnv.getElementsAnnotatedWith(DesignerProperty.class)) {
+    for (Element el : roundEnv.getElementsAnnotatedWith(com.google.appinventor.components.annotations.DesignerProperty.class)) {
+      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Annotation @DesignerProperty can't be used on element '" + el.getSimpleName() + "'. It can only be used on members of class '" + org + "." + extName + "'.");
+        continue;
+      }
       if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        Property prop = new Property(el, extensionFieldInfo, messager).build();
+        DesignerProperty prop = new DesignerProperty(el, extensionFieldInfo, messager).build();
         if (prop.getName() != null) {
           extensionFieldInfo.addProp(prop);
         }
       } else {
-        messager.printMessage(Diagnostic.Kind.ERROR, "Private element '" + el.getSimpleName() + "' can't be annotated with @DesignerProperty.");
+        messager.printMessage(Diagnostic.Kind.ERROR, "ERR Private element '" + el.getSimpleName() + "' can't be annotated with @DesignerProperty.");
       }
     }
 
     String root = processingEnv.getOptions().get("root");
     String version = processingEnv.getOptions().get("version");
-    String type = processingEnv.getOptions().get("type");
+    String type = org + "." + extName;
     String output = processingEnv.getOptions().get("output");
 
     InfoFilesGenerator generator = new InfoFilesGenerator(root, version, type, extensionFieldInfo, output);

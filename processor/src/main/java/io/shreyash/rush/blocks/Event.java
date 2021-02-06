@@ -41,7 +41,7 @@ public class Event {
       if (!CheckName.isCamelCase(param)) {
         messager.printMessage(Diagnostic.Kind.WARNING, "Parameter '" + param.getSimpleName() + "' of Event '" + element.getSimpleName() + "' should follow camelCase naming convention.");
       }
-      params.add(new EventParam(param, messager));
+      params.add(new EventParam(param, messager, name));
     }
 
     return this;

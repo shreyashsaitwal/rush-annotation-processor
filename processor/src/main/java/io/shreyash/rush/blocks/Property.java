@@ -1,11 +1,12 @@
 package io.shreyash.rush.blocks;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
 import io.shreyash.rush.util.CheckName;
+import io.shreyash.rush.util.ConvertToYailType;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeKind;
 import javax.tools.Diagnostic;
 
 public class Property {
@@ -13,10 +14,12 @@ public class Property {
   private final ExtensionFieldInfo ext;
   private final Messager messager;
   private String name;
-  private String defaultVal;
-  private String editorType;
-  private String[] args;
-  private boolean alwaysSend;
+  private String description;
+  private String type;
+  private boolean deprecated;
+  private AccessType accessType;
+  private String defaultVal = "";
+  private boolean alwaysSend = false;
 
   public Property(Element element, ExtensionFieldInfo ext, Messager messager) {
     this.element = element;
@@ -26,28 +29,64 @@ public class Property {
 
   public Property build() {
     if (!CheckName.isPascalCase(element)) {
-      messager.printMessage(Diagnostic.Kind.WARNING, "Designer property '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
+      messager.printMessage(Diagnostic.Kind.WARNING, "Property '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
     }
-    ExecutableElement executableElement = (ExecutableElement) element;
-    name = executableElement.getSimpleName().toString();
+    ExecutableElement executableElement = ((ExecutableElement) element);
+    int paramSize = executableElement.getParameters().size();
 
-    if (!ext.getBlockProps().containsKey(name)) {
-      messager.printMessage(Diagnostic.Kind.ERROR, "Unable to find corresponding @SimpleProperty annotation for designer property '" + name + "'.");
+    if (executableElement.getReturnType().getKind() == TypeKind.VOID) {
+      if (paramSize != 1) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the setter property '" + element.getSimpleName() + "' is: 1.");
+      } else {
+        accessType = AccessType.WRITE;
+        final String paramType = executableElement.getParameters().get(0).asType().toString();
+        try {
+          type = ConvertToYailType.convert(paramType);
+        } catch (IllegalStateException e) {
+          messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleProperty '" + name + "': Can't convert parameter type '" + paramType + "' (parameter '" + name + "') to YAIL type.");
+        }
+      }
     } else {
-      defaultVal = executableElement.getAnnotation(DesignerProperty.class).defaultValue();
-      editorType = executableElement.getAnnotation(DesignerProperty.class).defaultValue();
-      args = executableElement.getAnnotation(DesignerProperty.class).editorArgs();
-      alwaysSend = executableElement.getAnnotation(DesignerProperty.class).alwaysSend();
-
-      if (!defaultVal.equals("")) {
-        ext.getBlockProps().get(name).setDefaultVal(defaultVal);
-      }
-
-      if (alwaysSend) {
-        ext.getBlockProps().get(name).setAlwaysSend(true);
+      if (paramSize != 0) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the getter property '" + element.getSimpleName() + "' is: 0.");
+      } else {
+        accessType = AccessType.READ;
+        final String returnType = executableElement.getReturnType().toString();
+        try {
+          type = ConvertToYailType.convert(returnType);
+        } catch (IllegalStateException e) {
+          messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleProperty '" + name + "': Can't convert return type '" + returnType + "' to YAIL type.");
+        }
       }
     }
 
+    name = executableElement.getSimpleName().toString();
+    description = executableElement.getAnnotation(com.google.appinventor.components.annotations.SimpleProperty.class).description();
+    accessType = executableElement.getAnnotation(com.google.appinventor.components.annotations.SimpleProperty.class).userVisible() ? accessType : AccessType.INVISIBLE;
+    deprecated = executableElement.getAnnotation(Deprecated.class) != null;
+
+    if (ext.getBlockProps().containsKey(executableElement.getSimpleName().toString())) {
+      Property priorProp = ext.getBlockProps().get(executableElement.getSimpleName().toString());
+      if (!priorProp.getType().equals(type)) {
+        if (accessType.equals(AccessType.READ)) {
+          priorProp.setType(type);
+        } else {
+          messager.printMessage(Diagnostic.Kind.ERROR, "Inconsistent types '" + priorProp.getType() + "' and '" + type + "' for property '" + name + "'.");
+        }
+      }
+
+      if (priorProp.getDescription().isEmpty() && !getDescription().isEmpty()) {
+        priorProp.setDescription(description);
+      }
+
+      if (priorProp.getAccessType().equals(AccessType.INVISIBLE) || accessType.equals(AccessType.INVISIBLE)) {
+        accessType = AccessType.INVISIBLE;
+      } else if (!priorProp.getAccessType().equals(accessType)) {
+        accessType = AccessType.READ_WRITE;
+      }
+
+      ext.removeBlockProp(name);
+    }
     return this;
   }
 
@@ -55,19 +94,44 @@ public class Property {
     return name;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public boolean isDeprecated() {
+    return deprecated;
+  }
+
+  public AccessType getAccessType() {
+    return accessType;
+  }
+
   public String getDefaultVal() {
     return defaultVal;
   }
 
-  public String getEditorType() {
-    return editorType;
-  }
-
-  public String[] getArgs() {
-    return args;
+  public void setDefaultVal(String defaultVal) {
+    this.defaultVal = defaultVal;
   }
 
   public boolean isAlwaysSend() {
     return alwaysSend;
   }
+
+  public void setAlwaysSend(boolean alwaysSend) {
+    this.alwaysSend = alwaysSend;
+  }
+
 }

@@ -2,6 +2,8 @@ plugins {
     id 'java-library'
 }
 
+version 'v186a'
+
 repositories {
     jcenter()
 }

@@ -8,8 +8,8 @@ import java.util.HashMap;
 public class ExtensionFieldInfo {
   private final HashMap<String, Function> functions = new HashMap<>();
   private final HashMap<String, Event> events = new HashMap<>();
-  private final HashMap<String, BlockProperty> blockProps = new HashMap<>();
-  private final HashMap<String, Property> props = new HashMap<>();
+  private final HashMap<String, Property> blockProps = new HashMap<>();
+  private final HashMap<String, DesignerProperty> props = new HashMap<>();
 
   public JSONArray getFuncJson() {
     JSONArray funcArray = new JSONArray();
@@ -65,7 +65,7 @@ public class ExtensionFieldInfo {
   public JSONArray getBlockPropsJson() {
     JSONArray propsArray = new JSONArray();
 
-    for (BlockProperty bp : blockProps.values()) {
+    for (Property bp : blockProps.values()) {
       JSONObject obj = new JSONObject();
       obj.put("deprecated", Boolean.toString(bp.isDeprecated()));
       obj.put("name", bp.getName());
@@ -96,7 +96,7 @@ public class ExtensionFieldInfo {
   public JSONArray getPropsJson() {
     JSONArray propsArray = new JSONArray();
 
-    for (Property p : props.values()) {
+    for (DesignerProperty p : props.values()) {
       JSONObject obj = new JSONObject();
       obj.put("name", p.getName());
       obj.put("editorType", p.getEditorType());
@@ -125,15 +125,15 @@ public class ExtensionFieldInfo {
     functions.put(func.getName(), func);
   }
 
-  public void addProp(Property prop) {
+  public void addProp(DesignerProperty prop) {
     props.put(prop.getName(), prop);
   }
 
-  public void addBlockProp(BlockProperty prop) {
+  public void addBlockProp(Property prop) {
     blockProps.put(prop.getName(), prop);
   }
 
-  public HashMap<String, BlockProperty> getBlockProps() {
+  public HashMap<String, Property> getBlockProps() {
     return blockProps;
   }
 
