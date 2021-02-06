@@ -15,5 +15,5 @@ pluginManagement {
 
 rootProject.name = 'rush-annotation-processor'
 include 'processor'
-include 'test-ext'
 include 'annotations'
+
