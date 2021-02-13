@@ -5,7 +5,7 @@ plugins {
 version 'v186a'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

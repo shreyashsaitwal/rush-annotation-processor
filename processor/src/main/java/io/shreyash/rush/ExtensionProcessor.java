@@ -110,8 +110,8 @@ public class ExtensionProcessor extends AbstractProcessor {
 
     InfoFilesGenerator generator = new InfoFilesGenerator(root, version, type, extensionFieldInfo, output);
     try {
-      generator.generateBuildInfoJson();
       generator.generateSimpleCompJson();
+      generator.generateBuildInfoJson();
     } catch (IOException | ParserConfigurationException | SAXException | YamlReadingException e) {
       messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
     }

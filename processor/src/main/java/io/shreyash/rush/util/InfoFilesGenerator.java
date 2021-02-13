@@ -4,6 +4,7 @@ import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.amihaiemil.eoyaml.YamlNode;
 import com.amihaiemil.eoyaml.YamlSequence;
+import com.amihaiemil.eoyaml.exceptions.YamlIndentationException;
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import io.shreyash.rush.blocks.ExtensionFieldInfo;
 import shaded.org.json.JSONArray;
@@ -45,48 +46,65 @@ public class InfoFilesGenerator {
    * Generates the simple_components.json file.
    *
    * @throws IOException
+   * @throws JSONException
+   * @throws YamlIndentationException
    */
-  public void generateSimpleCompJson() throws IOException, JSONException {
+  public void generateSimpleCompJson() throws IOException, JSONException, YamlIndentationException {
     JSONArray simpleCompJson = new JSONArray();
 
     YamlMapping yml = getRushYml();
-    String name = yml.string("name");
-
+    String name;
     String verName;
-    if (yml.yamlMapping("version").string("name") != null) {
-      verName = yml.yamlMapping("version").string("name");
-    } else {
-      verName = "";
-    }
-
     String helpStr;
-    if (yml.string("description") != null) {
-      helpStr = yml.string("description");
-    } else {
-      helpStr = "";
-    }
-
     String helpUrl;
-    if (yml.string("homepage") != null) {
-      helpUrl = yml.string("homepage");
-    } else {
-      helpUrl = "";
-    }
-
     String icon;
-    if (yml.yamlMapping("assets").string("icon") != null) {
-      icon = "aiwebres/" + yml.yamlMapping("assets").string("icon");
-    } else {
-      icon = "";
-    }
-
-    int minSdk = Math.max(yml.integer("min_sdk"), 7);
-
+    int minSdk;
     String license;
-    if (yml.string("licence_url") != null) {
-      license = yml.string("licence_url");
-    } else {
-      license = "";
+
+    try {
+      // Put name
+      name = yml.string("name");
+
+      // Put version name
+      if (yml.yamlMapping("version").string("name") != null) {
+        verName = yml.yamlMapping("version").string("name");
+      } else {
+        verName = "";
+      }
+
+      // Put desc
+      if (yml.string("description") != null) {
+        helpStr = yml.string("description");
+      } else {
+        helpStr = "";
+      }
+
+      // Put help url
+      if (yml.string("homepage") != null) {
+        helpUrl = yml.string("homepage");
+      } else {
+        helpUrl = "";
+      }
+
+      // Put icon
+      icon = yml.yamlMapping("assets").string("icon");
+      if (icon.equals("") || icon.startsWith("http:") || icon.startsWith("https:")) {
+        icon = yml.yamlMapping("assets").string("icon");
+      } else {
+        icon = "aiwebres/" + yml.yamlMapping("assets").string("icon");
+      }
+
+      // Put min sdk
+      minSdk = Math.max(yml.integer("min_sdk"), 7);
+
+      // Put license
+      if (yml.string("licence_url") != null) {
+        license = yml.string("licence_url");
+      } else {
+        license = "";
+      }
+    } catch (YamlIndentationException e) {
+      throw new YamlIndentationException("ERR rush.yml: " + e.getMessage());
     }
 
     JSONObject obj = new JSONObject();
@@ -130,39 +148,60 @@ public class InfoFilesGenerator {
     JSONObject obj = new JSONObject();
 
     YamlMapping yml = getRushYml();
-    int minSdk = yml.integer("min_sdk");
+    int minSdk;
+
+    JSONArray deps = new JSONArray();
+    JSONArray nativeDeps = new JSONArray();
+    JSONArray assets = new JSONArray();
+
+    try {
+      // Put min sdk
+      minSdk = Math.max(yml.integer("min_sdk"), 7);
+
+      // Put deps
+      YamlSequence ymlDeps = yml.yamlSequence("deps");
+      if (ymlDeps != null && !ymlDeps.values().isEmpty()) {
+        for (YamlNode dep : ymlDeps.values()) {
+          if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
+            deps.put(dep.asScalar().value());
+          } else {
+            throw new YamlReadingException("ERR rush.yml: Bad value '" + dep + "' in deps sequence.");
+          }
+        }
+      }
+      obj.put("libraries", deps);
+
+      // Put native deps
+      YamlSequence ymlNative = yml.yamlSequence("native_deps");
+      if (ymlNative != null && !ymlNative.values().isEmpty()) {
+        for (YamlNode dep : ymlNative.values()) {
+          if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
+            nativeDeps.put(dep.asScalar().value());
+          } else {
+            throw new YamlReadingException("ERR rush.yml: Bad value '" + dep + "' in native_deps sequence.");
+          }
+        }
+      }
+      obj.put("native", nativeDeps);
+
+      // Put assets
+      YamlSequence ymlAssets = yml.yamlMapping("assets").yamlSequence("other");
+      if (ymlAssets != null && !ymlAssets.values().isEmpty()) {
+        for (YamlNode asset : ymlAssets.values()) {
+          if (asset.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
+            assets.put(asset.asScalar().value());
+          } else {
+            throw new YamlReadingException("ERR rush.yml: Bad value '" + asset + "' in assets/other sequence.");
+          }
+        }
+      }
+      obj.put("assets", assets);
+    } catch (YamlIndentationException e) {
+      throw new YamlIndentationException("ERR " + e.getMessage());
+    }
+
     obj.put("type", type);
     obj.put("androidMinSdk", new JSONArray().put(minSdk));
-
-    // TODO: Put native libraries
-
-    // Put libraries
-    JSONArray deps = new JSONArray();
-    YamlSequence ymlDeps = yml.yamlSequence("dependencies");
-    if (ymlDeps != null && !ymlDeps.values().isEmpty()) {
-      for (YamlNode dep : ymlDeps.values()) {
-        if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
-          deps.put(dep.asScalar().value());
-        } else {
-          throw new YamlReadingException("ERR One or more invalid values found in dependencies sequence in rush.yml");
-        }
-      }
-    }
-    obj.put("libraries", deps);
-
-    // Put assets
-    JSONArray assets = new JSONArray();
-    YamlSequence ymlAssets = yml.yamlMapping("assets").yamlSequence("other");
-    if (ymlAssets != null && !ymlAssets.values().isEmpty()) {
-      for (YamlNode asset : ymlAssets.values()) {
-        if (asset.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
-          assets.put(asset.asScalar().value());
-        } else {
-          throw new YamlReadingException("ERR One or more invalid values found in assets/other sequence in rush.yml");
-        }
-      }
-    }
-    obj.put("assets", assets);
 
     File manifest = Paths.get(projectRootPath, "src", "AndroidManifest.xml").toFile();
     if (manifest.exists()) {
@@ -183,6 +222,7 @@ public class InfoFilesGenerator {
       obj.put("permissions", permissions);
     }
     buildInfoJson.put(obj);
+
     FileWriter writer = new FileWriter(Paths.get(outputPath, "simple_components_build_info.json").toFile());
     buildInfoJson.write(writer);
     writer.flush();
@@ -193,9 +233,9 @@ public class InfoFilesGenerator {
    * Get rush.yml file's data
    *
    * @return The rush.yml file's data
-   * @throws IOException
+   * @throws IOException  If the input can't be read for some reason.
    */
-  private YamlMapping getRushYml() throws IOException {
+  private YamlMapping getRushYml() throws IOException, YamlIndentationException {
     File rushYml = Paths.get(projectRootPath, "rush.yml").toFile();
     if (!rushYml.exists()) {
       if (Paths.get(projectRootPath, "rush.yaml").toFile().exists()) {
@@ -290,10 +330,12 @@ public class InfoFilesGenerator {
       buildInfoJson.put(key, arr);
     });
 
-    // This is a sort of hack which allows adding application level tags
-    // to AndroidManifest by adding your desired tag any of the available
-    // tag's JSON array. AI2's compiler doesn't perform any checks and
-    // simply add anything from this JSON arrays to the manifest...
+    // This is a sort of hack that allows adding application level
+    // manifest tags by adding them to the JSON Arrays of available
+    // application level tags in simple_components_build_info.json
+    // AI2's compiler currently do not have any validation checks
+    // and adds anything inside those JSON Arrays to the manifest
+    // file.
     unavailable.forEach(el -> {
       JSONArray arr = new JSONArray();
       NodeList elements = doc.getElementsByTagName(el);
