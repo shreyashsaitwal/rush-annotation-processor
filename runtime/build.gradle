@@ -91,7 +91,6 @@ dependencies {
     implementation 'org.webrtc:google-webrtc:1.0.23995'
 
     implementation files('./libs/kawa-1.11-modified.jar')
-    implementation files('./libs/httpcore-4.3.2.jar')
     implementation files('./libs/httpmime-4.3.4.jar')
     implementation files('./libs/org.apache.http.legacy.jar')
     implementation files('./libs/physicaloid-library.jar')
