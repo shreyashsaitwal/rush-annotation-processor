@@ -97,3 +97,10 @@ dependencies {
 
     implementation project(':annotations')
 }
+
+configurations.implementation.setCanBeResolved(true)
+
+task copyImplementation(type: Copy) {
+    from configurations.implementation
+    into 'build/implementation'
+}
