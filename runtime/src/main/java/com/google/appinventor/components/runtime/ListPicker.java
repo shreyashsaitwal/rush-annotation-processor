@@ -10,8 +10,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.WindowManager;
 
-import annotations.DesignerProperty;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;

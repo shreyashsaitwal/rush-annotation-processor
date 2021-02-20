@@ -8,8 +8,8 @@ package com.google.appinventor.components.runtime;
 
 import android.hardware.Sensor;
 
-import annotations.SimpleEvent;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleProperty;
 
 /**
  * Physical world component that can measure the relative ambient air 

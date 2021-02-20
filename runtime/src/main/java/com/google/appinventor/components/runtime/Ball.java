@@ -6,9 +6,9 @@
 
 package com.google.appinventor.components.runtime;
 
-import annotations.DesignerProperty;
-import annotations.SimpleFunction;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 

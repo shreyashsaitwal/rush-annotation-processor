@@ -9,9 +9,9 @@ package com.google.appinventor.components.runtime;
 import android.app.DatePickerDialog;
 import android.os.Handler;
 
-import annotations.SimpleEvent;
-import annotations.SimpleFunction;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 

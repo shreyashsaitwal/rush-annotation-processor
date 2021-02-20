@@ -4,7 +4,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package annotations;
+package com.google.appinventor.components.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

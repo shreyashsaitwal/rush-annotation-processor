@@ -13,10 +13,10 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
-import annotations.DesignerProperty;
-import annotations.SimpleEvent;
-import annotations.SimpleFunction;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
@@ -756,7 +756,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-    
+
   /**
    * Decodes the encoded text value so that the values aren't URL encoded anymore.
    *
@@ -794,7 +794,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   // The object will be sanitized to produce the corresponding Yail data by call-component-method.
   // That mechanism would need to be extended if we ever change JSON decoding to produce
   // dictionaries rather than lists
-  // TOOD(hal): Provide an alternative way to decode JSON objects to dictionaries.  Maybe with 
+  // TOOD(hal): Provide an alternative way to decode JSON objects to dictionaries.  Maybe with
   // renaming this JsonTextDecodeWithPairs and making JsonTextDecode the one to use
   // dictionaries
   public Object JsonTextDecode(String jsonText) {

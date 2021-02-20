@@ -12,9 +12,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import annotations.DesignerProperty;
-import annotations.SimpleEvent;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.PropertyTypeConstants;
 
 import java.util.List;

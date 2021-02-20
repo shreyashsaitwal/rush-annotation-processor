@@ -5,7 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
-import annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.Ev3BinaryParser;
 import com.google.appinventor.components.runtime.util.Ev3Constants;

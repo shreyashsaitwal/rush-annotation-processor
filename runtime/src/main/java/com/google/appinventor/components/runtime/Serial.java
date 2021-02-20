@@ -9,9 +9,9 @@ package com.google.appinventor.components.runtime;
 import android.content.Context;
 import android.util.Log;
 
-import annotations.DesignerProperty;
-import annotations.SimpleFunction;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.physicaloid.lib.Physicaloid;

@@ -11,7 +11,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 
 /**
  * Users enter passwords in a password text box component, which hides the text that has been typed in it.
@@ -30,9 +30,9 @@ import annotations.SimpleProperty;
 */
 
 public final class PasswordTextBox extends TextBoxBase {
-    
+
   private boolean passwordVisible;
-    
+
   /**
    * Creates a new PasswordTextBox component.
    *
@@ -51,7 +51,7 @@ public final class PasswordTextBox extends TextBoxBase {
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
     PasswordVisible(false);
-    
+
   }
 
   @SimpleProperty(description = "Visibility of password.")

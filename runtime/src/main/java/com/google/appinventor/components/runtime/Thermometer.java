@@ -8,8 +8,8 @@ package com.google.appinventor.components.runtime;
 
 import android.hardware.Sensor;
 
-import annotations.SimpleEvent;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleProperty;
 
 /**
  * Physical world component that can measure the ambient air temperature if
@@ -30,7 +30,7 @@ public class Thermometer extends SingleValueSensor {
   protected void onValueChanged(float value) {
     TemperatureChanged(value);
   }
-  
+
   /**
    * Indicates a change of temperature, provided in degrees Celsius.
    *
@@ -43,7 +43,7 @@ public class Thermometer extends SingleValueSensor {
 
   /**
    * Returns the temperature in degrees Celsius.
-   * The sensor must be enabled and available 
+   * The sensor must be enabled and available
    * to return meaningful values.
    *
    * @return the temperature in degrees Celsius

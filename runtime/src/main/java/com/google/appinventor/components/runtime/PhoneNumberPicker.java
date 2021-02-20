@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.provider.Contacts;
 import android.util.Log;
 
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.HoneycombMR1Util;
 import com.google.appinventor.components.runtime.util.SdkLevel;

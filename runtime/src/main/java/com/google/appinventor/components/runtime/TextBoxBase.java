@@ -12,10 +12,10 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
 
-import annotations.DesignerProperty;
-import annotations.SimpleEvent;
-import annotations.SimpleFunction;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.ComponentConstants;
 import common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.EclairUtil;

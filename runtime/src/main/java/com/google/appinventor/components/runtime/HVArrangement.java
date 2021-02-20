@@ -16,8 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
-import annotations.DesignerProperty;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.ComponentConstants;
 import common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;

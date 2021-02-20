@@ -13,9 +13,9 @@ import android.widget.CompoundButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import annotations.DesignerProperty;
-import annotations.SimpleEvent;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 

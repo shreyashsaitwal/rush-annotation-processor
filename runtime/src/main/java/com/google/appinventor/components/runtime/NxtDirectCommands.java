@@ -8,7 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import android.util.Log;
 
-import annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;

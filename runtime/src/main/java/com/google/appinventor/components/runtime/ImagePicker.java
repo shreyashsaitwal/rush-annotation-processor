@@ -15,7 +15,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;

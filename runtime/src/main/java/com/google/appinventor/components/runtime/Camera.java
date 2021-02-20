@@ -16,9 +16,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import annotations.SimpleEvent;
-import annotations.SimpleFunction;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;

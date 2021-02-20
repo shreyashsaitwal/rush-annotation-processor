@@ -20,7 +20,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 
 import android.widget.Toast;
 
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 
 import common.ComponentConstants;
 

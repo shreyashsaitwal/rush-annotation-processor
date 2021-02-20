@@ -9,7 +9,7 @@ package com.google.appinventor.components.runtime;
 import android.Manifest;
 import android.widget.AutoCompleteTextView;
 
-import annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleEvent;
 
 /**
  * An `EmailPicker` is a kind of text box. If the user begins entering the name or email address of

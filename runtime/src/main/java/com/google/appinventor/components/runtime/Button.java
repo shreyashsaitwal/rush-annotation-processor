@@ -6,7 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
-import annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleEvent;
 
 /**
  * Button with the ability to detect clicks. Many aspects of its appearance can be changed, as well

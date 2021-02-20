@@ -5,7 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.runtime.Component;
 
 import java.lang.reflect.InvocationTargetException;

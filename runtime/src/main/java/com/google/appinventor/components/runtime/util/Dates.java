@@ -6,7 +6,7 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleFunction;
 
 import java.util.Date;
 import java.text.DateFormat;

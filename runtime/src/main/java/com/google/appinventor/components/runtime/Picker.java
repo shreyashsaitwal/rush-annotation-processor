@@ -8,8 +8,8 @@ package com.google.appinventor.components.runtime;
 
 import android.content.Intent;
 
-import annotations.SimpleEvent;
-import annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 
 /**

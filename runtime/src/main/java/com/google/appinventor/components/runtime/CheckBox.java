@@ -6,8 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
-import annotations.DesignerProperty;
-import annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import common.PropertyTypeConstants;
 
 /**

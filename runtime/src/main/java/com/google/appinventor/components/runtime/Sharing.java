@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-import annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 
