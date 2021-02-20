@@ -1,0 +1,96 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude("META-INF/*.kotlin_module")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.asynclayoutinflater:asynclayoutinflater:1.0.0'
+    implementation 'androidx.collection:collection:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.0.0'
+    implementation 'androidx.core:core:1.0.0'
+    implementation 'androidx.cursoradapter:cursoradapter:1.0.0'
+    implementation 'androidx.arch.core:core-common:2.0.0'
+    implementation 'androidx.arch.core:core-runtime:2.0.0'
+    implementation 'androidx.customview:customview:1.0.0'
+    implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
+    implementation 'androidx.fragment:fragment:1.0.0'
+    implementation 'androidx.interpolator:interpolator:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-common:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.0.0'
+    implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    implementation 'androidx.loader:loader:1.0.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'androidx.print:print:1.0.0'
+    implementation 'androidx.slidingpanelayout:slidingpanelayout:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable-animated:1.0.0'
+    implementation 'androidx.versionedparcelable:versionedparcelable:1.0.0'
+    implementation 'androidx.viewpager:viewpager:1.0.0'
+
+    implementation 'org.locationtech.jts:jts-core:1.16.1'
+    implementation 'org.osmdroid:osmdroid-android:6.1.0'
+    implementation 'redis.clients:jedis:3.1.0'
+    implementation 'ch.acra:acra:4.9.0'
+    implementation 'com.caverock:androidsvg:1.2.1'
+
+    implementation 'com.firebase:firebase-client-android:2.5.2'
+    implementation 'com.google.api-client:google-api-client:1.31.1'
+    implementation 'com.google.api-client:google-api-client-android2:1.10.3-beta'
+    implementation 'org.webrtc:google-webrtc:1.0.23995'
+
+    implementation files('./libs/kawa-1.11-modified.jar')
+    implementation files('./libs/httpcore-4.3.2.jar')
+    implementation files('./libs/httpmime-4.3.4.jar')
+    implementation files('./libs/org.apache.http.legacy.jar')
+    implementation files('./libs/physicaloid-library.jar')
+
+    implementation project(':annotations')
+}

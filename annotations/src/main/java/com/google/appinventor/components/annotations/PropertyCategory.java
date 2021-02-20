@@ -4,7 +4,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.components.annotations;
+package annotations;
 
 /**
  * Categories for Simple properties.  This is used only for documentation.
