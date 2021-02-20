@@ -1,6 +1,5 @@
 package com.google.appinventor.components.runtime;
 
-import android.R;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.res.ColorStateList;
@@ -152,7 +151,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
         StateListDrawable drawable = (StateListDrawable) seekbar.getProgressDrawable();
         if (drawable.getCurrent() instanceof LayerDrawable) {
           LayerDrawable layerDrawable = (LayerDrawable) drawable.getCurrent();
-          Drawable background = layerDrawable.findDrawableByLayerId(R.id.background);
+          Drawable background = layerDrawable.findDrawableByLayerId(android.R.id.background);
           background.setTintList(ColorStateList.valueOf(rightColor));
           background.setTintMode(Mode.MULTIPLY);
         }
@@ -160,7 +159,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     } else {
       LayerDrawable fullBar = (LayerDrawable) seekbar.getProgressDrawable();
       fullBar.setColorFilter(rightColor,PorterDuff.Mode.SRC);
-      fullBar.findDrawableByLayerId(R.id.progress).setColorFilter(leftColor, PorterDuff.Mode.SRC);
+      fullBar.findDrawableByLayerId(android.R.id.progress).setColorFilter(leftColor, PorterDuff.Mode.SRC);
     }
   }
 

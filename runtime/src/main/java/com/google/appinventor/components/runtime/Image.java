@@ -53,7 +53,7 @@ public final class Image extends AndroidViewComponent {
   public Image(ComponentContainer container) {
     super(container);
 
-    view = new ImageView(container.$context()) {
+    view = new androidx.appcompat.widget.AppCompatImageView(container.$context()) {
       @Override
       public boolean verifyDrawable(Drawable dr) {
         super.verifyDrawable(dr);

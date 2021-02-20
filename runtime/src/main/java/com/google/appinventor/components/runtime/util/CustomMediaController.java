@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -72,6 +73,7 @@ public class CustomMediaController extends MediaController implements
    *          The {@link android.view.ViewGroup.LayoutParams} to use when adding
    *          the CustomMediaController to the parent.
    */
+  @SuppressLint("LongLogTag")
   public boolean addTo(ViewGroup parent, ViewGroup.LayoutParams params) {
     Object mParent = getParent();
     if (mParent != null && mParent instanceof ViewGroup) {

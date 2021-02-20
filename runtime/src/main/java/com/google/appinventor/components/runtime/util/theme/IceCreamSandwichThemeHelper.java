@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.util.theme;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.text.Html;
 import android.view.Window;
@@ -56,6 +57,7 @@ public class IceCreamSandwichThemeHelper implements ThemeHelper {
     }
   }
 
+  @SuppressLint("RestrictedApi")
   @Override
   public void setActionBarAnimation(boolean enabled) {
     ActionBar actionBar = activity.getSupportActionBar();

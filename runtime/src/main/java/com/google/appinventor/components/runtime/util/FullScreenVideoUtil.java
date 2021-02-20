@@ -9,9 +9,8 @@ package com.google.appinventor.components.runtime.util;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.VideoPlayer;
 import com.google.appinventor.components.runtime.errors.PermissionException;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
-import android.R;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -104,7 +103,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
     mHandler = handler;
 
     mFullScreenVideoDialog = new Dialog(mForm,
-        R.style.Theme_NoTitleBar_Fullscreen) {
+        android.R.style.Theme_NoTitleBar_Fullscreen) {
         public void onBackPressed() {
           // Allows the user to force exiting full-screen.
           Bundle values = new Bundle();
@@ -161,8 +160,9 @@ public class FullScreenVideoUtil implements OnCompletionListener,
    *          Used by the method. This object varies depending on the action.
    * @return Varies depending on what action was passed in.
    */
+  @SuppressLint("LongLogTag")
   public synchronized Bundle performAction(int action, VideoPlayer source,
-      Object data) {
+                                           Object data) {
     Log.i("Form.fullScreenVideoAction", "Actions:" + action + " Source:"
         + source + ": Current Source:" + mFullScreenPlayer + " Data:" + data);
     Bundle result = new Bundle();
@@ -238,6 +238,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
   /*
    * Displays or hides a full-screen video.
    */
+  @SuppressLint("LongLogTag")
   private Bundle doFullScreenVideoAction(VideoPlayer source, Bundle data) {
     Log.i("Form.doFullScreenVideoAction", "Source:" + source + " Data:" + data);
     Bundle result = new Bundle();
@@ -280,6 +281,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
    *
    * @return The created Dialog
    */
+  @SuppressLint("LongLogTag")
   public Dialog createFullScreenVideoDialog() {
 
     if (mFullScreenVideoBundle == null)
@@ -408,6 +410,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
   /**
    * Called when the video has been loaded.
    */
+  @SuppressLint("LongLogTag")
   @Override
   public void onPrepared(MediaPlayer arg0) {
     Log.i(
