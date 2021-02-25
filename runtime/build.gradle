@@ -100,7 +100,7 @@ dependencies {
 
 configurations.implementation.setCanBeResolved(true)
 
-task copyImplementation(type: Copy) {
+task copyImpl(type: Copy) {
     from configurations.implementation
     into 'build/implementation'
 }

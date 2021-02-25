@@ -3,7 +3,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package common;
+package com.google.appinventor.components.common;
 
 /**
  * Contains constants related to the description of Simple components.

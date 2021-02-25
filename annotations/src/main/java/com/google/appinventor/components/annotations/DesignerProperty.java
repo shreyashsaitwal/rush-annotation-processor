@@ -6,7 +6,7 @@
 
 package com.google.appinventor.components.annotations;
 
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -16,3 +16,10 @@ dependencies {
     implementation files('shaded-json.jar')
     implementation project(':annotations')
 }
+
+configurations.implementation.setCanBeResolved(true)
+
+task copyImpl(type: Copy) {
+    from configurations.implementation
+    into 'build/implementation'
+}
