@@ -15,7 +15,7 @@ import android.hardware.SensorManager;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 
 /**
  * Component providing data from the device's gyroscope sensor.

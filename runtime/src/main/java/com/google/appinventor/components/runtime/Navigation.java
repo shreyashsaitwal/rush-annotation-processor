@@ -11,7 +11,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeoJSONUtil;
@@ -64,12 +64,12 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     WHEELCHAIR ("wheelchair");
 
     private final String method;
-    
+
     TransportMethod(String method) {
       this.method = method;
     }
-    
-    private String method() { 
+
+    private String method() {
       return method;
     }
   }

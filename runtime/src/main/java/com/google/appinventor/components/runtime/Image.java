@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -42,7 +42,7 @@ public final class Image extends AndroidViewComponent {
   private double rotationAngle = 0.0;
 
   private int scalingMode = Component.SCALING_SCALE_PROPORTIONALLY;
-  
+
   private boolean clickable = false;
 
   /**

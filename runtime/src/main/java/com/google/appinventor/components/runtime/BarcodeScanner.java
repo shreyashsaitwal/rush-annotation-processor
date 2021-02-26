@@ -16,7 +16,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -114,7 +114,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates that the scanner has read a (text) result and provides the result 
+   * Indicates that the scanner has read a (text) result and provides the result
    */
   @SimpleEvent
   public void AfterScan(String result) {

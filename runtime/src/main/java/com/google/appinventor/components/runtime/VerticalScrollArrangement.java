@@ -5,7 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * A formatting element in which to place components that should be displayed one below another.

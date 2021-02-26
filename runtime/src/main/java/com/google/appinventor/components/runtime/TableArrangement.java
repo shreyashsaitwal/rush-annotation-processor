@@ -11,7 +11,7 @@ import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 /**

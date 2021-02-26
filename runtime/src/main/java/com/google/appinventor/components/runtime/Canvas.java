@@ -33,8 +33,8 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.ComponentConstants;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.BoundingBox;
@@ -1175,7 +1175,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
-  @SimpleProperty(description = 
+  @SimpleProperty(description =
       "Determines whether moves can extend beyond the canvas borders.  "  +
       " Default is false. This should normally be false, and the property " +
       "is provided for backwards compatibility.",
@@ -1191,7 +1191,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(userVisible = true)
   public void ExtendMovesOutsideCanvas(boolean extend){
-    extendMovesOutsideCanvas = extend;   
+    extendMovesOutsideCanvas = extend;
   }
 
   // Methods supporting event handling
@@ -1359,7 +1359,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *                   The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
    * @param fill  true for filled shape; false for shape outline
    */
-  @SimpleFunction(description = 
+  @SimpleFunction(description =
       "Draws a shape on the canvas. " +
       "pointList should be a list contains sub-lists with two number which represents a coordinate. " +
       "The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3)) " +
@@ -1429,7 +1429,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * Start angle is 0 when heading to the right, and increase when rotate clockwise.
    * When useCenter is true, a sector will be drawed instead of an arc.
    * When fill is true, a filled arc (or sector) will be drawed instead of just an outline.
-   * 
+   *
    * @param left   the left end of the oval
    * @param top    the top of the oval
    * @param right  the right end of the oval
@@ -1439,12 +1439,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param useCenter  fill a sector instead of just an arc (when true)
    * @param fill  true for filled arc (or sector); false for outline only
    */
-  @SimpleFunction(description = 
+  @SimpleFunction(description =
       "Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom). " +
       "Start angle is 0 when heading to the right, and increase when rotate clockwise. " +
       "When useCenter is true, a sector will be drawed instead of an arc. " +
       "When fill is true, a filled arc (or sector) will be drawed instead of just an outline.")
-  public void DrawArc(int left, int top, int right, int bottom, 
+  public void DrawArc(int left, int top, int right, int bottom,
       float startAngle, float sweepAngle, boolean useCenter, boolean fill) {
     float scalingFactor = $form().deviceDensity();
     Paint p = new Paint(paint);

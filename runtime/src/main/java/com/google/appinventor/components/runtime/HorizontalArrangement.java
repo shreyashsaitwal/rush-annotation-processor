@@ -6,7 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * ![HorizontalArrangement icon](images/horizontalarrangement.png)

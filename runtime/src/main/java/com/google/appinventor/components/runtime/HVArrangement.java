@@ -18,8 +18,8 @@ import android.widget.ScrollView;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.ComponentConstants;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;

@@ -22,7 +22,7 @@ import androidx.appcompat.app.AppCompatCallback;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.ActionMode.Callback;
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.theme.ClassicThemeHelper;

@@ -7,7 +7,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.view.Gravity;
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.LinearLayout;
 
 /**

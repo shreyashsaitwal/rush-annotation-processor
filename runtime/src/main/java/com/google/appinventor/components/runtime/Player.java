@@ -18,7 +18,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
@@ -275,7 +275,7 @@ public final class Player extends AndroidNonvisibleComponent
   public void Volume(int vol) {
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       if (vol > 100 || vol < 0) {
-        form.dispatchErrorOccurredEvent(this, "Volume", ErrorMessages.ERROR_PLAYER_INVALID_VOLUME, vol); 
+        form.dispatchErrorOccurredEvent(this, "Volume", ErrorMessages.ERROR_PLAYER_INVALID_VOLUME, vol);
       } else {
         player.setVolume(((float) vol) / 100, ((float) vol) / 100);
       }

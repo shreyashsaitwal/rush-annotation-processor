@@ -9,7 +9,7 @@ import android.graphics.Color;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisitor;

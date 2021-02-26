@@ -10,7 +10,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -245,13 +245,13 @@ public class Clock extends AndroidNonvisibleComponent
       GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
       cal.setLenient(false);
 
-      // A non-lenient GregorianCalendar throws an exception upon 
+      // A non-lenient GregorianCalendar throws an exception upon
       // calculating its time or calendar field values if any out-of-range field value has been set.
       cal.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
-    
+
     Calendar instant = Dates.DateInstant(year, month, day);
     return instant;
   }
@@ -300,15 +300,15 @@ public class Clock extends AndroidNonvisibleComponent
       instant = new GregorianCalendar(year, jMonth, day);
       instant.setLenient(false);
 
-      // A non-lenient GregorianCalendar throws an exception upon 
+      // A non-lenient GregorianCalendar throws an exception upon
       // calculating its time or calendar field values if any out-of-range field value has been set.
       instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
-    
+
     instant = Dates.DateInstant(year, month, day);
-    
+
     try {
       instant.set(Calendar.HOUR_OF_DAY, hour);
       instant.set(Calendar.MINUTE, minute);
@@ -319,7 +319,7 @@ public class Clock extends AndroidNonvisibleComponent
     }
 
     return instant;
-    
+
   }
 
   /**

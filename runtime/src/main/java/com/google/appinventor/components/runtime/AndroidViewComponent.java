@@ -8,8 +8,8 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.ComponentConstants;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.view.View;

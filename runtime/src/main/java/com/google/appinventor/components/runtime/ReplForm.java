@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.google.appinventor.components.annotations.SimpleProperty;
 
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;

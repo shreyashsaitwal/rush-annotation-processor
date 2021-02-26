@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * A layout component allowing subcomponents to be placed in tabular form.

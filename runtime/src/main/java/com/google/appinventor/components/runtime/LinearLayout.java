@@ -9,7 +9,7 @@ package com.google.appinventor.components.runtime;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * Linear layout for placing components horizontally or vertically.

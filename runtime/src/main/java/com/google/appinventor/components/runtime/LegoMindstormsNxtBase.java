@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import common.PropertyTypeConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import java.io.UnsupportedEncodingException;

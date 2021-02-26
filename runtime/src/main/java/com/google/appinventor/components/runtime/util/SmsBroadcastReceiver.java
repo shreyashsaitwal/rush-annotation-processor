@@ -21,7 +21,7 @@ import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
-import common.ComponentConstants;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.Texting;
 import java.util.List;
