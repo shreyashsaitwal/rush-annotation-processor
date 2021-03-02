@@ -308,18 +308,19 @@ public class InfoFilesGenerator {
    * @param doc           The AndroidManifest.xml document
    */
   private void putApplicationElements(JSONObject buildInfoJson, Document doc) {
-    HashMap<String, String> available = new HashMap<>();
-    available.put("activities", "activity");
-    available.put("metadata", "meta-data");
-    available.put("broadcastReceivers", "receiver");
-    available.put("services", "service");
-    available.put("contentProviders", "provider");
+    //
+    HashMap<String, String> supportedTags = new HashMap<>();
+    supportedTags.put("activities", "activity");
+    supportedTags.put("metadata", "meta-data");
+    supportedTags.put("broadcastReceivers", "receiver");
 
-    ArrayList<String> unavailable = new ArrayList<>();
-    unavailable.add("activity-alias");
-    unavailable.add("uses-library");
+    ArrayList<String> otherTags = new ArrayList<>();
+    otherTags.add("service");
+    otherTags.add("provider");
+    otherTags.add("activity-alias");
+    otherTags.add("uses-library");
 
-    available.forEach((key, val) -> {
+    supportedTags.forEach((key, val) -> {
       JSONArray arr = new JSONArray();
       NodeList elements = doc.getElementsByTagName(val);
       if (elements.getLength() != 0) {
@@ -336,7 +337,7 @@ public class InfoFilesGenerator {
     // AI2's compiler currently do not have any validation checks
     // and adds anything inside those JSON Arrays to the manifest
     // file.
-    unavailable.forEach(el -> {
+    otherTags.forEach(el -> {
       JSONArray arr = new JSONArray();
       NodeList elements = doc.getElementsByTagName(el);
       if (elements.getLength() != 0) {
