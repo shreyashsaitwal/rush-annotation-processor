@@ -34,7 +34,7 @@ public class DesignerProperty {
       messager.printMessage(Diagnostic.Kind.ERROR, "Unable to find corresponding @SimpleProperty annotation for designer property '" + name + "'.");
     } else {
       defaultVal = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).defaultValue();
-      editorType = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).defaultValue();
+      editorType = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).editorType();
       args = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).editorArgs();
       alwaysSend = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).alwaysSend();
 
