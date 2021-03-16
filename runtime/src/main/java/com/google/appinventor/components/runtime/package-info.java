@@ -6,4 +6,7 @@
 /**
  * Components for App Inventor runtime library.
  */
+// This file has been modified by Shreyash Saitwal to add support for extensions
+// built with Rush build tool (https://github.com/ShreyashSaitwal/rush-cli)
+
 package com.google.appinventor.components.runtime;
