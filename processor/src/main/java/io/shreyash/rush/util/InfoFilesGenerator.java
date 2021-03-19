@@ -117,6 +117,7 @@ public class InfoFilesGenerator {
     obj.put("iconName", icon);
     obj.put("androidMinSdk", minSdk);
     obj.put("licenseName", license);
+    obj.put("rush", "true");
     obj.put("external", "true");
     obj.put("dateBuilt", ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE));
     obj.put("categoryString", "EXTENSION");

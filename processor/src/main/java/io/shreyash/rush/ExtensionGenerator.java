@@ -30,9 +30,15 @@ public class ExtensionGenerator {
     private static boolean useFQCN = false;
     private static String rootDir;
 
-    public static void main(String[] args) throws IOException, JSONException {
-        String simple_component_json = readFile(args[0], Charset.defaultCharset());
-        String simple_component_build_info_json = readFile(args[1], Charset.defaultCharset());
+    public static void main(String[] args) {
+        String simple_component_json = null;
+        String simple_component_build_info_json = null;
+        try {
+            simple_component_json = readFile(args[0], Charset.defaultCharset());
+            simple_component_build_info_json = readFile(args[1], Charset.defaultCharset());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         externalComponentsDirPath = args[2];
         androidRuntimeClassDirPath = args[3];
@@ -56,7 +62,11 @@ public class ExtensionGenerator {
             }
         }
 
-        generateAllExtensions();
+        try {
+            generateAllExtensions();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static Map<String, JSONObject> buildInfoAsMap(JSONArray buildInfos) throws JSONException {
@@ -126,7 +136,7 @@ public class ExtensionGenerator {
         String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
         String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
         String extensionFileDirPath = extensionDirPath + File.separator + "files";
-        copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempDirPath);
+        copyRelatedExternalClasses(androidRuntimeClassDirPath, extensionTempDirPath);
 
         JSONArray buildInfos = new JSONArray();
         for (ExtensionInfo info : extensions) {
@@ -291,13 +301,12 @@ public class ExtensionGenerator {
     }
 
     /**
-     * Copy a compiled classes related to a given extension in his package folder
+     * Copy compiled classes of all the Java files in src directory
      *
      * @param srcPath          the folder in which to check compiled classes
-     * @param extensionPackage the classpath of the extension
      * @param destPath         where the compiled classes will be copied
      */
-    private static void copyRelatedExternalClasses(final String srcPath, String extensionPackage,
+    private static void copyRelatedExternalClasses(final String srcPath,
                                                    final String destPath) throws IOException {
         File srcFolder = new File(srcPath);
         File[] files = srcFolder.listFiles();
@@ -306,48 +315,13 @@ public class ExtensionGenerator {
         }
         for (File fileEntry : files) {
             if (fileEntry.isFile()) {
-                if (isRelatedExternalClass(fileEntry.getAbsolutePath(), extensionPackage)) {
-                    copyFile(fileEntry.getAbsolutePath(), destPath + File.separator + fileEntry.getName());
-                }
+                copyFile(fileEntry.getAbsolutePath(), destPath + File.separator + fileEntry.getName());
             } else if (fileEntry.isDirectory()) {
                 String newDestPath = destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
                 ensureDirectory(newDestPath, "ERR Unable to create temporary path for extension build.");
-                copyRelatedExternalClasses(fileEntry.getAbsolutePath(), extensionPackage, newDestPath);
+                copyRelatedExternalClasses(fileEntry.getAbsolutePath(), newDestPath);
             }
         }
-    }
-
-    /**
-     * Returns true if a class is related to an external component
-     * Current implementation returns true for all files in the same package as that of the external component
-     * A better implementation is possible but might be more complex
-     *
-     * @param testClassAbsolutePath absolute path of the class file
-     * @param extensionPackage      package of the external component
-     * @return {@code true} if the Java class file at {@code testClassAbsolutePath} is a member of
-     * {@code extensionPackage}, {@code false} otherwise
-     */
-    private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage) {
-        if (!testClassAbsolutePath.endsWith(".class")) {  // Ignore things that aren't class files...
-            return false;
-        }
-        String componentPackagePath = extensionPackage.replace(".", File.separator);
-
-        String testClassPath = getClassPackage(testClassAbsolutePath);
-        testClassPath = testClassPath.replace(".", File.separator);
-        return testClassPath.startsWith(componentPackagePath);
-    }
-
-    private static String getClassPackage(String classAbsolutePath) {
-        String parentPath = androidRuntimeClassDirPath;
-        if (!parentPath.endsWith("/")) {
-            parentPath += "/";
-        }
-        parentPath = parentPath.replace("/", File.separator);
-        String componentPackage = classAbsolutePath.substring(classAbsolutePath.indexOf(parentPath) + parentPath.length());
-        componentPackage = componentPackage.substring(0, componentPackage.lastIndexOf(File.separator));
-        componentPackage = componentPackage.replace(File.separator, ".");
-        return componentPackage;
     }
 
     private static boolean deleteRecursively(File dirOrFile) {
