@@ -346,7 +346,7 @@ public class InfoFilesGenerator {
           arr.put(generateXmlElement(elements.item(i), "application"));
         }
       }
-      buildInfoJson.put("activity", arr);
+      arr.forEach(o -> buildInfoJson.getJSONArray("activities").put(o));
     });
   }
 }
