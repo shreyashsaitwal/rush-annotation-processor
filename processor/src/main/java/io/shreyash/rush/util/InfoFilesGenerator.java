@@ -312,12 +312,12 @@ public class InfoFilesGenerator {
     //
     HashMap<String, String> supportedTags = new HashMap<>();
     supportedTags.put("activities", "activity");
-    supportedTags.put("metadata", "meta-data");
     supportedTags.put("broadcastReceivers", "receiver");
 
     ArrayList<String> otherTags = new ArrayList<>();
     otherTags.add("service");
     otherTags.add("provider");
+    otherTags.add("meta-data");
     otherTags.add("activity-alias");
     otherTags.add("uses-library");
 
@@ -346,7 +346,7 @@ public class InfoFilesGenerator {
           arr.put(generateXmlElement(elements.item(i), "application"));
         }
       }
-      buildInfoJson.put("metadata", arr);
+      buildInfoJson.put("activity", arr);
     });
   }
 }
