@@ -6,16 +6,19 @@ import com.amihaiemil.eoyaml.YamlNode;
 import com.amihaiemil.eoyaml.YamlSequence;
 import com.amihaiemil.eoyaml.exceptions.YamlIndentationException;
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
+
 import io.shreyash.rush.blocks.ExtensionFieldInfo;
 import shaded.org.json.JSONArray;
 import shaded.org.json.JSONException;
 import shaded.org.json.JSONObject;
+
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -234,7 +237,7 @@ public class InfoFilesGenerator {
    * Get rush.yml file's data
    *
    * @return The rush.yml file's data
-   * @throws IOException  If the input can't be read for some reason.
+   * @throws IOException If the input can't be read for some reason.
    */
   private YamlMapping getRushYml() throws IOException, YamlIndentationException {
     File rushYml = Paths.get(projectRootPath, "rush.yml").toFile();
