@@ -5,8 +5,8 @@ plugins {
 version 'v186a'
 
 compileJava {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {
@@ -18,7 +18,7 @@ dependencies {
     implementation 'com.google.auto.service:auto-service:1.0-rc7'
     implementation 'com.amihaiemil.web:eo-yaml:5.1.7'
 
-    implementation files('shaded-json.jar')
+    implementation files('libs/shaded-json.jar')
     implementation project(':annotations')
 }
 
