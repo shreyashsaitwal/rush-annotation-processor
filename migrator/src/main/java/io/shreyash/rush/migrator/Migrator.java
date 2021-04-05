@@ -80,8 +80,7 @@ import io.shreyash.rush.migrator.util.XmlUtil;
 public class Migrator extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
-    final String manifestDir = processingEnv.getOptions().get("manifestDir");
-    final String rushYmlDir = processingEnv.getOptions().get("rushYmlDir");
+    final String outputDir = processingEnv.getOptions().get("outputDir");
 
     final Messager messager = processingEnv.getMessager();
 
@@ -91,8 +90,8 @@ public class Migrator extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.NOTE, "External component class named \"" +
             el.getSimpleName().toString() + "\" detected.");
         try {
-          generateAndroidManifest(el, manifestDir);
-          generateRushYml(el, rushYmlDir);
+          generateAndroidManifest(el, outputDir);
+          generateRushYml(el, outputDir);
         } catch (TransformerException | ParserConfigurationException | IOException e) {
           e.printStackTrace();
         }
@@ -106,9 +105,9 @@ public class Migrator extends AbstractProcessor {
    * Generates rush.yml for {@param comp}.
    *
    * @param comp        the element for which rush.yml is to be produced
-   * @param rushYmlDirPath the path where the generated rush.yml is to be stored
+   * @param outputDir the path where the generated rush.yml is to be stored
    */
-  private void generateRushYml(Element comp, String rushYmlDirPath) throws IOException {
+  private void generateRushYml(Element comp, String outputDir) throws IOException {
     final String moreInfo = "# For a detailed info on this file and supported fields, check out this" +
         "\n# link: https://github.com/ShreyashSaitwal/rush-cli/wiki/Metadata-File\n";
     final String optimizeComment = "# Un-comment the below field if you wish to apply ProGuard while" +
@@ -163,7 +162,7 @@ public class Migrator extends AbstractProcessor {
       content.append("\n");
     }
 
-    final Path yamlPath = Paths.get(rushYmlDirPath + File.pathSeparatorChar + "rush-" + extName + ".yml");
+    final Path yamlPath = Paths.get(outputDir + File.pathSeparatorChar + "rush-" + extName + ".yml");
     final FileWriter writer = new FileWriter(yamlPath.toFile());
     writer.write(content.toString());
     writer.flush();
@@ -174,9 +173,9 @@ public class Migrator extends AbstractProcessor {
    * Generates AndroidManifest.xml for {@param comp}
    *
    * @param comp         the element for which AndroidManifest.xml is to be generated
-   * @param manifestDirPath the path to where the generated manifest file is to br stored.
+   * @param outputDir the path to where the generated manifest file is to br stored.
    */
-  private void generateAndroidManifest(Element comp, String manifestDirPath) throws TransformerException, ParserConfigurationException {
+  private void generateAndroidManifest(Element comp, String outputDir) throws TransformerException, ParserConfigurationException {
     final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
 
@@ -255,7 +254,7 @@ public class Migrator extends AbstractProcessor {
     }
 
     final DOMSource domSource = new DOMSource(doc);
-    final Path manifestPath = Paths.get(manifestDirPath + File.separatorChar + "manifest-" + comp.getSimpleName().toString() + ".xml");
+    final Path manifestPath = Paths.get(outputDir + File.separatorChar + "manifest-" + comp.getSimpleName().toString() + ".xml");
     final StreamResult streamResult = new StreamResult(manifestPath.toFile());
 
     final TransformerFactory tf = TransformerFactory.newInstance();
