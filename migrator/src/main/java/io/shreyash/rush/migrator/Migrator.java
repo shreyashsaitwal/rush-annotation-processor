@@ -21,8 +21,10 @@ import com.google.auto.service.AutoService;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
@@ -78,9 +80,8 @@ import io.shreyash.rush.migrator.util.XmlUtil;
 public class Migrator extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
-    final String manifestPath = processingEnv.getOptions().get("manifestPath");
-    final String extName = processingEnv.getOptions().get("extName");
-    final String rushYmlPath = processingEnv.getOptions().get("rushYmlPath");
+    final String manifestDirPath = processingEnv.getOptions().get("manifestDirPath");
+    final String rushYmlDirPath = processingEnv.getOptions().get("rushYmlDirPath");
 
     final Messager messager = processingEnv.getMessager();
 
@@ -90,8 +91,8 @@ public class Migrator extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.NOTE, "External component class named \"" +
             el.getSimpleName().toString() + "\" detected.");
         try {
-          generateAndroidManifest(el, manifestPath);
-          generateRushYml(el, extName, rushYmlPath);
+          generateAndroidManifest(el, manifestDirPath);
+          generateRushYml(el, rushYmlDirPath);
         } catch (TransformerException | ParserConfigurationException | IOException e) {
           e.printStackTrace();
         }
@@ -105,14 +106,15 @@ public class Migrator extends AbstractProcessor {
    * Generates rush.yml for {@param comp}.
    *
    * @param comp        the element for which rush.yml is to be produced
-   * @param extName     the name of the extension which is to be produced
-   * @param rushYmlPath the path where the generated rush.yml is to be stored
+   * @param rushYmlDirPath the path where the generated rush.yml is to be stored
    */
-  private void generateRushYml(Element comp, String extName, String rushYmlPath) throws IOException {
+  private void generateRushYml(Element comp, String rushYmlDirPath) throws IOException {
     final String moreInfo = "# For a detailed info on this file and supported fields, check out this" +
         "\n# link: https://github.com/ShreyashSaitwal/rush-cli/wiki/Metadata-File\n";
     final String optimizeComment = "# Un-comment the below field if you wish to apply ProGuard while" +
         " building\n# a release build ('-r') of your extension:\n# release:\n#   optimize: true\n";
+
+    final String extName = comp.getSimpleName().toString();
 
     final DesignerComponent dc = comp.getAnnotation(DesignerComponent.class);
 
@@ -161,7 +163,8 @@ public class Migrator extends AbstractProcessor {
       content.append("\n");
     }
 
-    final FileWriter writer = new FileWriter(Paths.get(rushYmlPath).toFile());
+    final Path yamlPath = Paths.get(rushYmlDirPath + File.pathSeparatorChar + "rush-" + extName + ".yml");
+    final FileWriter writer = new FileWriter(yamlPath.toFile());
     writer.write(content.toString());
     writer.flush();
     writer.close();
@@ -171,9 +174,9 @@ public class Migrator extends AbstractProcessor {
    * Generates AndroidManifest.xml for {@param comp}
    *
    * @param comp         the element for which AndroidManifest.xml is to be generated
-   * @param manifestPath the path to where the generated manifest file is to br stored.
+   * @param manifestDirPath the path to where the generated manifest file is to br stored.
    */
-  private void generateAndroidManifest(Element comp, String manifestPath) throws TransformerException, ParserConfigurationException {
+  private void generateAndroidManifest(Element comp, String manifestDirPath) throws TransformerException, ParserConfigurationException {
     final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
 
@@ -252,7 +255,8 @@ public class Migrator extends AbstractProcessor {
     }
 
     final DOMSource domSource = new DOMSource(doc);
-    final StreamResult streamResult = new StreamResult(Paths.get(manifestPath).toFile());
+    final Path manifestPath = Paths.get(manifestDirPath + File.separatorChar + "manifest-" + comp.getSimpleName().toString() + ".xml");
+    final StreamResult streamResult = new StreamResult(manifestPath.toFile());
 
     final TransformerFactory tf = TransformerFactory.newInstance();
     final Transformer transformer = tf.newTransformer();
