@@ -80,8 +80,8 @@ import io.shreyash.rush.migrator.util.XmlUtil;
 public class Migrator extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
-    final String manifestDirPath = processingEnv.getOptions().get("manifestDirPath");
-    final String rushYmlDirPath = processingEnv.getOptions().get("rushYmlDirPath");
+    final String manifestDir = processingEnv.getOptions().get("manifestDir");
+    final String rushYmlDir = processingEnv.getOptions().get("rushYmlDir");
 
     final Messager messager = processingEnv.getMessager();
 
@@ -91,8 +91,8 @@ public class Migrator extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.NOTE, "External component class named \"" +
             el.getSimpleName().toString() + "\" detected.");
         try {
-          generateAndroidManifest(el, manifestDirPath);
-          generateRushYml(el, rushYmlDirPath);
+          generateAndroidManifest(el, manifestDir);
+          generateRushYml(el, rushYmlDir);
         } catch (TransformerException | ParserConfigurationException | IOException e) {
           e.printStackTrace();
         }
