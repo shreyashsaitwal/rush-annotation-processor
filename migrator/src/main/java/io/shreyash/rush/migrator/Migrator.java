@@ -162,7 +162,7 @@ public class Migrator extends AbstractProcessor {
       content.append("\n");
     }
 
-    final Path yamlPath = Paths.get(outputDir + File.pathSeparatorChar + "rush-" + extName + ".yml");
+    final Path yamlPath = Paths.get(outputDir + File.separatorChar + "rush-" + extName + ".yml");
     final FileWriter writer = new FileWriter(yamlPath.toFile());
     writer.write(content.toString());
     writer.flush();
