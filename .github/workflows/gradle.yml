@@ -40,12 +40,12 @@ jobs:
         name: dev-deps
         path: runtime/build/outputs/aar/runtime.jar
     - name: Upload processor
-      uses: actions/upload-artifacts@v2
+      uses: actions/upload-artifact@v2
       with:
         name: processor
         path: processor/build/libs/*.jar
     - name: Append processor deps to processor
-      uses: actions/upload-artifacts@v2
+      uses: actions/upload-artifact@v2
       with: 
         name: processor
         path: processor/build/implementation/
