@@ -32,7 +32,7 @@ jobs:
       run: sudo apt install unzip
     - name: Extract runtime-release.aar
       run: |
-        unzip runtime/build/outputs/aar/runtime-release.aar
+        unzip runtime/build/outputs/aar/runtime-release.aar -d runtime/build/outputs/aar/
         mv runtime/build/outputs/aar/classes.jar runtime/build/outputs/aar/runtime.jar
     - name: Append runtime.jar to dev-deps
       uses: actions/upload-artifact@v2
