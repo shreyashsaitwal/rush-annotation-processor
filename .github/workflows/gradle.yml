@@ -1,10 +1,8 @@
-# This workflow will build a Java project with Gradle
-
 name: Java CI with Gradle
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/migrate ]
   pull_request:
     branches: [ main ]
 
@@ -23,3 +21,36 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Copy implementations
+      run: ./gradlew copyImpl
+    - name: Upload dev deps
+      uses: actions/upload-artifact@v2
+      with:
+        name: dev-deps
+        path: runtime/build/implementation/
+    - name: Install unzip
+      run: sudo apt install unzip
+    - name: Extract runtime-release.aar
+      run: |
+        unzip runtime/build/outputs/aar/runtime-release.aar -d runtime/build/outputs/aar/
+        mv runtime/build/outputs/aar/classes.jar runtime/build/outputs/aar/runtime.jar
+    - name: Append runtime.jar to dev-deps
+      uses: actions/upload-artifact@v2
+      with: 
+        name: dev-deps
+        path: runtime/build/outputs/aar/runtime.jar
+    - name: Upload processor
+      uses: actions/upload-artifact@v2
+      with:
+        name: processor
+        path: processor/build/libs/*.jar
+    - name: Append processor deps to processor
+      uses: actions/upload-artifact@v2
+      with: 
+        name: processor
+        path: processor/build/implementation/
+    - name: Upload artifacts
+      shell: bash
+      env:
+        ENDPOINT: ${{ secrets.RUSH_API_ENDPOINT }}
+      run: curl "$ENDPOINT"

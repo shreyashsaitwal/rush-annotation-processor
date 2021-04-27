@@ -1,11 +1,11 @@
 package io.shreyash.rush;
 
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.auto.service.AutoService;
+
 import io.shreyash.rush.blocks.*;
 import io.shreyash.rush.util.InfoFilesGenerator;
+
 import org.xml.sax.SAXException;
 
 import javax.annotation.processing.*;
@@ -15,14 +15,19 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.IOException;
 import java.util.Set;
 
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedAnnotationTypes("com.google.appinventor.components.annotations.*")
+@SupportedAnnotationTypes({
+    "com.google.appinventor.components.annotations.SimpleEvent",
+    "com.google.appinventor.components.annotations.SimpleFunction",
+    "com.google.appinventor.components.annotations.SimpleProperty",
+    "com.google.appinventor.components.annotations.DesignerProperty"
+})
 public class ExtensionProcessor extends AbstractProcessor {
-
   private ExtensionFieldInfo extensionFieldInfo;
   private boolean isFirstRound = true;
 
@@ -44,7 +49,7 @@ public class ExtensionProcessor extends AbstractProcessor {
     final String extName = processingEnv.getOptions().get("extName");
 
     // Process all SimpleEvents
-    for (Element el : roundEnv.getElementsAnnotatedWith(SimpleEvent.class)) {
+    for (Element el : roundEnv.getElementsAnnotatedWith(com.google.appinventor.components.annotations.SimpleEvent.class)) {
       if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
         messager.printMessage(Diagnostic.Kind.ERROR, "ERR Annotation @SimpleEvent can't be used on element '" + el.getSimpleName() + "'. It can only be used on members of class '" + org + "." + extName + "'.");
         continue;
@@ -58,7 +63,7 @@ public class ExtensionProcessor extends AbstractProcessor {
     }
 
     // Process all SimpleFunctions
-    for (Element el : roundEnv.getElementsAnnotatedWith(SimpleFunction.class)) {
+    for (Element el : roundEnv.getElementsAnnotatedWith(com.google.appinventor.components.annotations.SimpleFunction.class)) {
       if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
         messager.printMessage(Diagnostic.Kind.ERROR, "ERR Annotation @SimpleFunction can't be used on element '" + el.getSimpleName() + "'. It can only be used on members of class '" + org + "." + extName + "'.");
         continue;
