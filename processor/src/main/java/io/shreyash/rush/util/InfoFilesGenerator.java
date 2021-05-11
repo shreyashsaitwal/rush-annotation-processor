@@ -158,7 +158,17 @@ public class InfoFilesGenerator {
     JSONArray nativeDeps = new JSONArray();
     JSONArray assets = new JSONArray();
 
+    boolean usesKt = false;
+
     try {
+      YamlMapping kt = yml.yamlMapping("kotlin");
+      if (kt != null) {
+        final String enabled = kt.string("enable");
+        if (enabled.equals("true")) {
+          usesKt = true;
+        }
+      }
+
       // Put min sdk
       minSdk = Math.max(yml.integer("min_sdk"), 7);
 
@@ -172,6 +182,9 @@ public class InfoFilesGenerator {
             throw new YamlReadingException("ERR rush.yml: Bad value '" + dep + "' in deps sequence.");
           }
         }
+      }
+      if (usesKt) {
+        deps.put("kotlin-stdlib.jar");
       }
       obj.put("libraries", deps);
 

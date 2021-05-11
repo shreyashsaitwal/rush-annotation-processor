@@ -9,6 +9,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -614,6 +615,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
       super(context);
     }
 
+    @SuppressLint("WrongCall")
     public void onMeasure(int specwidth, int specheight) {
       onMeasure(specwidth, specheight, 0);
     }
@@ -685,6 +687,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
         if (cWidth == 0 && trycount < 2) {
           Log.d("VideoPlayer...onMeasure", "Width not stable... trying again (onMeasure " + trycount + ")");
           androidUIHandler.postDelayed(new Runnable() {
+              @SuppressLint("WrongCall")
               @Override
               public void run() {
                 onMeasure(specwidth, specheight, trycount + 1);
@@ -736,6 +739,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
         if (cHeight == 0 && trycount < 2) {
           Log.d("VideoPlayer...onMeasure", "Height not stable... trying again (onMeasure " + trycount + ")");
           androidUIHandler.postDelayed(new Runnable() {
+              @SuppressLint("WrongCall")
               @Override
               public void run() {
                 onMeasure(specwidth, specheight, trycount + 1);

@@ -1,4 +1,3 @@
-include ':migrator'
 buildscript {
     repositories {
         google()
@@ -13,3 +12,4 @@ rootProject.name = 'rush-annotation-processor'
 include 'processor'
 include 'annotations'
 include 'runtime'
+include 'migrator'

@@ -9,7 +9,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import android.os.Handler;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -142,6 +145,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   // function (StoreValue)  associated with the component.
   public void StoreValue(final String tag, final Object valueToStore) {
     final Runnable call = new Runnable() {
+      @RequiresApi(api = Build.VERSION_CODES.N)
       public void run() { postStoreValue(tag, valueToStore); }};
       AsynchUtil.runAsynchronously(call);
   }
@@ -162,6 +166,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   // WebServiceError, which will signal a WebServiceError event for the
   // application.
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void postStoreValue(String tag, Object valueToStore) {
     // The commented-out Log.w command writes a message to the
     // AppInventor Web server log.  It's useful to include these
@@ -197,7 +202,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
       }
     };
     try {
-      WebServiceUtil.getInstance().postCommand(serviceURL,
+      WebServiceUtil.postCommand(serviceURL,
                   STOREAVALUE_COMMAND,
                   Lists.<NameValuePair>newArrayList(
                       new BasicNameValuePair(TAG_PARAMETER, tag),
@@ -251,10 +256,12 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
       + "the given tag. The Web service must decide what to return if there is no value stored "
       + "under the tag. This component accepts whatever is returned.")
   public void GetValue(final String tag) {
-    final Runnable call = new Runnable() { public void run() { postGetValue(tag); }};
+    final Runnable call = new Runnable() { @RequiresApi(api = Build.VERSION_CODES.N)
+    public void run() { postGetValue(tag); }};
     AsynchUtil.runAsynchronously(call);
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void postGetValue(final String tag) {
     // Log.w(LOG_TAG, "postGetValue: sending tag = " + tag);
     AsyncCallbackPair<JSONArray> myCallback = new AsyncCallbackPair<JSONArray>() {
@@ -312,7 +319,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
         return;
       }
     };
-    WebServiceUtil.getInstance().postCommandReturningArray(
+    WebServiceUtil.postCommandReturningArray(
         serviceURL,
         GETVALUE_COMMAND,
         Lists.<NameValuePair>newArrayList(new BasicNameValuePair(TAG_PARAMETER, tag)),
