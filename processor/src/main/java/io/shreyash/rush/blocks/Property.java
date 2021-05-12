@@ -79,8 +79,19 @@ public class Property {
         priorProp.setDescription(description);
       }
 
-      if (priorProp.getAccessType().equals(AccessType.INVISIBLE) || accessType.equals(AccessType.INVISIBLE)) {
-        accessType = AccessType.INVISIBLE;
+      if (priorProp.getAccessType().equals(AccessType.INVISIBLE) && accessType != AccessType.INVISIBLE) {
+        if (paramSize == 1) {
+          accessType = AccessType.WRITE;
+        } else if (paramSize == 0) {
+          accessType = AccessType.READ;
+        }
+      } else if (!priorProp.getAccessType().equals(AccessType.INVISIBLE) && accessType == AccessType.INVISIBLE) {
+        final ExecutableElement el = (ExecutableElement) priorProp.element;
+        if (el.getParameters().size() == 1) {
+          accessType = AccessType.WRITE;
+        } else if (el.getParameters().size() == 0) {
+          accessType = AccessType.READ;
+        }
       } else if (!priorProp.getAccessType().equals(accessType)) {
         accessType = AccessType.READ_WRITE;
       }
