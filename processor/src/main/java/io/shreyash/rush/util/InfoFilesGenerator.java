@@ -104,7 +104,14 @@ public class InfoFilesGenerator {
       if (yml.string("licence_url") != null) {
         license = yml.string("licence_url");
       } else {
-        license = "";
+        final File licenseFile = Paths.get(projectRootPath, "LICENSE").toFile();
+        final File licenseFileTxt = Paths.get(projectRootPath, "LICENSE.txt").toFile();
+
+        if (licenseFile.exists() || licenseFileTxt.exists()) {
+          license = "aiwebres/" + "LICENSE";
+        } else {
+          license = "";
+        }
       }
     } catch (YamlIndentationException e) {
       throw new YamlIndentationException("ERR rush.yml: " + e.getMessage());
