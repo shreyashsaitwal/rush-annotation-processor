@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: rush-annotation-processor.processor.processor">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/processor/build/libs/processor.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
