@@ -161,39 +161,11 @@ public class InfoFilesGenerator {
     YamlMapping yml = getRushYml();
     int minSdk;
 
-    JSONArray deps = new JSONArray();
-    JSONArray nativeDeps = new JSONArray();
     JSONArray assets = new JSONArray();
 
     try {
       // Put min sdk
       minSdk = Math.max(yml.integer("min_sdk"), 7);
-
-      // Put deps
-      YamlSequence ymlDeps = yml.yamlSequence("deps");
-      if (ymlDeps != null && !ymlDeps.values().isEmpty()) {
-        for (YamlNode dep : ymlDeps.values()) {
-          if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
-            deps.put(dep.asScalar().value());
-          } else {
-            throw new YamlReadingException("ERR rush.yml: Bad value '" + dep + "' in deps sequence.");
-          }
-        }
-      }
-      obj.put("libraries", deps);
-
-      // Put native deps
-      YamlSequence ymlNative = yml.yamlSequence("native_deps");
-      if (ymlNative != null && !ymlNative.values().isEmpty()) {
-        for (YamlNode dep : ymlNative.values()) {
-          if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
-            nativeDeps.put(dep.asScalar().value());
-          } else {
-            throw new YamlReadingException("ERR rush.yml: Bad value '" + dep + "' in native_deps sequence.");
-          }
-        }
-      }
-      obj.put("native", nativeDeps);
 
       // Put assets
       YamlSequence ymlAssets = yml.yamlMapping("assets").yamlSequence("other");
