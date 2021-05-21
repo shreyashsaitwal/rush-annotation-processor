@@ -7,17 +7,14 @@ import com.amihaiemil.eoyaml.YamlSequence;
 import com.amihaiemil.eoyaml.exceptions.YamlIndentationException;
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 
-import io.shreyash.rush.blocks.ExtensionFieldInfo;
-import shaded.org.json.JSONArray;
-import shaded.org.json.JSONException;
-import shaded.org.json.JSONObject;
-
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +26,15 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import io.shreyash.rush.blocks.ExtensionFieldInfo;
+import shaded.org.json.JSONArray;
+import shaded.org.json.JSONException;
+import shaded.org.json.JSONObject;
 
 public class InfoFilesGenerator {
   private final String projectRootPath;
@@ -154,52 +160,11 @@ public class InfoFilesGenerator {
     YamlMapping yml = getRushYml();
     int minSdk;
 
-    JSONArray deps = new JSONArray();
-    JSONArray nativeDeps = new JSONArray();
     JSONArray assets = new JSONArray();
 
-    boolean usesKt = false;
-
     try {
-      YamlMapping kt = yml.yamlMapping("kotlin");
-      if (kt != null) {
-        final String enabled = kt.string("enable");
-        if (enabled.equals("true")) {
-          usesKt = true;
-        }
-      }
-
       // Put min sdk
       minSdk = Math.max(yml.integer("min_sdk"), 7);
-
-      // Put deps
-      YamlSequence ymlDeps = yml.yamlSequence("deps");
-      if (ymlDeps != null && !ymlDeps.values().isEmpty()) {
-        for (YamlNode dep : ymlDeps.values()) {
-          if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
-            deps.put(dep.asScalar().value());
-          } else {
-            throw new YamlReadingException("ERR rush.yml: Bad value '" + dep + "' in deps sequence.");
-          }
-        }
-      }
-      if (usesKt) {
-        deps.put("kotlin-stdlib.jar");
-      }
-      obj.put("libraries", deps);
-
-      // Put native deps
-      YamlSequence ymlNative = yml.yamlSequence("native_deps");
-      if (ymlNative != null && !ymlNative.values().isEmpty()) {
-        for (YamlNode dep : ymlNative.values()) {
-          if (dep.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
-            nativeDeps.put(dep.asScalar().value());
-          } else {
-            throw new YamlReadingException("ERR rush.yml: Bad value '" + dep + "' in native_deps sequence.");
-          }
-        }
-      }
-      obj.put("native", nativeDeps);
 
       // Put assets
       YamlSequence ymlAssets = yml.yamlMapping("assets").yamlSequence("other");
