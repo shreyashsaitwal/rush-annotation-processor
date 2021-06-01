@@ -104,7 +104,7 @@ public class Migrator extends AbstractProcessor {
   /**
    * Generates rush.yml for {@param comp}.
    *
-   * @param comp        the element for which rush.yml is to be produced
+   * @param comp      the element for which rush.yml is to be produced
    * @param outputDir the path where the generated rush.yml is to be stored
    */
   private void generateRushYml(Element comp, String outputDir) throws IOException {
@@ -117,11 +117,6 @@ public class Migrator extends AbstractProcessor {
 
     final DesignerComponent dc = comp.getAnnotation(DesignerComponent.class);
 
-    // The reason behind using a string builder here instead of the YAML library that's being used
-    // for the processor is that that library provides only immutable builders to construct YAML,
-    // and you cannot add fields to it after it has been instantiated.
-    // This is sort of a work-around. It'd be much better to just use some other YAML parsing library
-    // for the whole project.
     final StringBuilder content = new StringBuilder();
     content.append(moreInfo + "\n---\n")
         .append("name: " + extName + "\n");
@@ -159,7 +154,6 @@ public class Migrator extends AbstractProcessor {
       for (final String lib : ul.libraries().split(",")) {
         content.append("  - " + lib.trim() + "\n");
       }
-      content.append("\n");
     }
 
     final Path yamlPath = Paths.get(outputDir + File.separatorChar + "rush-" + extName + ".yml");
@@ -172,7 +166,7 @@ public class Migrator extends AbstractProcessor {
   /**
    * Generates AndroidManifest.xml for {@param comp}
    *
-   * @param comp         the element for which AndroidManifest.xml is to be generated
+   * @param comp      the element for which AndroidManifest.xml is to be generated
    * @param outputDir the path to where the generated manifest file is to br stored.
    */
   private void generateAndroidManifest(Element comp, String outputDir) throws TransformerException, ParserConfigurationException {

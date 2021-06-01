@@ -5,13 +5,13 @@ import shaded.org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class ExtensionFieldInfo {
+public class BlocksDescriptorAdapter {
   private final HashMap<String, Function> functions = new HashMap<>();
   private final HashMap<String, Event> events = new HashMap<>();
   private final HashMap<String, Property> blockProps = new HashMap<>();
   private final HashMap<String, DesignerProperty> props = new HashMap<>();
 
-  public JSONArray getFuncJson() {
+  public JSONArray getSimpleFunctions() {
     JSONArray funcArray = new JSONArray();
 
     for (Function f : functions.values()) {
@@ -19,6 +19,7 @@ public class ExtensionFieldInfo {
       obj.put("deprecated", Boolean.toString(f.isDeprecated()));
       obj.put("name", f.getName());
       obj.put("description", f.getDescription());
+
       if (f.getReturnType() != null) {
         obj.put("returnType", f.getReturnType());
       }
@@ -38,7 +39,7 @@ public class ExtensionFieldInfo {
     return funcArray;
   }
 
-  public JSONArray getEventJson() {
+  public JSONArray getSimpleEvents() {
     JSONArray eventArray = new JSONArray();
 
     for (Event e : events.values()) {
@@ -62,7 +63,7 @@ public class ExtensionFieldInfo {
     return eventArray;
   }
 
-  public JSONArray getBlockPropsJson() {
+  public JSONArray getSimpleProperties() {
     JSONArray propsArray = new JSONArray();
 
     for (Property bp : blockProps.values()) {
@@ -70,6 +71,7 @@ public class ExtensionFieldInfo {
       obj.put("deprecated", Boolean.toString(bp.isDeprecated()));
       obj.put("name", bp.getName());
       obj.put("description", bp.getDescription());
+
       if (bp.getAccessType().equals(AccessType.INVISIBLE)) {
         obj.put("rw", "invisible");
       } else if (bp.getAccessType().equals(AccessType.READ)) {
@@ -79,9 +81,11 @@ public class ExtensionFieldInfo {
       } else if (bp.getAccessType().equals(AccessType.READ_WRITE)) {
         obj.put("rw", "read-write");
       }
+
       if (!bp.getDefaultVal().equals("")) {
         obj.put("defaultValue", bp.getDefaultVal());
       }
+
       if (bp.isAlwaysSend()) {
         obj.put("alwaysSend", bp.isAlwaysSend());
       }
@@ -93,7 +97,7 @@ public class ExtensionFieldInfo {
     return propsArray;
   }
 
-  public JSONArray getPropsJson() {
+  public JSONArray getDesignerProperties() {
     JSONArray propsArray = new JSONArray();
 
     for (DesignerProperty p : props.values()) {
@@ -101,6 +105,7 @@ public class ExtensionFieldInfo {
       obj.put("name", p.getName());
       obj.put("editorType", p.getEditorType());
       obj.put("defaultValue", p.getDefaultVal());
+
       if (p.isAlwaysSend()) {
         obj.put("alwaysSend", p.isAlwaysSend());
       }
@@ -117,27 +122,27 @@ public class ExtensionFieldInfo {
     return propsArray;
   }
 
-  public void addEvent(Event event) {
+  public void addSimpleEvent(Event event) {
     events.put(event.getName(), event);
   }
 
-  public void addFunction(Function func) {
+  public void addSimpleFunction(Function func) {
     functions.put(func.getName(), func);
   }
 
-  public void addProp(DesignerProperty prop) {
+  public void addDesignerProperty(DesignerProperty prop) {
     props.put(prop.getName(), prop);
   }
 
-  public void addBlockProp(Property prop) {
+  public void addSimpleProperty(Property prop) {
     blockProps.put(prop.getName(), prop);
   }
 
-  public HashMap<String, Property> getBlockProps() {
+  public HashMap<String, Property> getSimplePropertiesMap() {
     return blockProps;
   }
 
-  public void removeBlockProp(String name) {
+  public void removeSimpleProperty(String name) {
     this.blockProps.remove(name);
   }
 }

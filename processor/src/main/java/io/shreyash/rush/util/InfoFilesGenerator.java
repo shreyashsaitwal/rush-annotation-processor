@@ -1,12 +1,14 @@
 package io.shreyash.rush.util;
 
-import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlNode;
-import com.amihaiemil.eoyaml.YamlSequence;
-import com.amihaiemil.eoyaml.exceptions.YamlIndentationException;
-import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
-
+import org.commonmark.Extension;
+import org.commonmark.ext.autolink.AutolinkExtension;
+import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
+import org.commonmark.ext.image.attributes.ImageAttributesExtension;
+import org.commonmark.ext.ins.InsExtension;
+import org.commonmark.ext.task.list.items.TaskListItemsExtension;
+import org.commonmark.ext.gfm.tables.TablesExtension;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -15,8 +17,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,167 +30,141 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import io.shreyash.rush.blocks.ExtensionFieldInfo;
+import io.shreyash.rush.blocks.BlocksDescriptorAdapter;
+import io.shreyash.rush.model.Assets;
+import io.shreyash.rush.model.RushYaml;
 import shaded.org.json.JSONArray;
 import shaded.org.json.JSONException;
 import shaded.org.json.JSONObject;
 
 public class InfoFilesGenerator {
-  private final String projectRootPath;
+  private final String projectRoot;
   private final String extVersion;
   private final String type;
-  private final ExtensionFieldInfo extensionFieldInfos;
+  private final BlocksDescriptorAdapter extensionFieldInfos;
   private final String outputPath;
 
-  public InfoFilesGenerator(String projectRootPath, String extVersion, String type, ExtensionFieldInfo extensionFieldInfos, String outputPath) {
-    this.projectRootPath = projectRootPath;
+  public InfoFilesGenerator(
+      String projectRoot, String extVersion, String type, BlocksDescriptorAdapter descriptorAdapter,
+      String outputPath) {
+    this.projectRoot = projectRoot;
     this.extVersion = extVersion;
     this.type = type;
-    this.extensionFieldInfos = extensionFieldInfos;
+    this.extensionFieldInfos = descriptorAdapter;
     this.outputPath = outputPath;
   }
 
   /**
-   * Generates the simple_components.json file.
+   * Generates the components.json file.
    *
    * @throws IOException
    * @throws JSONException
-   * @throws YamlIndentationException
    */
-  public void generateSimpleCompJson() throws IOException, JSONException, YamlIndentationException {
-    JSONArray simpleCompJson = new JSONArray();
+  public void generateComponentsJson() throws IOException, JSONException {
+    JSONArray componentsJson = new JSONArray();
 
-    YamlMapping yml = getRushYml();
-    String name;
-    String verName;
-    String helpStr;
-    String helpUrl;
-    String icon;
-    int minSdk;
-    String license;
+    final RushYaml yaml = getRushYml();
+    JSONObject json = new JSONObject();
 
-    try {
-      // Put name
-      name = yml.string("name");
-
-      // Put version name
-      if (yml.yamlMapping("version").string("name") != null) {
-        verName = yml.yamlMapping("version").string("name");
-      } else {
-        verName = "";
-      }
-
-      // Put desc
-      if (yml.string("description") != null) {
-        helpStr = yml.string("description");
-      } else {
-        helpStr = "";
-      }
-
-      // Put help url
-      if (yml.string("homepage") != null) {
-        helpUrl = yml.string("homepage");
-      } else {
-        helpUrl = "";
-      }
-
-      // Put icon
-      icon = yml.yamlMapping("assets").string("icon");
-      if (icon.equals("") || icon.startsWith("http:") || icon.startsWith("https:")) {
-        icon = yml.yamlMapping("assets").string("icon");
-      } else {
-        icon = "aiwebres/" + yml.yamlMapping("assets").string("icon");
-      }
-
-      // Put min sdk
-      minSdk = Math.max(yml.integer("min_sdk"), 7);
-
-      // Put license
-      if (yml.string("licence_url") != null) {
-        license = yml.string("licence_url");
-      } else {
-        license = "";
-      }
-    } catch (YamlIndentationException e) {
-      throw new YamlIndentationException("ERR rush.yml: " + e.getMessage());
+    if (yaml.getVersion().getName() != null) {
+      json.put("versionName", yaml.getVersion().getName());
+    } else {
+      json.put("versionName", "");
     }
 
-    JSONObject obj = new JSONObject();
-    obj.put("type", type);
-    obj.put("name", name);
-    obj.put("versionName", verName);
-    obj.put("version", extVersion);
-    obj.put("helpString", helpStr);
-    obj.put("helpUrl", helpUrl);
-    obj.put("iconName", icon);
-    obj.put("androidMinSdk", minSdk);
-    obj.put("licenseName", license);
-    obj.put("rush", "true");
-    obj.put("external", "true");
-    obj.put("dateBuilt", ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE));
-    obj.put("categoryString", "EXTENSION");
-    obj.put("showOnPalette", "true");
-    obj.put("nonVisible", "true");
-    obj.put("events", extensionFieldInfos.getEventJson());
-    obj.put("methods", extensionFieldInfos.getFuncJson());
-    obj.put("properties", extensionFieldInfos.getPropsJson());
-    obj.put("blockProperties", extensionFieldInfos.getBlockPropsJson());
+    if (yaml.getHomepage() != null) {
+      json.put("helpUrl", yaml.getHomepage());
+    } else {
+      json.put("helpUrl", "");
+    }
 
-    simpleCompJson.put(obj);
+    if (yaml.getLicense() != null) {
+      json.put("licenseName", yaml.getLicense());
+    } else {
+      json.put("licenseName", "");
+    }
 
-    FileWriter writer = new FileWriter(Paths.get(outputPath, "simple_components.json").toFile());
-    simpleCompJson.write(writer);
+    List<Extension> extensionList = Arrays.asList(
+        ImageAttributesExtension.create(),
+        AutolinkExtension.create(),
+        StrikethroughExtension.create(),
+        InsExtension.create(),
+        TaskListItemsExtension.create(),
+        TablesExtension.create()
+    );
+    final Parser parser = new Parser.Builder()
+        .extensions(extensionList)
+        .build();
+    final org.commonmark.node.Node doc = parser.parse(yaml.getDescription());
+
+    final HtmlRenderer renderer = HtmlRenderer.builder()
+        .extensions(extensionList)
+        .softbreak("<br>")
+        .build();
+    json.put("helpString", renderer.render(doc));
+
+    json.put("type", type);
+    json.put("version", extVersion);
+    json.put("name", yaml.getName());
+    json.put("iconName", "aiwebres/" + yaml.getAssets().getIcon());
+    json.put("androidMinSdk", Math.max(yaml.getMin_sdk(), 7));
+
+    final String time = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    json.put("dateBuilt", time);
+
+    json.put("external", "true");
+    json.put("categoryString", "EXTENSION");
+    json.put("showOnPalette", "true");
+    json.put("nonVisible", "true");
+
+    // Put block descriptions
+    json.put("events", extensionFieldInfos.getSimpleEvents());
+    json.put("methods", extensionFieldInfos.getSimpleFunctions());
+    json.put("properties", extensionFieldInfos.getDesignerProperties());
+    json.put("blockProperties", extensionFieldInfos.getSimpleProperties());
+
+    componentsJson.put(json);
+
+    FileWriter writer = new FileWriter(Paths.get(outputPath, "components.json").toFile());
+    componentsJson.write(writer);
     writer.flush();
     writer.close();
   }
 
   /**
-   * Generate simple_components_build_info.json file.
+   * Generate component_build_infos.json file.
    *
    * @throws IOException
    * @throws ParserConfigurationException
    * @throws SAXException
-   * @throws YamlReadingException
    */
-  public void generateBuildInfoJson() throws IOException, ParserConfigurationException, SAXException, YamlReadingException {
+  public void generateBuildInfoJson() throws IOException, ParserConfigurationException, SAXException {
     JSONArray buildInfoJson = new JSONArray();
     JSONObject obj = new JSONObject();
 
-    YamlMapping yml = getRushYml();
-    int minSdk;
+    RushYaml yaml = getRushYml();
 
+    // Put assets
     JSONArray assets = new JSONArray();
+    Assets ymlAssets = yaml.getAssets();
 
-    try {
-      // Put min sdk
-      minSdk = Math.max(yml.integer("min_sdk"), 7);
-
-      // Put assets
-      YamlSequence ymlAssets = yml.yamlMapping("assets").yamlSequence("other");
-      if (ymlAssets != null && !ymlAssets.values().isEmpty()) {
-        for (YamlNode asset : ymlAssets.values()) {
-          if (asset.type().equals(com.amihaiemil.eoyaml.Node.SCALAR)) {
-            assets.put(asset.asScalar().value());
-          } else {
-            throw new YamlReadingException("ERR rush.yml: Bad value '" + asset + "' in assets/other sequence.");
-          }
-        }
-      }
-      obj.put("assets", assets);
-    } catch (YamlIndentationException e) {
-      throw new YamlIndentationException("ERR " + e.getMessage());
+    if (ymlAssets != null && !ymlAssets.getOther().isEmpty()) {
+      ymlAssets.getOther().forEach(it -> assets.put(it.trim()));
     }
+    obj.put("assets", assets);
 
     obj.put("type", type);
-    obj.put("androidMinSdk", new JSONArray().put(minSdk));
+    obj.put("androidMinSdk", new JSONArray().put(yaml.getMin_sdk()));
 
-    File manifest = Paths.get(projectRootPath, "src", "AndroidManifest.xml").toFile();
+    File manifest = Paths.get(projectRoot, "src", "AndroidManifest.xml").toFile();
     if (manifest.exists()) {
       DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Document doc = builder.parse(manifest);
@@ -205,7 +184,7 @@ public class InfoFilesGenerator {
     }
     buildInfoJson.put(obj);
 
-    FileWriter writer = new FileWriter(Paths.get(outputPath, "simple_components_build_info.json").toFile());
+    FileWriter writer = new FileWriter(Paths.get(outputPath, "component_build_infos.json").toFile());
     buildInfoJson.write(writer);
     writer.flush();
     writer.close();
@@ -217,17 +196,19 @@ public class InfoFilesGenerator {
    * @return The rush.yml file's data
    * @throws IOException If the input can't be read for some reason.
    */
-  private YamlMapping getRushYml() throws IOException, YamlIndentationException {
-    File rushYml = Paths.get(projectRootPath, "rush.yml").toFile();
+  private RushYaml getRushYml() throws IOException {
+    final Yaml parser = new Yaml(new Constructor(RushYaml.class));
+
+    File rushYml = Paths.get(projectRoot, "rush.yml").toFile();
     if (!rushYml.exists()) {
-      if (Paths.get(projectRootPath, "rush.yaml").toFile().exists()) {
-        rushYml = Paths.get(projectRootPath, "rush.yaml").toFile();
+      if (Paths.get(projectRoot, "rush.yaml").toFile().exists()) {
+        rushYml = Paths.get(projectRoot, "rush.yaml").toFile();
       } else {
         throw new FileNotFoundException("ERR Unable to find rush.yml file.");
       }
     }
 
-    return Yaml.createYamlInput(rushYml).readYamlMapping();
+    return parser.load(new FileInputStream(rushYml));
   }
 
   /**
@@ -243,7 +224,7 @@ public class InfoFilesGenerator {
    */
   private String generateXmlElement(Node node, String parent) {
     if (node.getNodeName().equals("uses-permission")) {
-      Node permission = node.getAttributes().getNamedItem("android:name");
+      final Node permission = node.getAttributes().getNamedItem("android:name");
       if (permission != null) {
         return permission.getNodeValue();
       } else {
@@ -251,18 +232,18 @@ public class InfoFilesGenerator {
       }
     }
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     if (node.getNodeType() == Node.ELEMENT_NODE && node.getParentNode().getNodeName().equals(parent)) {
-      Element element = (Element) node;
-      String tagName = element.getTagName();
+      final Element element = (Element) node;
+      final String tagName = element.getTagName();
       sb.append("<" + tagName + " ");
 
 
       if (element.hasAttributes()) {
-        NamedNodeMap attributes = element.getAttributes();
+        final NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
           if (attributes.item(i).getNodeType() == Node.ATTRIBUTE_NODE) {
-            Attr attribute = (Attr) attributes.item(i);
+            final Attr attribute = (Attr) attributes.item(i);
             sb.append(attribute.getNodeName() + " = \"" + attribute.getNodeValue() + "\" ");
           }
         }
@@ -270,7 +251,8 @@ public class InfoFilesGenerator {
 
       if (element.hasChildNodes()) {
         sb.append(" >\n");
-        NodeList children = element.getChildNodes();
+        final NodeList children = element.getChildNodes();
+
         for (int j = 0; j < children.getLength(); j++) {
           sb.append(generateXmlElement(children.item(j), element.getNodeName()));
         }
@@ -290,8 +272,7 @@ public class InfoFilesGenerator {
    * @param doc           The AndroidManifest.xml document
    */
   private void putApplicationElements(JSONObject buildInfoJson, Document doc) {
-    //
-    HashMap<String, String> supportedTags = new HashMap<>();
+    final HashMap<String, String> supportedTags = new HashMap<>();
     supportedTags.put("activities", "activity");
     supportedTags.put("broadcastReceivers", "receiver");
 
@@ -315,7 +296,7 @@ public class InfoFilesGenerator {
 
     // This is a sort of hack that allows adding application level
     // manifest tags by adding them to the JSON Arrays of available
-    // application level tags in simple_components_build_info.json
+    // application level tags in component_build_infos.json
     // AI2's compiler currently do not have any validation checks
     // and adds anything inside those JSON Arrays to the manifest
     // file.

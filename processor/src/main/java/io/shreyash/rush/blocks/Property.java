@@ -11,7 +11,7 @@ import javax.tools.Diagnostic;
 
 public class Property {
   private final Element element;
-  private final ExtensionFieldInfo ext;
+  private final BlocksDescriptorAdapter ext;
   private final Messager messager;
   private String name;
   private String description;
@@ -21,7 +21,7 @@ public class Property {
   private String defaultVal = "";
   private boolean alwaysSend = false;
 
-  public Property(Element element, ExtensionFieldInfo ext, Messager messager) {
+  public Property(Element element, BlocksDescriptorAdapter ext, Messager messager) {
     this.element = element;
     this.ext = ext;
     this.messager = messager;
@@ -29,33 +29,41 @@ public class Property {
 
   public Property build() {
     if (!CheckName.isPascalCase(element)) {
-      messager.printMessage(Diagnostic.Kind.WARNING, "Property '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
+      messager.printMessage(Diagnostic.Kind.WARNING,
+          "Property '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
     }
     ExecutableElement executableElement = ((ExecutableElement) element);
     int paramSize = executableElement.getParameters().size();
 
     if (executableElement.getReturnType().getKind() == TypeKind.VOID) {
       if (paramSize != 1) {
-        messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the setter property '" + element.getSimpleName() + "' is: 1.");
+        messager.printMessage(Diagnostic.Kind.ERROR,
+            "@SimpleProperty '" + name + "': The total number of parameters allowed " +
+                "on the setter property '" + element.getSimpleName() + "' is: 1.");
       } else {
         accessType = AccessType.WRITE;
         final String paramType = executableElement.getParameters().get(0).asType().toString();
         try {
           type = ConvertToYailType.convert(paramType);
         } catch (IllegalStateException e) {
-          messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleProperty '" + name + "': Can't convert parameter type '" + paramType + "' (parameter '" + name + "') to YAIL type.");
+          messager.printMessage(Diagnostic.Kind.ERROR,
+              "@SimpleProperty '" + name + "': Can't convert parameter type '"
+                  + paramType + "' (parameter '" + name + "') to YAIL type.");
         }
       }
     } else {
       if (paramSize != 0) {
-        messager.printMessage(Diagnostic.Kind.ERROR, "The number of parameters allowed on the getter property '" + element.getSimpleName() + "' is: 0.");
+        messager.printMessage(Diagnostic.Kind.ERROR,
+            "@SimpleProperty '" + name + "': The total number of parameters allowed " +
+                "on the getter property '" + element.getSimpleName() + "' is: 0.");
       } else {
         accessType = AccessType.READ;
         final String returnType = executableElement.getReturnType().toString();
         try {
           type = ConvertToYailType.convert(returnType);
         } catch (IllegalStateException e) {
-          messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleProperty '" + name + "': Can't convert return type '" + returnType + "' to YAIL type.");
+          messager.printMessage(Diagnostic.Kind.ERROR,
+              "@SimpleProperty '" + name + "': Can't convert return type '" + returnType + "' to YAIL type.");
         }
       }
     }
@@ -65,13 +73,15 @@ public class Property {
     accessType = executableElement.getAnnotation(com.google.appinventor.components.annotations.SimpleProperty.class).userVisible() ? accessType : AccessType.INVISIBLE;
     deprecated = executableElement.getAnnotation(Deprecated.class) != null;
 
-    if (ext.getBlockProps().containsKey(executableElement.getSimpleName().toString())) {
-      Property priorProp = ext.getBlockProps().get(executableElement.getSimpleName().toString());
+    if (ext.getSimplePropertiesMap().containsKey(executableElement.getSimpleName().toString())) {
+      Property priorProp = ext.getSimplePropertiesMap().get(executableElement.getSimpleName().toString());
       if (!priorProp.getType().equals(type)) {
         if (accessType.equals(AccessType.READ)) {
           priorProp.setType(type);
         } else {
-          messager.printMessage(Diagnostic.Kind.ERROR, "Inconsistent types '" + priorProp.getType() + "' and '" + type + "' for property '" + name + "'.");
+          messager.printMessage(Diagnostic.Kind.ERROR,
+              "@SimpleProperty '" + name + "': Inconsistent types '" + priorProp.getType()
+                  + "' and '" + type + "' for property '" + name + "'.");
         }
       }
 
@@ -96,7 +106,7 @@ public class Property {
         accessType = AccessType.READ_WRITE;
       }
 
-      ext.removeBlockProp(name);
+      ext.removeSimpleProperty(name);
     }
     return this;
   }
