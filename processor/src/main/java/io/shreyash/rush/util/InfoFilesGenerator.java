@@ -181,7 +181,7 @@ public class InfoFilesGenerator {
     obj.put("assets", assets);
 
     obj.put("type", type);
-    obj.put("androidMinSdk", new JSONArray().put(yaml.getMin_sdk()));
+    obj.put("androidMinSdk", new JSONArray().put(Math.max(yaml.getMin_sdk(), 7)));
 
     File manifest = Paths.get(projectRoot, "src", "AndroidManifest.xml").toFile();
     if (manifest.exists()) {
