@@ -2,10 +2,6 @@ package io.shreyash.rush.util;
 
 import org.commonmark.Extension;
 import org.commonmark.ext.autolink.AutolinkExtension;
-import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
-import org.commonmark.ext.gfm.tables.TablesExtension;
-import org.commonmark.ext.image.attributes.ImageAttributesExtension;
-import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -53,8 +49,8 @@ public class InfoFilesGenerator {
   private final String outputPath;
 
   public InfoFilesGenerator(
-      String projectRoot, String extVersion, String type, BlocksDescriptorAdapter descriptorAdapter,
-      String outputPath) {
+      String projectRoot, String extVersion, String type,
+      BlocksDescriptorAdapter descriptorAdapter, String outputPath) {
     this.projectRoot = projectRoot;
     this.extVersion = extVersion;
     this.type = type;
@@ -64,10 +60,10 @@ public class InfoFilesGenerator {
 
   /**
    * {@link io.shreyash.rush.ExtensionProcessor} is designed to pick only the classes that declare
-   * at least one of the block annotations. So, in case there's no block annotation, Rush would
-   * crash, as there won't be any info file to process. Therefore, to prevent this, we check if the
-   * info files exists and that they are up-to-date. They aren't, we run this class using this
-   * method and generate (new) info files w/o block descriptions.
+   * at least one of the block annotations. So, in case there's no block annotation, the CLI would
+   * crash, as there won't be any annotation processor generated info file to further process by
+   * the CLI. Therefore, to prevent this, we check if the info files exists and that they are
+   * up-to-date. If they aren't, we run this method and generate (new) info files w/o any blocks.
    *
    * @param args 0 -> projectPath
    *             1 -> extVersion
@@ -112,12 +108,8 @@ public class InfoFilesGenerator {
     }
 
     List<Extension> extensionList = Arrays.asList(
-        ImageAttributesExtension.create(),
         AutolinkExtension.create(),
-        StrikethroughExtension.create(),
-        InsExtension.create(),
-        TaskListItemsExtension.create(),
-        TablesExtension.create()
+        TaskListItemsExtension.create()
     );
     final Parser parser = new Parser.Builder()
         .extensions(extensionList)
