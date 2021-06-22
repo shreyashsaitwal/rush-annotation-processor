@@ -11,8 +11,6 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
-        consumerProguardFiles "consumer-rules.pro"
     }
 
     packagingOptions {
@@ -25,13 +23,6 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/ASL2.0'
         exclude("META-INF/*.kotlin_module")
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
     }
 
     compileOptions {
@@ -87,9 +78,7 @@ dependencies {
     implementation 'com.google.api-client:google-api-client-android2:1.10.3-beta'
     implementation 'org.webrtc:google-webrtc:1.0.23995'
 
-    implementation files('./libs/kawa-1.11-modified.jar')
-    implementation files('./libs/physicaloid-library.jar')
-
+    implementation fileTree('libs')
     implementation project(':annotations')
 }
 
