@@ -10,12 +10,12 @@ public class Assets {
     return icon;
   }
 
-  public ArrayList<String> getOther() {
-    return other;
-  }
-
   public void setIcon(String icon) {
     this.icon = icon;
+  }
+
+  public ArrayList<String> getOther() {
+    return other;
   }
 
   public void setOther(ArrayList<String> other) {
