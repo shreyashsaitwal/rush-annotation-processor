@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
+<module external.linked.project.id=":annotations" external.linked.project.path="$MODULE_DIR$/../../../annotations" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="rush-annotation-processor" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
@@ -14,5 +14,21 @@
         <option name="BUILDABLE" value="true" />
       </configuration>
     </facet>
+  </component>
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/../../../annotations/build/classes/java/main" />
+    <output-test url="file://$MODULE_DIR$/../../../annotations/build/classes/java/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../annotations">
+      <sourceFolder url="file://$MODULE_DIR$/../../../annotations/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../annotations/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../annotations/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../annotations/src/test/resources" type="java-test-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../annotations/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../annotations/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="Gradle: rush-annotation-processor.annotations.annotations" level="project" />
   </component>
 </module>

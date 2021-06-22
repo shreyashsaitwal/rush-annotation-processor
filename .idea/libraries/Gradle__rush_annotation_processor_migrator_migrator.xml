@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: rush-annotation-processor.migrator.migrator">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/migrator/build/libs/migrator.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
