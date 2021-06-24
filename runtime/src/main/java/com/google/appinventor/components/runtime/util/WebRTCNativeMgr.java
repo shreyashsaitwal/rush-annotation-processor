@@ -10,12 +10,6 @@ import android.util.Log;
 
 import com.google.appinventor.components.runtime.ReplForm;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,10 +34,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -57,24 +53,24 @@ public class WebRTCNativeMgr {
   private static final boolean DEBUG = true;
 
   private static final String LOG_TAG = "AppInvWebRTC";
-  private static final CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();
+  private static final CharsetDecoder utf8Decoder = StandardCharsets.UTF_8.newDecoder();
 
   private ReplForm form;
 
   private PeerConnection peerConnection;
   /* We need to keep track of whether or not we have processed an element */
   /* Received from the rendezvous server. */
-  private TreeSet<String> seenNonces = new TreeSet();
+  private TreeSet<String> seenNonces = new TreeSet<>();
   private boolean haveOffer = false;
   private String rCode;
   private volatile boolean keepPolling = true;
   private volatile boolean haveLocalDescription = false;
   private boolean first = true; // This is used for logging in the Rendezvous server
-  private Random random = new Random();
+  private final Random random = new Random();
   private DataChannel dataChannel = null;
   private String rendezvousServer = null; // Primary (first level) Rendezvous server
   private String rendezvousServer2 = null; // Second level (webrtc rendezvous) Rendezvous server
-  private List<PeerConnection.IceServer> iceServers = new ArrayList();
+  private List<PeerConnection.IceServer> iceServers = new ArrayList<>();
 
   Timer timer = new Timer();
 
@@ -296,17 +292,15 @@ public class WebRTCNativeMgr {
         Log.d(LOG_TAG, "Poller() Called");
         Log.d(LOG_TAG, "Poller: rendezvousServer2 = " + rendezvousServer2);
       }
-      HttpClient client = new DefaultHttpClient();
-      HttpGet request = new HttpGet("http://" + rendezvousServer2 + "/rendezvous2/" + rCode + "-s");
-      HttpResponse response = client.execute(request);
+      URL url = new URL("http://" + rendezvousServer2 + "/rendezvous2/" + rCode + "-s");
       StringBuilder sb = new StringBuilder();
 
       BufferedReader rd = null;
       try {
         rd = new BufferedReader
           (new InputStreamReader(
-            response.getEntity().getContent()));
-        String line = "";
+            url.openStream()));
+        String line;
         while ((line = rd.readLine()) != null) {
           sb.append(line);
         }
@@ -435,17 +429,16 @@ public class WebRTCNativeMgr {
               first = false;
               data.put("apiversion", SdkLevel.getLevel());
             }
-            HttpClient client = new DefaultHttpClient();
-            HttpPost post = new HttpPost("http://" + rendezvousServer2 + "/rendezvous2/");
-            try {
-              if (DEBUG) {
-                Log.d(LOG_TAG, "About to send = " + data.toString());
-              }
-              post.setEntity(new StringEntity(data.toString()));
-              client.execute(post);
-            } catch (IOException e) {
-              Log.e(LOG_TAG, "sendRedezvous IOException", e);
-            }
+            URL url = new URL("http://" + rendezvousServer2 + "/rendezvous2/");
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+
+            byte[] bytes = data.toString().getBytes(StandardCharsets.UTF_8);
+
+            http.setFixedLengthStreamingMode(bytes.length);
+            http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            http.connect();
           } catch (Exception e) {
             Log.e(LOG_TAG, "Exception in sendRendezvous", e);
           }

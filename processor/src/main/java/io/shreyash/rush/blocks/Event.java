@@ -30,8 +30,10 @@ public class Event {
    */
   public Event build() {
     if (!CheckName.isPascalCase(element)) {
-      messager.printMessage(Diagnostic.Kind.WARNING, "Event '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
+      messager.printMessage(Diagnostic.Kind.WARNING,
+          "@SimpleEvent '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
     }
+
     ExecutableElement executableElement = ((ExecutableElement) element);
     name = executableElement.getSimpleName().toString();
     description = executableElement.getAnnotation(SimpleEvent.class).description();
@@ -39,7 +41,9 @@ public class Event {
 
     for (VariableElement param : executableElement.getParameters()) {
       if (!CheckName.isCamelCase(param)) {
-        messager.printMessage(Diagnostic.Kind.WARNING, "Parameter '" + param.getSimpleName() + "' of Event '" + element.getSimpleName() + "' should follow camelCase naming convention.");
+        messager.printMessage(Diagnostic.Kind.WARNING,
+            "Parameter '" + param.getSimpleName() + "' of Event '" + element.getSimpleName()
+                + "' should follow camelCase naming convention.");
       }
       params.add(new EventParam(param, messager, name));
     }

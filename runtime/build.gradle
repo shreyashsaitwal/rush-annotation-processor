@@ -7,16 +7,10 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
-        consumerProguardFiles "consumer-rules.pro"
-    }
-
-    lintOptions {
-        disable 'DuplicatePlatformClasses', 'WrongCall'
     }
 
     packagingOptions {
@@ -31,12 +25,6 @@ android {
         exclude("META-INF/*.kotlin_module")
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -90,15 +78,24 @@ dependencies {
     implementation 'com.google.api-client:google-api-client-android2:1.10.3-beta'
     implementation 'org.webrtc:google-webrtc:1.0.23995'
 
-    implementation files('./libs/kawa-1.11-modified.jar')
-    implementation files('./libs/httpmime-4.3.4.jar')
-    implementation files('./libs/org.apache.http.legacy.jar')
-    implementation files('./libs/physicaloid-library.jar')
-
+    implementation fileTree('libs')
     implementation project(':annotations')
 }
 
-configurations.implementation.setCanBeResolved(true)
+configurations {
+    all {
+        exclude module: 'xpp3'
+        exclude module: 'xmlParserAPIs'
+        exclude module: 'opengl-api'
+        exclude module: 'json'
+        exclude module: 'commons-logging'
+        exclude module: 'httpclient'
+    }
+
+    implementation {
+        setCanBeResolved(true)
+    }
+}
 
 task copyImpl(type: Copy) {
     from configurations.implementation

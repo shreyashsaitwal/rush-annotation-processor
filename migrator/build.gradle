@@ -15,6 +15,6 @@ dependencies {
     implementation 'com.google.guava:guava:29.0-jre'
     implementation 'com.google.auto.service:auto-service:1.0-rc7'
 
-    implementation project(path: ':annotations')
-    implementation files('libs/shaded-json.jar')
+    implementation fileTree('libs')
+    implementation project(':annotations')
 }

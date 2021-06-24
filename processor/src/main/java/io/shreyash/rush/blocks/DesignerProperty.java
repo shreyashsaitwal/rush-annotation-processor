@@ -9,7 +9,7 @@ import javax.tools.Diagnostic;
 
 public class DesignerProperty {
   private final Element element;
-  private final ExtensionFieldInfo ext;
+  private final BlocksDescriptorAdapter ext;
   private final Messager messager;
   private String name;
   private String defaultVal;
@@ -17,7 +17,7 @@ public class DesignerProperty {
   private String[] args;
   private boolean alwaysSend;
 
-  public DesignerProperty(Element element, ExtensionFieldInfo ext, Messager messager) {
+  public DesignerProperty(Element element, BlocksDescriptorAdapter ext, Messager messager) {
     this.element = element;
     this.ext = ext;
     this.messager = messager;
@@ -25,13 +25,16 @@ public class DesignerProperty {
 
   public DesignerProperty build() {
     if (!CheckName.isPascalCase(element)) {
-      messager.printMessage(Diagnostic.Kind.WARNING, "Designer property '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
+      messager.printMessage(Diagnostic.Kind.WARNING,
+          "@DesignerProperty '" + element.getSimpleName()
+              + "' should follow PascalCase naming convention.");
     }
     ExecutableElement executableElement = (ExecutableElement) element;
     name = executableElement.getSimpleName().toString();
 
-    if (!ext.getBlockProps().containsKey(name)) {
-      messager.printMessage(Diagnostic.Kind.ERROR, "Unable to find corresponding @SimpleProperty annotation for designer property '" + name + "'.");
+    if (!ext.getSimplePropertiesMap().containsKey(name)) {
+      messager.printMessage(Diagnostic.Kind.ERROR,
+          "Unable to find corresponding @SimpleProperty annotation for designer property '" + name + "'.");
     } else {
       defaultVal = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).defaultValue();
       editorType = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).editorType();
@@ -39,11 +42,11 @@ public class DesignerProperty {
       alwaysSend = executableElement.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty.class).alwaysSend();
 
       if (!defaultVal.equals("")) {
-        ext.getBlockProps().get(name).setDefaultVal(defaultVal);
+        ext.getSimplePropertiesMap().get(name).setDefaultVal(defaultVal);
       }
 
       if (alwaysSend) {
-        ext.getBlockProps().get(name).setAlwaysSend(true);
+        ext.getSimplePropertiesMap().get(name).setAlwaysSend(true);
       }
     }
 

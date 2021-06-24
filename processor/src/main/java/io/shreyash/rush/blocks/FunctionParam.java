@@ -15,7 +15,9 @@ public class FunctionParam {
     try {
       type = ConvertToYailType.convert(param.asType().toString());
     } catch (IllegalStateException e) {
-      messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleFunction '" + parent + "': Can't convert parameter type '" + param.asType() + "' (parameter '" + name + "') to YAIL type.");
+      messager.printMessage(Diagnostic.Kind.ERROR,
+          "@SimpleFunction '" + parent + "': Can't convert parameter type '"
+              + param.asType() + "' (parameter '" + name + "') to YAIL type.");
     }
   }
 

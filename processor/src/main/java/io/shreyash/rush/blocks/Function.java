@@ -27,7 +27,8 @@ public class Function {
 
   public Function build() {
     if (!CheckName.isPascalCase(element)) {
-      messager.printMessage(Diagnostic.Kind.WARNING, "Function '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
+      messager.printMessage(Diagnostic.Kind.WARNING,
+          "@SimpleFunction '" + element.getSimpleName() + "' should follow PascalCase naming convention.");
     }
     ExecutableElement executableElement = ((ExecutableElement) element);
     name = executableElement.getSimpleName().toString();
@@ -37,13 +38,17 @@ public class Function {
       try {
         returnType = ConvertToYailType.convert(executableElement.getReturnType().toString());
       } catch (IllegalStateException e) {
-        messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleFunction '" + executableElement.getSimpleName() + "': Can't convert return type '" + executableElement.getReturnType() + "' to YAIL type.");
+        messager.printMessage(Diagnostic.Kind.ERROR,
+            "@SimpleFunction '" + executableElement.getSimpleName()
+                + "': Can't convert return type '" + executableElement.getReturnType() + "' to YAIL type.");
       }
     }
 
     for (VariableElement param : executableElement.getParameters()) {
       if (!CheckName.isCamelCase(param)) {
-        messager.printMessage(Diagnostic.Kind.WARNING, "Parameter '" + param.getSimpleName() + "' of Function '" + element.getSimpleName() + "' should follow camelCase naming convention.");
+        messager.printMessage(Diagnostic.Kind.WARNING,
+            "Parameter '" + param.getSimpleName() + "' of @SimpleFunction '"
+                + element.getSimpleName() + "' should follow camelCase naming convention.");
       }
       params.add(new FunctionParam(param, messager, name));
     }

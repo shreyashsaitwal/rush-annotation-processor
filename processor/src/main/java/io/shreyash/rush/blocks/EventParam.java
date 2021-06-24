@@ -7,15 +7,18 @@ import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 
 public class EventParam {
-  private String name;
+  private final String name;
   private String type;
 
   public EventParam(VariableElement param, Messager messager, String parent) {
     name = param.getSimpleName().toString();
+
     try {
       type = ConvertToYailType.convert(param.asType().toString());
     } catch (IllegalStateException e) {
-      messager.printMessage(Diagnostic.Kind.ERROR, "ERR @SimpleFunction '" + parent + "': Can't convert return type '" + param.asType() + "' (parameter '" + name + "') to YAIL type.");
+      messager.printMessage(Diagnostic.Kind.ERROR,
+          "@SimpleFunction '" + parent + "': Can't convert return type '" + param.asType()
+              + "' (parameter '" + name + "') to YAIL type.");
     }
   }
 

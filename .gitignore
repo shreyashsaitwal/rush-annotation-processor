@@ -5,3 +5,6 @@
 build
 
 test-ext
+local.properties
+
+*.iml

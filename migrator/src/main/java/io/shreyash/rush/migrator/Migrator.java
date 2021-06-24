@@ -104,42 +104,44 @@ public class Migrator extends AbstractProcessor {
   /**
    * Generates rush.yml for {@param comp}.
    *
-   * @param comp        the element for which rush.yml is to be produced
+   * @param comp      the element for which rush.yml is to be produced
    * @param outputDir the path where the generated rush.yml is to be stored
    */
   private void generateRushYml(Element comp, String outputDir) throws IOException {
     final String moreInfo = "# For a detailed info on this file and supported fields, check out this" +
         "\n# link: https://github.com/ShreyashSaitwal/rush-cli/wiki/Metadata-File\n";
-    final String optimizeComment = "# Un-comment the below field if you wish to apply ProGuard while" +
-        " building\n# a release build ('-r') of your extension:\n# release:\n#   optimize: true\n";
+
+    final StringBuilder content = new StringBuilder();
 
     final String extName = comp.getSimpleName().toString();
-
     final DesignerComponent dc = comp.getAnnotation(DesignerComponent.class);
 
-    // The reason behind using a string builder here instead of the YAML library that's being used
-    // for the processor is that that library provides only immutable builders to construct YAML,
-    // and you cannot add fields to it after it has been instantiated.
-    // This is sort of a work-around. It'd be much better to just use some other YAML parsing library
-    // for the whole project.
-    final StringBuilder content = new StringBuilder();
+    // Add extension name
     content.append(moreInfo + "\n---\n")
         .append("name: " + extName + "\n");
 
+    // Add description
     content.append("description: ")
         .append(!dc.description().equals("") ? dc.description()
             : "Extension component for " + extName + ". Built with Rush.")
         .append("\n\n");
 
+    // Add version info
     content.append("version: \n")
         .append("  number: " + dc.version() + "\n")
-        .append("  name: ")
+        .append("  name: '")
         .append(!dc.versionName().equals("") ? dc.versionName() : dc.version())
-        .append("\n\n");
+        .append("'\n\n");
 
-    content.append(optimizeComment + "\n");
+    // Add build info
+    content.append("build:")
+        .append("  release:")
+        .append("    optimize: true");
+
+    // Add minimum SDK
     content.append("min_sdk: " + dc.androidMinSdk() + "\n\n");
 
+    // Add assets (icon and others)
     content.append("assets: \n")
         .append("  icon: ")
         .append(!dc.iconName().equals("") ? dc.iconName() : "icon.png")
@@ -153,15 +155,16 @@ public class Migrator extends AbstractProcessor {
     }
     content.append("\n");
 
+    // Add deps if any
     final UsesLibraries ul = comp.getAnnotation(UsesLibraries.class);
     if (ul != null) {
       content.append("deps:\n");
       for (final String lib : ul.libraries().split(",")) {
         content.append("  - " + lib.trim() + "\n");
       }
-      content.append("\n");
     }
 
+    // Write rush-<extname>.yml to `outputDir`
     final Path yamlPath = Paths.get(outputDir + File.separatorChar + "rush-" + extName + ".yml");
     final FileWriter writer = new FileWriter(yamlPath.toFile());
     writer.write(content.toString());
@@ -172,10 +175,11 @@ public class Migrator extends AbstractProcessor {
   /**
    * Generates AndroidManifest.xml for {@param comp}
    *
-   * @param comp         the element for which AndroidManifest.xml is to be generated
+   * @param comp      the element for which AndroidManifest.xml is to be generated
    * @param outputDir the path to where the generated manifest file is to br stored.
    */
-  private void generateAndroidManifest(Element comp, String outputDir) throws TransformerException, ParserConfigurationException {
+  private void generateAndroidManifest(Element comp, String outputDir)
+      throws TransformerException, ParserConfigurationException {
     final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
 
@@ -187,16 +191,18 @@ public class Migrator extends AbstractProcessor {
     final org.w3c.dom.Element root = doc.createElement("manifest");
     doc.appendChild(root);
 
-    final Attr vc = doc.createAttributeNS(namespaceUri, "android:versionCode");
-    final Attr vn = doc.createAttributeNS(namespaceUri, "android:versionName");
-    vc.setValue("1");
-    vn.setValue("1.0");
-    root.setAttributeNode(vc);
-    root.setAttributeNode(vn);
+    final Attr versionCodeAttr = doc.createAttributeNS(namespaceUri, "android:versionCode");
+    versionCodeAttr.setValue("1");
+    final Attr versionNameAttr = doc.createAttributeNS(namespaceUri, "android:versionName");
+    versionNameAttr.setValue("1.0");
+
+    root.setAttributeNode(versionCodeAttr);
+    root.setAttributeNode(versionNameAttr);
 
     final org.w3c.dom.Element applicationElement = doc.createElement("application");
     root.appendChild(applicationElement);
 
+    // Add permission
     final UsesPermissions usesPermissions = comp.getAnnotation(UsesPermissions.class);
     if (usesPermissions != null) {
       final String[] permissions = usesPermissions.permissionNames().split(",");
@@ -211,6 +217,7 @@ public class Migrator extends AbstractProcessor {
 
     final XmlUtil xmlUtil = new XmlUtil();
 
+    // Add activities
     final UsesActivities usesActivities = comp.getAnnotation(UsesActivities.class);
     if (usesActivities != null) {
       for (ActivityElement activityElement : usesActivities.activities()) {
@@ -218,6 +225,7 @@ public class Migrator extends AbstractProcessor {
       }
     }
 
+    // Add activity metadata
     final UsesActivityMetadata usesActivityMetadata = comp.getAnnotation(UsesActivityMetadata.class);
     if (usesActivityMetadata != null) {
       for (MetaDataElement metaDataElement : usesActivityMetadata.metaDataElements()) {
@@ -225,6 +233,7 @@ public class Migrator extends AbstractProcessor {
       }
     }
 
+    // Add application metadata
     final UsesApplicationMetadata usesApplicationMetadata = comp.getAnnotation(UsesApplicationMetadata.class);
     if (usesApplicationMetadata != null) {
       for (MetaDataElement metaDataElement : usesApplicationMetadata.metaDataElements()) {
@@ -232,6 +241,7 @@ public class Migrator extends AbstractProcessor {
       }
     }
 
+    // Add receivers
     final UsesBroadcastReceivers usesBroadcastReceivers = comp.getAnnotation(UsesBroadcastReceivers.class);
     if (usesBroadcastReceivers != null) {
       for (ReceiverElement receiverElement : usesBroadcastReceivers.receivers()) {
@@ -239,6 +249,7 @@ public class Migrator extends AbstractProcessor {
       }
     }
 
+    // Add providers
     final UsesContentProviders usesContentProviders = comp.getAnnotation(UsesContentProviders.class);
     if (usesContentProviders != null) {
       for (ProviderElement providerElement : usesContentProviders.providers()) {
@@ -246,6 +257,7 @@ public class Migrator extends AbstractProcessor {
       }
     }
 
+    // Add services
     final UsesServices usesServices = comp.getAnnotation(UsesServices.class);
     if (usesServices != null) {
       for (ServiceElement serviceElement : usesServices.services()) {
@@ -254,7 +266,8 @@ public class Migrator extends AbstractProcessor {
     }
 
     final DOMSource domSource = new DOMSource(doc);
-    final Path manifestPath = Paths.get(outputDir + File.separatorChar + "manifest-" + comp.getSimpleName().toString() + ".xml");
+    final Path manifestPath = Paths.get(outputDir + File.separatorChar + "manifest-"
+        + comp.getSimpleName().toString() + ".xml");
     final StreamResult streamResult = new StreamResult(manifestPath.toFile());
 
     final TransformerFactory tf = TransformerFactory.newInstance();

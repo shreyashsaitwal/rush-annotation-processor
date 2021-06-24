@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: rush-annotation-processor.annotations.annotations-v186a">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/annotations/build/libs/annotations-v186a.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
