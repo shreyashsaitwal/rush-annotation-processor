@@ -8,6 +8,7 @@ import com.google.auto.service.AutoService;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -40,109 +41,114 @@ import io.shreyash.rush.blocks.Property;
 })
 public class ExtensionProcessor extends AbstractProcessor {
   private final BlockStore store = BlockStore.getInstance();
+
   private boolean isFirstRound = true;
+  private Messager messager;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
+    this.messager = processingEnv.getMessager();
   }
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    if (!isFirstRound || processingEnv.getOptions().get("root") == null) {
+    if (!this.isFirstRound || this.processingEnv.getOptions().get("root") == null) {
       return true;
     }
-    isFirstRound = false;
+    this.isFirstRound = false;
 
-    final Messager messager = processingEnv.getMessager();
-    final String org = processingEnv.getOptions().get("org");
-    final String extName = processingEnv.getOptions().get("extName");
+    final String org = this.processingEnv.getOptions().get("org");
+    final String extName = this.processingEnv.getOptions().get("extName");
 
     // Process all SimpleEvents
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleEvent.class)) {
-      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Annotation @SimpleEvent can't be used on element \"" + el.getSimpleName()
-                + "\". It can only be used on members of class \"" + org + "." + extName + "\".");
+      if (!isInRightParent(el, extName, org, "@SimpleEvent")) {
         continue;
       }
 
-      if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        Event event = new Event(el, messager);
-        store.putEvent(event);
-      } else {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Private element \"" + el.getSimpleName() + "\" can't be annotated with @SimpleEvent.");
+      if (isPublic(el, "@SimpleEvent")) {
+        Event event = new Event(el, this.messager);
+        this.store.putEvent(event);
       }
     }
 
     // Process all SimpleFunctions
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleFunction.class)) {
-      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Annotation @SimpleFunction can't be used on element \"" + el.getSimpleName()
-                + "\". It can only be used on members of class \"" + org + "." + extName + "\".");
+      if (!isInRightParent(el, extName, org, "@SimpleFunction")) {
         continue;
       }
 
-      if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        Method method = new Method(el, messager);
-        store.putMethod(method);
-      } else {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Private element \"" + el.getSimpleName() + "\" can't be annotated with @SimpleFunction.");
+      if (isPublic(el, "@SimpleFunction")) {
+        Method method = new Method(el, this.messager);
+        this.store.putMethod(method);
       }
     }
 
     // Process all SimpleProps
     for (Element el : roundEnv.getElementsAnnotatedWith(SimpleProperty.class)) {
-      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Annotation @SimpleProperty can't be used on element \"" + el.getSimpleName()
-                + "\". It can only be used on members of class \"" + org + "." + extName + "\".");
+      if (!isInRightParent(el, extName, org, "@SimpleProperty")) {
         continue;
       }
 
-      if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        Property prop = new Property(el, messager);
-        store.putProperty(prop);
-      } else {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Private element \"" + el.getSimpleName() + "\" can't be annotated with @SimpleProperty.");
+      if (isPublic(el, "@SimpleProperty")) {
+        Property prop = new Property(el, this.messager);
+        this.store.putProperty(prop);
       }
     }
 
     // Process all DesignerProps
     for (Element el : roundEnv.getElementsAnnotatedWith(com.google.appinventor.components.annotations.DesignerProperty.class)) {
-      if (!el.getEnclosingElement().getSimpleName().toString().equals(extName)) {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Annotation @DesignerProperty can't be used on element \"" + el.getSimpleName()
-                + "\". It can only be used on members of class \"" + org + "." + extName + "\".");
+      if (!isInRightParent(el, extName, org, "@DesignerProperty")) {
         continue;
       }
 
-      if (!el.getModifiers().contains(Modifier.PRIVATE)) {
-        DesignerProperty prop = new DesignerProperty(el, messager);
-        store.putDesignerProperty(prop);
-      } else {
-        messager.printMessage(Diagnostic.Kind.ERROR,
-            "Private element \"" + el.getSimpleName() + "\" can't be annotated with @DesignerProperty.");
+      if (isPublic(el, "@DesignerProperty")) {
+        DesignerProperty prop = new DesignerProperty(el, this.messager);
+        this.store.putDesignerProperty(prop);
       }
     }
 
-    String root = processingEnv.getOptions().get("root");
-    String version = processingEnv.getOptions().get("version");
+    generateInfoFiles(extName, org);
+
+    return false;
+  }
+
+  private void generateInfoFiles(String extName, String org) {
+    String root = this.processingEnv.getOptions().get("root");
+    String version = this.processingEnv.getOptions().get("version");
     String type = org + "." + extName;
-    String output = processingEnv.getOptions().get("output");
+    String output = this.processingEnv.getOptions().get("output");
 
     InfoFilesGenerator generator = new InfoFilesGenerator(root, version, type, output);
     try {
       generator.generateComponentsJson();
       generator.generateBuildInfoJson();
     } catch (IOException | ParserConfigurationException | SAXException e) {
-      messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+      this.messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+    }
+  }
+
+  private boolean isInRightParent(Element el, String extName, String org, String annotationName) {
+    final boolean res = el.getEnclosingElement().getSimpleName().toString().equals(extName);
+
+    if (!res) {
+      this.messager.printMessage(Diagnostic.Kind.ERROR,
+          "Annotation" + annotationName + "can't be used on element \"" + el.getSimpleName()
+              + "\". It can only be used on members of class \"" + org + "." + extName + "\".");
     }
 
-    return false;
+    return res;
+  }
+
+  private boolean isPublic(Element el, String annotationName) {
+    final boolean isPublic = el.getModifiers().contains(Modifier.PUBLIC);
+
+    if (!isPublic) {
+      messager.printMessage(Diagnostic.Kind.ERROR,
+          "Private element \"" + el.getSimpleName() + "\" can't be annotated with" + annotationName + " .");
+    }
+
+    return isPublic;
   }
 }
