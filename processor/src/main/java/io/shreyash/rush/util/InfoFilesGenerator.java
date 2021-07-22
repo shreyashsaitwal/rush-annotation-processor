@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -125,8 +126,15 @@ public class InfoFilesGenerator {
     json.put("type", type);
     json.put("version", extVersion);
     json.put("name", yaml.getName());
-    json.put("iconName", "aiwebres/" + yaml.getAssets().getIcon());
     json.put("androidMinSdk", Math.max(yaml.getMin_sdk(), 7));
+
+    final Pattern urlPattern = Pattern.compile("https?://(www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)");
+    final String icon = yaml.getAssets().getIcon();
+    if (urlPattern.matcher(icon).find()) {
+      json.put("iconName", icon);
+    } else {
+      json.put("iconName", "aiwebres/" + icon);
+    }
 
     final String time = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     json.put("dateBuilt", time);
