@@ -1,21 +1,21 @@
 package io.shreyash.rush.blocks;
 
-import com.google.appinventor.components.annotations.SimpleEvent;
-
-import io.shreyash.rush.util.Casing;
-import shaded.org.json.JSONArray;
-import shaded.org.json.JSONObject;
+import com.google.appinventor.components.annotations.SimpleFunction;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
 
-public class Event extends BlockWithParams {
+import io.shreyash.rush.util.Casing;
+import shaded.org.json.JSONArray;
+import shaded.org.json.JSONObject;
+
+public class Method extends BlockWithParams {
   private final ExecutableElement element;
   private final Messager messager;
 
-  public  Event(Element element, Messager messager) {
+  public Method(Element element, Messager messager) {
     super(element);
     this.element = (ExecutableElement) element;
     this.messager = messager;
@@ -24,7 +24,7 @@ public class Event extends BlockWithParams {
 
   @Override
   String description() {
-    return this.element.getAnnotation(SimpleEvent.class).description();
+    return this.element.getAnnotation(SimpleFunction.class).description();
   }
 
   @Override
@@ -33,7 +33,7 @@ public class Event extends BlockWithParams {
     if (!Casing.isPascalCase(this.name())) {
       messager.printMessage(
           Diagnostic.Kind.WARNING,
-          "Simple event \"" + this.name() + "\" should follow 'PascalCase' naming convention."
+          "Simple function \"" + this.name() + "\" should follow 'PascalCase' naming convention."
       );
     }
 
@@ -42,22 +42,20 @@ public class Event extends BlockWithParams {
       if (!Casing.isCamelCase(el.getName())) {
         messager.printMessage(
             Diagnostic.Kind.WARNING,
-            "Parameter \"" + el.getName() + "\" in simple event \"" + this.name() + "\" should " +
-                "follow 'camelCase' naming convention."
+            "Parameter \"" + el.getName() + "\" in simple function \"" + this.name() + "\" should " +
+            "follow 'camelCase' naming convention."
         );
       }
     });
   }
 
   /**
-   * Converts this event to a JSONObject which will later be added
-   * the `components.json` descriptor file.
-   *
-   * JSON:
+   * JSON structure:
    * {
    *   "name": "Foo",
    *   "description": "This is a description",
    *   "deprecated": "false",
+   *   "returnType": "any",
    *   "params": [
    *      { "name": "bar", "type": "number" },
    *   ]
@@ -65,11 +63,17 @@ public class Event extends BlockWithParams {
    */
   @Override
   public JSONObject asJsonObject() {
-    final JSONObject eventJson = new JSONObject();
+    final JSONObject methodJson = new JSONObject();
 
-    eventJson.put("name", this.name());
-    eventJson.put("description", this.description());
-    eventJson.put("deprecated", Boolean.toString(this.element.getAnnotation(Deprecated.class) != null));
+    methodJson.put("name", this.name());
+    methodJson.put("description", this.description());
+    methodJson.put("deprecated", Boolean.toString(this.element.getAnnotation(Deprecated.class) != null));
+
+    // Here, null represents the return type is void. Return type for void
+    // methods don't need to be specified
+    if (this.returnType() != null) {
+      methodJson.put("returnType", this.returnType());
+    }
 
     final JSONArray params = new JSONArray();
     this.params().forEach(el -> {
@@ -80,7 +84,7 @@ public class Event extends BlockWithParams {
       params.put(paramObj);
     });
 
-    eventJson.put("params", params);
-    return eventJson;
+    methodJson.put("params", params);
+    return methodJson;
   }
 }

@@ -1,4 +1,4 @@
-package io.shreyash.rush.util;
+package io.shreyash.rush;
 
 import org.commonmark.Extension;
 import org.commonmark.ext.autolink.AutolinkExtension;
@@ -29,12 +29,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import io.shreyash.rush.blocks.BlocksDescriptorAdapter;
+import io.shreyash.rush.blocks.BlockStore;
 import io.shreyash.rush.model.Assets;
 import io.shreyash.rush.model.RushYaml;
 import shaded.org.json.JSONArray;
@@ -45,16 +46,15 @@ public class InfoFilesGenerator {
   private final String projectRoot;
   private final String extVersion;
   private final String type;
-  private final BlocksDescriptorAdapter extensionFieldInfos;
   private final String outputPath;
 
+  private final BlockStore store = BlockStore.getInstance();
+
   public InfoFilesGenerator(
-      String projectRoot, String extVersion, String type,
-      BlocksDescriptorAdapter descriptorAdapter, String outputPath) {
+      String projectRoot, String extVersion, String type, String outputPath) {
     this.projectRoot = projectRoot;
     this.extVersion = extVersion;
     this.type = type;
-    this.extensionFieldInfos = descriptorAdapter;
     this.outputPath = outputPath;
   }
 
@@ -70,9 +70,9 @@ public class InfoFilesGenerator {
    *             2 -> type
    *             3 -> outputPath
    */
-  public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-    final InfoFilesGenerator generator =
-        new InfoFilesGenerator(args[0], args[1], args[2], new BlocksDescriptorAdapter(), args[3]);
+  public static void main(String[] args)
+      throws IOException, ParserConfigurationException, SAXException {
+    final InfoFilesGenerator generator = new InfoFilesGenerator(args[0], args[1], args[2], args[3]);
     generator.generateComponentsJson();
     generator.generateBuildInfoJson();
   }
@@ -107,26 +107,34 @@ public class InfoFilesGenerator {
       json.put("licenseName", "");
     }
 
-    List<Extension> extensionList = Arrays.asList(
+    final List<Extension> extensionList = Arrays.asList(
         AutolinkExtension.create(),
         TaskListItemsExtension.create()
     );
+
     final Parser parser = new Parser.Builder()
         .extensions(extensionList)
         .build();
-    final org.commonmark.node.Node doc = parser.parse(yaml.getDescription());
 
     final HtmlRenderer renderer = HtmlRenderer.builder()
         .extensions(extensionList)
         .softbreak("<br>")
         .build();
-    json.put("helpString", renderer.render(doc));
+
+    json.put("helpString", renderer.render(parser.parse(yaml.getDescription())));
 
     json.put("type", type);
     json.put("version", extVersion);
     json.put("name", yaml.getName());
-    json.put("iconName", "aiwebres/" + yaml.getAssets().getIcon());
     json.put("androidMinSdk", Math.max(yaml.getMin_sdk(), 7));
+
+    final Pattern urlPattern = Pattern.compile("https?://(www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)");
+    final String icon = yaml.getAssets().getIcon();
+    if (urlPattern.matcher(icon).find()) {
+      json.put("iconName", icon);
+    } else {
+      json.put("iconName", "aiwebres/" + icon);
+    }
 
     final String time = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     json.put("dateBuilt", time);
@@ -136,11 +144,25 @@ public class InfoFilesGenerator {
     json.put("showOnPalette", "true");
     json.put("nonVisible", "true");
 
-    // Put block descriptions
-    json.put("events", extensionFieldInfos.getSimpleEvents());
-    json.put("methods", extensionFieldInfos.getSimpleFunctions());
-    json.put("properties", extensionFieldInfos.getDesignerProperties());
-    json.put("blockProperties", extensionFieldInfos.getSimpleProperties());
+    // Put events
+    final JSONArray events = new JSONArray();
+    this.store.getAllEvents().forEach(el -> events.put(el.asJsonObject()));
+    json.put("events", events);
+
+    // Put methods
+    final JSONArray methods = new JSONArray();
+    this.store.getAllMethods().forEach(el -> methods.put(el.asJsonObject()));
+    json.put("methods", methods);
+
+    // Put properties
+    final JSONArray properties = new JSONArray();
+    this.store.getAllProperties().forEach(el -> properties.put(el.asJsonObject()));
+    json.put("blockProperties", properties);
+
+    // Put designer properties
+    final JSONArray designerProperties = new JSONArray();
+    this.store.getAllDesignerProperties().forEach(el -> designerProperties.put(el.asJsonObject()));
+    json.put("properties", designerProperties);
 
     componentsJson.put(json);
 
