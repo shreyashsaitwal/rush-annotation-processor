@@ -2,7 +2,6 @@ package com.google.appinventor.components.common
 
 /**
  * Contains constants related to the description of Simple components.
- *
  */
 object ComponentDescriptorConstants {
     // shared constants between ComponentListGenerator.java and Compiler.java

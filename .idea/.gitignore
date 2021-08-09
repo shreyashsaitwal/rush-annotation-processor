@@ -1,6 +1,8 @@
-# Default ignored files
-/shelf/
-/workspace.xml
+shelf
+libraries
+modules
+caches
+
+workspace.xml
 modules.xml
 gradle.xml
-/libraries/

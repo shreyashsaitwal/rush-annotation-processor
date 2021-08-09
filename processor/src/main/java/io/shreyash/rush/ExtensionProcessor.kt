@@ -4,16 +4,22 @@ import com.google.appinventor.components.annotations.SimpleEvent
 import com.google.appinventor.components.annotations.SimpleFunction
 import com.google.appinventor.components.annotations.SimpleProperty
 import com.google.auto.service.AutoService
-import io.shreyash.rush.block.DesignerProperty
-import io.shreyash.rush.block.Event
-import io.shreyash.rush.block.Method
-import io.shreyash.rush.block.Property
-import javax.annotation.processing.*
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.Messager
+import javax.annotation.processing.ProcessingEnvironment
+import javax.annotation.processing.Processor
+import javax.annotation.processing.RoundEnvironment
+import javax.annotation.processing.SupportedAnnotationTypes
+import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
+import io.shreyash.rush.block.DesignerProperty
+import io.shreyash.rush.block.Event
+import io.shreyash.rush.block.Method
+import io.shreyash.rush.block.Property
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -49,7 +55,7 @@ class ExtensionProcessor : AbstractProcessor() {
         // Process all SimpleEvents
         roundEnv.getElementsAnnotatedWith(SimpleEvent::class.java)
             .filter {
-                isInRightParent(it, "@SimpleEvent") && isPublic(it, "@SimpleEvent")
+                isInRightParent(it, "@SimpleEvent") && isPublic(it, "@Sim pleEvent")
             }.map {
                 store.putEvent(Event(it, messager))
             }

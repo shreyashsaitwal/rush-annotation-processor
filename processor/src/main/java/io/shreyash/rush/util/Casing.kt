@@ -7,7 +7,8 @@ import java.util.regex.Pattern
  */
 fun isCamelCase(text: String): Boolean {
     val pattern = Pattern.compile(
-        """^[a-z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])?[A-Za-z0-9]*$""")
+        """^[a-z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])?[A-Za-z0-9]*$"""
+    )
     return pattern.matcher(text).find()
 }
 
@@ -16,6 +17,7 @@ fun isCamelCase(text: String): Boolean {
  */
 fun isPascalCase(text: String): Boolean {
     val pattern = Pattern.compile(
-        """^[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])?[A-Za-z0-9]*$""")
+        """^[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])?[A-Za-z0-9]*$"""
+    )
     return pattern.matcher(text).find()
 }

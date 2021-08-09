@@ -2,7 +2,6 @@ package com.google.appinventor.components.common
 
 /**
  * Contains constants related to the persistent format of Simple components.
- *
  */
 object ComponentConstants {
     /**
@@ -64,6 +63,7 @@ object ComponentConstants {
      */
     @JvmField
     var SCROLLABLE_ARRANGEMENT = true
+
     @JvmField
     var NONSCROLLABLE_ARRANGEMENT = false
 

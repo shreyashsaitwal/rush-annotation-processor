@@ -3,7 +3,6 @@ package com.google.appinventor.components.annotations
 /**
  * Annotation to mark Simple functions.
  *
- *
  * Note that the Simple compiler will only recognize Java methods marked
  * with this annotation. All other methods will be ignored.
  *

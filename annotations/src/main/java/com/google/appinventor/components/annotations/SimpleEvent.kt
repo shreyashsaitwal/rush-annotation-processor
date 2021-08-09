@@ -2,7 +2,6 @@ package com.google.appinventor.components.annotations
 
 /**
  * Annotation to mark Simple event definitions.
- *
  */
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 @Target(

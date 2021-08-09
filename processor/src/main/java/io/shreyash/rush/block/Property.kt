@@ -1,14 +1,14 @@
 package io.shreyash.rush.block
 
 import com.google.appinventor.components.annotations.SimpleProperty
-import io.shreyash.rush.BlockStore
-import io.shreyash.rush.util.convert
-import io.shreyash.rush.util.isPascalCase
-import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.tools.Diagnostic
+import io.shreyash.rush.BlockStore
+import io.shreyash.rush.util.convert
+import io.shreyash.rush.util.isPascalCase
+import shaded.org.json.JSONObject
 
 class Property(element: Element, private val messager: Messager) : Block(element) {
     private val store = BlockStore.instance

@@ -1,12 +1,12 @@
 package io.shreyash.rush.block
 
 import com.google.appinventor.components.annotations.DesignerProperty
-import io.shreyash.rush.BlockStore
-import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.tools.Diagnostic
+import io.shreyash.rush.BlockStore
+import shaded.org.json.JSONObject
 
 class DesignerProperty(element: Element, private val messager: Messager) : Block(element) {
     private val store = BlockStore.instance

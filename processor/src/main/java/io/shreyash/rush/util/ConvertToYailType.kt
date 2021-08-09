@@ -1,9 +1,5 @@
 package io.shreyash.rush.util
 
-import kotlin.Throws
-import java.lang.IllegalStateException
-import java.util.ArrayList
-
 private val componentTypes = listOf(
     "com.google.appinventor.components.runtime.AccelerometerSensor",
     "com.google.appinventor.components.runtime.ActivityStarter",
