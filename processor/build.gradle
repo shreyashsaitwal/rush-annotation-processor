@@ -1,5 +1,7 @@
 plugins {
     id 'java-library'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.21'
 }
 
 compileJava {
@@ -12,13 +14,16 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.auto.service:auto-service:1.0-rc7'
-    implementation 'org.yaml:snakeyaml:1.28'
+    implementation 'com.google.auto.service:auto-service:1.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     // CommonMark (Markdown)
-    implementation 'org.commonmark:commonmark:0.17.2'
-    implementation 'org.commonmark:commonmark-ext-autolink:0.17.2'
-    implementation 'org.commonmark:commonmark-ext-task-list-items:0.17.2'
+    implementation 'org.commonmark:commonmark:0.18.0'
+    implementation 'org.commonmark:commonmark-ext-autolink:0.18.0'
+    implementation 'org.commonmark:commonmark-ext-task-list-items:0.18.0'
+
+    implementation 'com.charleskorn.kaml:kaml-jvm:0.35.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.2.2'
 
     implementation fileTree('libs')
     implementation project(':annotations')
@@ -29,4 +34,15 @@ configurations.implementation.setCanBeResolved(true)
 task copyImpl(type: Copy) {
     from configurations.implementation
     into 'build/implementation'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
