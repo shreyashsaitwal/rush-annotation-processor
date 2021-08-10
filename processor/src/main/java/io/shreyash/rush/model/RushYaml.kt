@@ -18,12 +18,12 @@ data class RushYaml(
     val homepage: String = "",
     val deps: List<String> = listOf(),
     val authors: List<String> = listOf(),
-    val build: Build? = null,
+    val build: Build = Build(),
 
     // Deprecated
     @SerialName("license_url")
     val licenseUrl: String = "",
-    val release: Release? = null,
+    val release: Release = Release(),
 )
 
 @Serializable

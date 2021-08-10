@@ -5,24 +5,24 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Build(
-    val desugar: Desugar? = null,
-    val kotlin: Kotlin? = null,
-    val release: Release? = null,
+    val release: Release? = Release(),
+    val kotlin: Kotlin = Kotlin(),
+    val desugar: Desugar = Desugar(),
 )
 
 @Serializable
 data class Release(
-    val optimize: Boolean
+    val optimize: Boolean = false
 )
 
 @Serializable
 data class Kotlin(
-    val enable: Boolean
+    val enable: Boolean = false
 )
 
 @Serializable
 data class Desugar(
     @SerialName("desugar_deps")
     val desugarDeps: Boolean = false,
-    val enable: Boolean
+    val enable: Boolean = false
 )
