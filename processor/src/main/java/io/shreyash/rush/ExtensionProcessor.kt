@@ -55,7 +55,7 @@ class ExtensionProcessor : AbstractProcessor() {
         // Process all SimpleEvents
         roundEnv.getElementsAnnotatedWith(SimpleEvent::class.java)
             .filter {
-                isInRightParent(it, "@SimpleEvent") && isPublic(it, "@Sim pleEvent")
+                isInRightParent(it, "@SimpleEvent") && isPublic(it, "@SimpleEvent")
             }.map {
                 store.putEvent(Event(it, messager))
             }
