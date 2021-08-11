@@ -34,7 +34,6 @@ class XmlUtil {
 
         val annotationMethods = annotation.annotationType().declaredMethods
         for (method in annotationMethods) {
-//            println("info: ${method.}")
             try {
                 // Invoke the method in order to obtain it's value.
                 val result = method.invoke(annotation.annotationType().cast(annotation))
