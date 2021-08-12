@@ -1,5 +1,6 @@
 package io.shreyash.rush.migrator.util
 
+import java.lang.annotation.Annotation as JAnnotation
 import com.google.appinventor.components.annotations.androidmanifest.ActionElement
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement
 import com.google.appinventor.components.annotations.androidmanifest.CategoryElement
@@ -14,7 +15,6 @@ import com.google.appinventor.components.annotations.androidmanifest.ServiceElem
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.lang.reflect.InvocationTargetException
-import java.lang.annotation.Annotation as JAnnotation
 
 class XmlUtil {
     /**

@@ -182,8 +182,9 @@ class Migrator : AbstractProcessor() {
         transformer.setOutputProperty(OutputKeys.INDENT, "yes")
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4")
 
-        val manifestPath = Paths.get(outputDir!!, "manifest-" + comp.simpleName.toString() + ".xml")
-        val streamResult = StreamResult(manifestPath.toFile())
+        val manifestFile =
+            Paths.get(outputDir!!, "manifest-" + comp.simpleName.toString() + ".xml").toFile()
+        val streamResult = StreamResult(manifestFile)
         transformer.transform(DOMSource(doc), streamResult)
     }
 }

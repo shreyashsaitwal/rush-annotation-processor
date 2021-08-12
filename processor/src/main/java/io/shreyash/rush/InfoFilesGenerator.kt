@@ -12,11 +12,9 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.SAXException
 import java.io.FileInputStream
-import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Paths
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
@@ -85,7 +83,7 @@ class InfoFilesGenerator(
             .put("helpString", parseMdString(yaml.description))
 
         val urlPattern = Pattern.compile(
-            """ https?://(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)"""
+            """https?://(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)"""
         )
         val icon = yaml.assets.icon
         if (urlPattern.matcher(icon).find()) {
@@ -94,8 +92,7 @@ class InfoFilesGenerator(
             primaryObj.put("iconName", "aiwebres/$icon")
         }
 
-        val time =
-            ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val time = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
         primaryObj.put("dateBuilt", time)
 
         // Put events
@@ -117,10 +114,7 @@ class InfoFilesGenerator(
         componentsJsonArray.put(primaryObj)
 
         val componentsJsonFile = Paths.get(outputPath, "components.json").toFile()
-        val writer = FileWriter(componentsJsonFile)
-        componentsJsonArray.write(writer)
-        writer.flush()
-        writer.close()
+        componentsJsonFile.writeText(componentsJsonArray.toString())
     }
 
     /**
@@ -172,10 +166,7 @@ class InfoFilesGenerator(
         buildInfoJsonArray.put(primaryObj)
 
         val buildInfoJsonFile = Paths.get(outputPath, "component_build_infos.json").toFile()
-        val writer = FileWriter(buildInfoJsonFile)
-        buildInfoJsonArray.write(writer)
-        writer.flush()
-        writer.close()
+        buildInfoJsonFile.writeText(buildInfoJsonArray.toString())
     }
 
     /**
