@@ -3,14 +3,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 7
+        targetSdkVersion 31
     }
 
     packagingOptions {
@@ -34,7 +32,6 @@ android {
 repositories {
     google()
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
