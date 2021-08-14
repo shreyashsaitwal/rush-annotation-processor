@@ -4,7 +4,6 @@
 # Ignore Gradle build output directory
 build
 
-test-ext
 local.properties
 
 *.iml

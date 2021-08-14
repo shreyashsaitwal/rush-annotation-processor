@@ -9,8 +9,6 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
     }
 
     packagingOptions {
@@ -34,7 +32,7 @@ android {
 repositories {
     google()
     mavenCentral()
-    jcenter()
+    jcenter() // For 'org.webrtc:google-webrtc:1.0.23995'
 }
 
 dependencies {
