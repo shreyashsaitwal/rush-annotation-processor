@@ -1,10 +1,10 @@
-package io.shreyash.rush.block
+package io.shreyash.rush.processor.block
 
 import java.lang.Deprecated
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import kotlin.String
-import io.shreyash.rush.util.convert
+import io.shreyash.rush.processor.util.convert
 import shaded.org.json.JSONObject
 
 abstract class Block protected constructor(element: Element) {

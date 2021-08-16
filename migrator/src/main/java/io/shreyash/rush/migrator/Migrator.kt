@@ -34,11 +34,12 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import io.shreyash.rush.migrator.util.XmlUtil
-import io.shreyash.rush.model.Assets
-import io.shreyash.rush.model.Build
-import io.shreyash.rush.model.Release
-import io.shreyash.rush.model.RushYaml
-import io.shreyash.rush.model.Version
+import io.shreyash.rush.processor.model.Assets
+import io.shreyash.rush.processor.model.Build
+import io.shreyash.rush.processor.model.DepEntry
+import io.shreyash.rush.processor.model.Release
+import io.shreyash.rush.processor.model.RushYaml
+import io.shreyash.rush.processor.model.Version
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -106,7 +107,7 @@ class Migrator : AbstractProcessor() {
             assets = assets,
             build = build,
             minSdk = designerComponent.androidMinSdk,
-            deps = deps ?: listOf()
+            deps = deps?.map { DepEntry(implement = it) } ?: listOf()
         )
 
         val yamlMapper = Yaml(

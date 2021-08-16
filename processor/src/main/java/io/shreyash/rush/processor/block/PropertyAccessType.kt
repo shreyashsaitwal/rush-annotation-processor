@@ -1,4 +1,4 @@
-package io.shreyash.rush.block
+package io.shreyash.rush.processor.block
 
 object PropertyAccessType {
     const val READ = "read-only"

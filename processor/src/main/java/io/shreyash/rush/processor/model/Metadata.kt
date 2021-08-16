@@ -1,4 +1,4 @@
-package io.shreyash.rush.model
+package io.shreyash.rush.processor.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,17 +12,15 @@ data class RushYaml(
     val assets: Assets,
 
     // Optional fields
-    @SerialName("min_sdk")
-    val minSdk: Int = 7,
+    @SerialName("min_sdk") val minSdk: Int = 7,
     val license: String = "",
     val homepage: String = "",
-    val deps: List<String> = listOf(),
+    val deps: List<DepEntry> = listOf(),
     val authors: List<String> = listOf(),
     val build: Build = Build(),
 
     // Deprecated
-    @SerialName("license_url")
-    val licenseUrl: String = "",
+    @SerialName("license_url") val licenseUrl: String = "",
     val release: Release = Release(),
 )
 

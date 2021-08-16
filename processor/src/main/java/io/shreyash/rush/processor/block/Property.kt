@@ -1,13 +1,13 @@
-package io.shreyash.rush.block
+package io.shreyash.rush.processor.block
 
 import com.google.appinventor.components.annotations.SimpleProperty
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.tools.Diagnostic
-import io.shreyash.rush.BlockStore
-import io.shreyash.rush.util.convert
-import io.shreyash.rush.util.isPascalCase
+import io.shreyash.rush.processor.BlockStore
+import io.shreyash.rush.processor.util.convert
+import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 
 class Property(element: Element, private val messager: Messager) : Block(element) {

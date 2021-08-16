@@ -1,4 +1,4 @@
-package io.shreyash.rush
+package io.shreyash.rush.processor
 
 import com.charleskorn.kaml.Yaml
 import org.commonmark.ext.autolink.AutolinkExtension
@@ -20,13 +20,13 @@ import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
 import kotlin.io.path.exists
-import io.shreyash.rush.model.RushYaml
+import io.shreyash.rush.processor.model.RushYaml
 import shaded.org.json.JSONArray
 import shaded.org.json.JSONException
 import shaded.org.json.JSONObject
 
 /**
- * [io.shreyash.rush.ExtensionProcessor] is designed to pick only the classes that declare
+ * [io.shreyash.processor.ExtensionProcessor] is designed to pick only the classes that declare
  * at least one of the block annotations. So, in case there's no block annotation, the CLI would
  * crash, as there won't be any annotation processor generated info file to further process by
  * the CLI. Therefore, to prevent this, we check if the info files exists and that they are

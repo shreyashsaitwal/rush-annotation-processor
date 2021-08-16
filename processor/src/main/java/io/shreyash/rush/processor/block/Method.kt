@@ -1,29 +1,29 @@
-package io.shreyash.rush.block
+package io.shreyash.rush.processor.block
 
-import com.google.appinventor.components.annotations.SimpleEvent
+import com.google.appinventor.components.annotations.SimpleFunction
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.tools.Diagnostic
-import io.shreyash.rush.util.isCamelCase
-import io.shreyash.rush.util.isPascalCase
+import io.shreyash.rush.processor.util.isCamelCase
+import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 
-class Event(element: Element, private val messager: Messager) : BlockWithParams(element) {
+class Method(element: Element, private val messager: Messager) : BlockWithParams(element) {
     private val element = element as ExecutableElement
 
     init {
         runChecks()
     }
 
-    override fun description() = this.element.getAnnotation(SimpleEvent::class.java).description
+    override fun description() = this.element.getAnnotation(SimpleFunction::class.java).description
 
     override fun runChecks() {
         // Check method name
         if (!isPascalCase(name())) {
             messager.printMessage(
                 Diagnostic.Kind.WARNING,
-                "Simple event \"" + name() + "\" should follow 'PascalCase' naming convention."
+                "Simple function \"" + name() + "\" should follow 'PascalCase' naming convention."
             )
         }
 
@@ -32,7 +32,7 @@ class Event(element: Element, private val messager: Messager) : BlockWithParams(
             if (!isCamelCase(it.name)) {
                 messager.printMessage(
                     Diagnostic.Kind.WARNING,
-                    "Parameter \"" + it.name + "\" in simple event \"" + name() + "\" should " +
+                    "Parameter \"" + it.name + "\" in simple function \"" + name() + "\" should " +
                             "follow 'camelCase' naming convention."
                 )
             }
@@ -40,31 +40,36 @@ class Event(element: Element, private val messager: Messager) : BlockWithParams(
     }
 
     /**
-     * @return JSON representation of this event.
-     *
-     * JSON:
+     * @return JSON representation of this method.
      * {
      *  "name": "Foo",
      *  "description": "This is a description",
      *  "deprecated": "false",
+     *  "returnType": "any",
      *  "params": [
      *    { "name": "bar", "type": "number" },
      *  ]
      * }
      */
     override fun asJsonObject(): JSONObject {
-        val eventJson = JSONObject()
-            .put("deprecated", this.deprecated().toString())
+        val methodJson = JSONObject()
             .put("name", name())
             .put("description", description())
+            .put("deprecated", this.deprecated().toString())
+
+        // Here, null represents the return type is void. Return type for void methods don't need to
+        // be specified
+        if (returnType() != null) {
+            methodJson.put("returnType", returnType())
+        }
 
         val params = params().map {
             JSONObject()
                 .put("name", it.name)
                 .put("type", it.type)
         }
-        eventJson.put("params", params)
+        methodJson.put("params", params)
 
-        return eventJson
+        return methodJson
     }
 }

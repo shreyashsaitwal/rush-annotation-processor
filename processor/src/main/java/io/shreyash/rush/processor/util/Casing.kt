@@ -1,4 +1,4 @@
-package io.shreyash.rush.util
+package io.shreyash.rush.processor.util
 
 import java.util.regex.Pattern
 

@@ -1,4 +1,4 @@
-package io.shreyash.rush
+package io.shreyash.rush.processor
 
 import com.google.appinventor.components.annotations.SimpleEvent
 import com.google.appinventor.components.annotations.SimpleFunction
@@ -16,10 +16,10 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
-import io.shreyash.rush.block.DesignerProperty
-import io.shreyash.rush.block.Event
-import io.shreyash.rush.block.Method
-import io.shreyash.rush.block.Property
+import io.shreyash.rush.processor.block.DesignerProperty
+import io.shreyash.rush.processor.block.Event
+import io.shreyash.rush.processor.block.Method
+import io.shreyash.rush.processor.block.Property
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)

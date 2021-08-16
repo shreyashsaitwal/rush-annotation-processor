@@ -1,4 +1,4 @@
-package io.shreyash.rush
+package io.shreyash.rush.processor
 
 import java.io.ByteArrayOutputStream
 import java.io.ObjectOutputStream

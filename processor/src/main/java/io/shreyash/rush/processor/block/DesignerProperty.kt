@@ -1,11 +1,11 @@
-package io.shreyash.rush.block
+package io.shreyash.rush.processor.block
 
 import com.google.appinventor.components.annotations.DesignerProperty
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.tools.Diagnostic
-import io.shreyash.rush.BlockStore
+import io.shreyash.rush.processor.BlockStore
 import shaded.org.json.JSONObject
 
 class DesignerProperty(element: Element, private val messager: Messager) : Block(element) {

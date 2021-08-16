@@ -1,9 +1,9 @@
-package io.shreyash.rush
+package io.shreyash.rush.processor
 
-import io.shreyash.rush.block.DesignerProperty
-import io.shreyash.rush.block.Event
-import io.shreyash.rush.block.Method
-import io.shreyash.rush.block.Property
+import io.shreyash.rush.processor.block.DesignerProperty
+import io.shreyash.rush.processor.block.Event
+import io.shreyash.rush.processor.block.Method
+import io.shreyash.rush.processor.block.Property
 
 /**
  * Singleton class to stores all the parsed blocks.
