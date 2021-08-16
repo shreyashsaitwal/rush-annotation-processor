@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Defines the path and required permissions for a specific subset of data within a
  * <provider>. This element can be specified multiple times to supply multiple paths.

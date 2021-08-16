@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Annotation to describe an <activity> element required by a component so that it
  * can be added to AndroidManifest.xml. <activity> element attributes that are not

@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Annotation to indicate asset files required by components.
  *

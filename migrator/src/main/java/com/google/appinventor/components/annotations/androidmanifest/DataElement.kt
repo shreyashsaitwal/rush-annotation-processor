@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Adds a data specification to an <intent-filter> as a <data> subelement.
  * The specification can be just a data type [.mimeType], just a URI,

@@ -7,9 +7,6 @@
 // built with Rush build tool (https://github.com/ShreyashSaitwal/rush-cli)
 package com.google.appinventor.components.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Annotation to indicate Android permissions required by components.
  *

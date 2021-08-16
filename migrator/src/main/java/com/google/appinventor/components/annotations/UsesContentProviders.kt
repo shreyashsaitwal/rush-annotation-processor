@@ -1,8 +1,6 @@
 package com.google.appinventor.components.annotations
 
 import com.google.appinventor.components.annotations.androidmanifest.ProviderElement
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
 
 /**
  * Annotation to indicate any content providers used by

@@ -1,8 +1,6 @@
 package com.google.appinventor.components.annotations
 
 import com.google.appinventor.components.annotations.androidmanifest.MetaDataElement
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
 
 /**
  * Annotation to indicate any additional metadata required by

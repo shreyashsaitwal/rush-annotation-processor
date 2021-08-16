@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Annotation to describe a <category> element, which is an optional subelement
  * of an <intent-filter>. A <category> element is a string containing

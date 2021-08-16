@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Annotation to describe a <provider> element required by a component so that
  * it can be added to AndroidManifest.xml. <provider> elements indicate that

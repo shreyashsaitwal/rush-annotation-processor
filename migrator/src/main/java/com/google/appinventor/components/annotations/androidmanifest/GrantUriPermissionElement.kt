@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Specifies the subsets of app data that the parent content provider has permission to access.
  * Data subsets are indicated by the path part of a content: URI. (The authority part of the URI

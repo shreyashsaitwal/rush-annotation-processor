@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Annotation to describe a <service> element required by a component so that
  * it can be added to AndroidManifest.xml. <service> elements indicate that

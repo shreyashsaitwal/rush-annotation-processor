@@ -1,8 +1,5 @@
 package com.google.appinventor.components.annotations.androidmanifest
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
  * Annotation to describe a <meta-data> element. A <meta-data> element consists
  * of a name-value pair for an item of additional, arbitrary data that can be

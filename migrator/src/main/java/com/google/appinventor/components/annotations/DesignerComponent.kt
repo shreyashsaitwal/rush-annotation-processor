@@ -2,8 +2,6 @@ package com.google.appinventor.components.annotations
 
 import com.google.appinventor.components.common.ComponentCategory
 import com.google.appinventor.components.common.ComponentConstants
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
 
 /**
  * Annotation to mark components for use in the Designer and Blocks Editor.
