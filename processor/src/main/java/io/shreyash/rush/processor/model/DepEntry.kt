@@ -3,15 +3,20 @@ package io.shreyash.rush.processor.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-enum class DepScope {
-    IMPLEMENTATION, COMPILE_ONLY
+enum class DepScope(val value: String) {
+    IMPLEMENT("runtime"),
+    COMPILE_ONLY("compile");
+
+    companion object {
+        private val map = DepScope.values().associateBy(DepScope::value)
+        fun fromString(string: String) = map[string]
+    }
 }
 
 @Serializable
 data class DepEntry(
     val implement: String? = null,
-    @SerialName("compile_only")
-    val compileOnly: String? = null,
+    @SerialName("compile_only") val compileOnly: String? = null,
     val exclude: List<String> = listOf(),
 ) {
     init {
@@ -23,7 +28,7 @@ data class DepEntry(
 
     val scope: DepScope
         get() = if (implement != null) {
-            DepScope.IMPLEMENTATION
+            DepScope.IMPLEMENT
         } else {
             DepScope.COMPILE_ONLY
         }
