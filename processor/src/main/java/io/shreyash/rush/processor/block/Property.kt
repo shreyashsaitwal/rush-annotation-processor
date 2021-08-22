@@ -10,6 +10,13 @@ import io.shreyash.rush.processor.util.convert
 import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 
+object PropertyAccessType {
+    const val READ = "read-only"
+    const val WRITE = "write-only"
+    const val READ_WRITE = "read-write"
+    const val INVISIBLE = "invisible"
+}
+
 class Property(element: Element, private val messager: Messager) : Block(element) {
     private val store = BlockStore.instance
     private val element = element as ExecutableElement
@@ -110,9 +117,11 @@ class Property(element: Element, private val messager: Messager) : Block(element
             PropertyAccessType.READ
         }
 
+        // If the current property is a setter, this could be a getter and vice versa.
         val partnerProp = this.store.properties.firstOrNull {
             it.name() == name() && it !== this
         }
+
         // If the partner prop exists and is not invisible, then it means that both getter and setter
         // exists for this prop. In that case, we set the access type to read-write which tells AI2
         // to render two blocks -- one getter and one setter.

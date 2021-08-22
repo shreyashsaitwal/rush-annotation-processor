@@ -26,11 +26,11 @@ import shaded.org.json.JSONException
 import shaded.org.json.JSONObject
 
 /**
- * [io.shreyash.processor.ExtensionProcessor] is designed to pick only the classes that declare
- * at least one of the block annotations. So, in case there's no block annotation, the CLI would
- * crash, as there won't be any annotation processor generated info file to further process by
- * the CLI. Therefore, to prevent this, we check if the info files exists and that they are
- * up-to-date. If they aren't, we run this method and generate (new) info files w/o any blocks.
+ * [ExtensionProcessor] is designed to pick only the classes that declare at least one of the block
+ * annotations. So, in case there's no block annotation, the CLI would crash, as there won't be any
+ * annotation processor generated info file to further process by the CLI. Therefore, to prevent
+ * this, we check if the info files exists and that they are up-to-date. If they aren't, we run this
+ * method and generate (new) info files w/o any blocks.
  */
 @Throws(IOException::class, ParserConfigurationException::class, SAXException::class)
 fun main(args: Array<String>) {
@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
         projectRoot = args[0],
         extVersion = args[1],
         type = args[2],
-        outputPath = args[3]
+        outputDir = args[3]
     )
     generator.generateComponentsJson()
     generator.generateBuildInfoJson()
@@ -48,7 +48,7 @@ class InfoFilesGenerator(
     private val projectRoot: String,
     private val extVersion: String,
     private val type: String,
-    private val outputPath: String
+    private val outputDir: String
 ) {
     private val store = BlockStore.instance
 
@@ -113,7 +113,7 @@ class InfoFilesGenerator(
 
         componentsJsonArray.put(primaryObj)
 
-        val componentsJsonFile = Paths.get(outputPath, "components.json").toFile()
+        val componentsJsonFile = Paths.get(outputDir, "components.json").toFile()
         componentsJsonFile.writeText(componentsJsonArray.toString())
     }
 
@@ -138,34 +138,39 @@ class InfoFilesGenerator(
         val assets = yaml.assets.other.map { it.trim() }
         primaryObj.put("assets", assets)
 
-        val manifest = Paths.get(projectRoot, "src", "AndroidManifest.xml").toFile()
-        if (manifest.exists()) {
-            val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-            val doc = builder.parse(manifest)
-
-            // Put application elements
-            val appElements = applicationElementsXmlString(doc)
-            // We put all the elements under the activities tag. This let's us use the tags which
-            // aren't yet added to AI2, and therefore, don't have a dedicated key in the build info
-            // JSON file.
-            // The reason why this works is that AI compiler doesn't performs any checks on these
-            // manifest arrays in the build info file, and just adds them to the final manifest file.
-            primaryObj.put("activities", appElements)
-
-            // Put permissions
-            val nodes = doc.getElementsByTagName("uses-permission")
-            val permissions = JSONArray()
-            if (nodes.length != 0) {
-                for (i in 0 until nodes.length) {
-                    permissions.put(generateXmlString(nodes.item(i), "manifest"))
-                }
-            }
-            primaryObj.put("permissions", permissions)
+        // Before the annotation processor runs, the CLI merges the manifests of all the AAR deps
+        // with the extension's main manifest and stores the output at [outputDir]/MergedManifest.xml.
+        // So, if the merged manifest is found use it instead of the main manifest.
+        val manifest = if (Paths.get(outputDir, "MergedManifest.xml").exists()) {
+            Paths.get(outputDir, "MergedManifest.xml").toFile()
+        } else {
+            Paths.get(projectRoot, "src", "AndroidManifest.xml").toFile()
         }
+
+        val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        val doc = builder.parse(manifest)
+
+        // Put application elements
+        val appElements = applicationElementsXmlString(doc)
+        // We put all the elements under the activities tag. This let's us use the tags which aren't
+        // yet added to AI2 and don't have a dedicated key in the build info JSON file.
+        // The reason why this works is that AI compiler doesn't performs any checks on these
+        // manifest arrays in the build info file, and just adds them to the final manifest file.
+        primaryObj.put("activities", appElements)
+
+        // Put permissions
+        val nodes = doc.getElementsByTagName("uses-permission")
+        val permissions = JSONArray()
+        if (nodes.length != 0) {
+            for (i in 0 until nodes.length) {
+                permissions.put(generateXmlString(nodes.item(i), "manifest"))
+            }
+        }
+        primaryObj.put("permissions", permissions)
 
         buildInfoJsonArray.put(primaryObj)
 
-        val buildInfoJsonFile = Paths.get(outputPath, "component_build_infos.json").toFile()
+        val buildInfoJsonFile = Paths.get(outputDir, "component_build_infos.json").toFile()
         buildInfoJsonFile.writeText(buildInfoJsonArray.toString())
     }
 
@@ -185,9 +190,7 @@ class InfoFilesGenerator(
         return Yaml.default.decodeFromStream(RushYaml.serializer(), FileInputStream(rushYml))
     }
 
-    /**
-     * Parses [markdown] and returns it.
-     */
+    /** Parses [markdown] and returns it. */
     private fun parseMdString(markdown: String): String {
         val extensionList = listOf(
             // Adds ability to convert URLs to clickable links
@@ -206,14 +209,11 @@ class InfoFilesGenerator(
     }
 
     /**
-     * Returns a JSON array of specific XML elements from the given
-     * list of nodes.
+     * Returns a JSON array of specific XML elements from the given list of nodes.
      *
      * @param node   A XML node, for eg., <service>
-     * @param parent Name of the node who's child nodes we want to
-     * generate. This is required because getElementsByTag()
-     * method returns all the elements that satisfy the
-     * name.
+     * @param parent Name of the node who's child nodes we want to generate. This is required because
+     *               getElementsByTag() method returns all the elements that satisfy the name.
      * @return A JSON array containing XML elements
      */
     private fun generateXmlString(node: Node, parent: String): String {
@@ -235,14 +235,17 @@ class InfoFilesGenerator(
         if (node.nodeType == Node.ELEMENT_NODE && node.parentNode.nodeName == parent) {
             val element = node as Element
             val tagName = element.tagName
-
             sb.append("<$tagName ")
+
             if (element.hasAttributes()) {
                 val attributes = element.attributes
                 for (i in 0 until attributes.length) {
                     if (attributes.item(i).nodeType == Node.ATTRIBUTE_NODE) {
                         val attribute = attributes.item(i) as Attr
-                        sb.append("${attribute.nodeName} = \"${attribute.nodeValue}\" ")
+                        // Drop the "tools:sth" attributes.
+                        if (!attribute.nodeName.contains("tools:")) {
+                            sb.append("${attribute.nodeName} = \"${attribute.nodeValue}\" ")
+                        }
                     }
                 }
             }
