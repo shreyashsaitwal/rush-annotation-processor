@@ -1,14 +1,12 @@
 package io.shreyash.rush.processor.block
 
 import com.google.appinventor.components.annotations.SimpleProperty
-import javax.annotation.processing.Messager
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
-import javax.tools.Diagnostic
-import io.shreyash.rush.processor.BlockStore
 import io.shreyash.rush.processor.util.convert
 import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
+import javax.annotation.processing.Messager
+import javax.lang.model.element.Element
+import javax.tools.Diagnostic
 
 object PropertyAccessType {
     const val READ = "read-only"
@@ -17,10 +15,11 @@ object PropertyAccessType {
     const val INVISIBLE = "invisible"
 }
 
-class Property(element: Element, private val messager: Messager) : Block(element) {
-    private val store = BlockStore.instance
-    private val element = element as ExecutableElement
-
+class Property(
+    element: Element,
+    private val messager: Messager,
+    private val priorProperties: MutableList<Property>,
+) : Block(element) {
     private val accessType: String
 
     init {
@@ -28,7 +27,7 @@ class Property(element: Element, private val messager: Messager) : Block(element
         accessType = accessType()
     }
 
-    override fun description() = element.getAnnotation(SimpleProperty::class.java).description
+    override fun description() = this.element.getAnnotation(SimpleProperty::class.java).description
 
     override fun runChecks() {
         if (!isPascalCase(name())) {
@@ -56,7 +55,7 @@ class Property(element: Element, private val messager: Messager) : Block(element
             )
         }
 
-        val partnerProp = this.store.properties.firstOrNull {
+        val partnerProp = priorProperties.firstOrNull {
             it.name() == name() && it !== this
         }
         // Return types of getters and setters must match
@@ -102,9 +101,7 @@ class Property(element: Element, private val messager: Messager) : Block(element
         .put("type", returnType())
         .put("rw", accessType)
 
-    /**
-     * @return The access type of the current property.
-     */
+    /** @return The access type of the current property. */
     private fun accessType(): String {
         val invisible = !this.element.getAnnotation(SimpleProperty::class.java).userVisible
         if (invisible) {
@@ -118,7 +115,7 @@ class Property(element: Element, private val messager: Messager) : Block(element
         }
 
         // If the current property is a setter, this could be a getter and vice versa.
-        val partnerProp = this.store.properties.firstOrNull {
+        val partnerProp = priorProperties.firstOrNull {
             it.name() == name() && it !== this
         }
 
@@ -129,10 +126,11 @@ class Property(element: Element, private val messager: Messager) : Block(element
             accessType = PropertyAccessType.READ_WRITE
         }
 
-        // Remove the partner prop from the store. This is necessary because AI2 doesn't expects
-        // getter and setter to be defined separately. It checks the access type to decide whether
-        // to generate getter (read-only), setter (write-only), both (read-write) or none (invisible).
-        this.store.properties.remove(partnerProp)
+        // Remove the partner prop from the prior props lst. This is necessary because AI2 doesn't
+        // expects getter and setter to be defined separately. It checks the access type to decide
+        // whether to generate getter (read-only), setter (write-only), both (read-write) or none
+        // (invisible).
+        priorProperties.remove(partnerProp)
         return accessType
     }
 }

@@ -1,12 +1,9 @@
 package io.shreyash.rush.processor.block
 
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
 import io.shreyash.rush.processor.util.convert
+import javax.lang.model.element.Element
 
 abstract class BlockWithParams protected constructor(element: Element) : Block(element) {
-    private val element = element as ExecutableElement
-
     /**
      * @return The parameters (or arguments) of this block.
      */

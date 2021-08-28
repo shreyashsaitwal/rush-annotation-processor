@@ -1,17 +1,14 @@
 package io.shreyash.rush.processor.block
 
 import com.google.appinventor.components.annotations.SimpleFunction
-import javax.annotation.processing.Messager
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
-import javax.tools.Diagnostic
 import io.shreyash.rush.processor.util.isCamelCase
 import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
+import javax.annotation.processing.Messager
+import javax.lang.model.element.Element
+import javax.tools.Diagnostic
 
-class Method(element: Element, private val messager: Messager) : BlockWithParams(element) {
-    private val element = element as ExecutableElement
-
+class Function(element: Element, private val messager: Messager) : BlockWithParams(element) {
     init {
         runChecks()
     }

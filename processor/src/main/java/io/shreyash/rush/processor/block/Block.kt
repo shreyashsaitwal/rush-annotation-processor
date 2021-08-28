@@ -1,14 +1,14 @@
 package io.shreyash.rush.processor.block
 
+import io.shreyash.rush.processor.util.convert
+import shaded.org.json.JSONObject
 import java.lang.Deprecated
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import kotlin.String
-import io.shreyash.rush.processor.util.convert
-import shaded.org.json.JSONObject
 
 abstract class Block protected constructor(element: Element) {
-    private val element = element as ExecutableElement
+    val element = element as ExecutableElement
 
     /**
      * Checks that are supposed to be performed on this block.

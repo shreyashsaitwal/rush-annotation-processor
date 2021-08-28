@@ -1,17 +1,16 @@
 package io.shreyash.rush.processor.block
 
 import com.google.appinventor.components.annotations.DesignerProperty
+import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
 import javax.tools.Diagnostic
-import io.shreyash.rush.processor.BlockStore
-import shaded.org.json.JSONObject
 
-class DesignerProperty(element: Element, private val messager: Messager) : Block(element) {
-    private val store = BlockStore.instance
-    private val element = element as ExecutableElement
-
+class DesignerProperty(
+    element: Element,
+    private val messager: Messager,
+    private val properties: List<Property>,
+) : Block(element) {
     init {
         runChecks()
     }
@@ -20,7 +19,7 @@ class DesignerProperty(element: Element, private val messager: Messager) : Block
 
     override fun runChecks() {
         // Check if the corresponding setter simple property exists.
-        val setterExist = store.properties.any { it.name() == name() }
+        val setterExist = properties.any { it.name() == name() }
         if (!setterExist) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
