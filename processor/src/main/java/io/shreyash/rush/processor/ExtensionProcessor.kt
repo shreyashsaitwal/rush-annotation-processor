@@ -46,7 +46,30 @@ class ExtensionProcessor : AbstractProcessor() {
         }
         this.isFirstRound = false
 
-        val extensions = roundEnv.getElementsAnnotatedWith(Meta::class.java).map {
+        val elements = roundEnv.getElementsAnnotatedWith(Meta::class.java)
+        elements.groupBy { elementUtil.getPackageOf(it).qualifiedName }.apply {
+            if (this.size > 1) {
+                val classes = this.map {
+                    val sb = StringBuilder()
+                    it.value.forEach { el ->
+                        sb.append("  - ${it.key}.${el.simpleName}\n")
+                    }
+                    sb.toString()
+                }.joinToString("\n")
+
+                messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    """
+                    |Classes annotated with @Meta annotation must reside in the same package.
+                    |The following classes have different packages:
+                    |$classes
+                    |NOTE Try moving all the above classes under the same package.
+                    """.trimMargin("|")
+                )
+            }
+        }
+
+        val extensions = elements.map {
             processExtensionElement(it)
         }
         generateInfoFiles(extensions)

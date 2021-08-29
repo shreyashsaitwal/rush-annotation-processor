@@ -55,7 +55,7 @@ class InfoFilesGenerator(
                 .put("helpUrl", yaml.homepage)
                 .put("licenseName", yaml.license)
                 .put("versionName", yaml.version)
-                .put("version", (0..999_999).random())
+                .put("version", (0..999_999).random().toString())
                 .put("androidMinSdk", yaml.android.minSdk.coerceAtLeast(7))
 
             val urlPattern = Pattern.compile(
@@ -66,18 +66,11 @@ class InfoFilesGenerator(
                 extJsonObj.put("iconName", icon)
             } else {
                 val origIcon = Paths.get(projectRoot, "assets", icon).toFile()
-                val destIconName = origIcon.extension.let {
-                    if (it.isNotBlank()) {
-                        "${ext.meta.name}.${it}"
-                    } else {
-                        ext.meta.name
-                    }
-                }
-                Paths.get(outputDir, "aiwebres", destIconName).toFile().apply {
+                Paths.get(outputDir, "aiwebres", icon).toFile().apply {
                     if (this.exists()) this.delete()
                     origIcon.copyTo(this)
                 }
-                extJsonObj.put("iconName", "aiwebres/$destIconName")
+                extJsonObj.put("iconName", "aiwebres/$icon")
             }
 
             val time = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
