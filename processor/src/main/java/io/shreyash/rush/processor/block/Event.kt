@@ -6,21 +6,36 @@ import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
+import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
-class Event(element: Element, private val messager: Messager) : BlockWithParams(element) {
+class Event(
+    element: Element,
+    private val messager: Messager,
+    private val elementUtils: Elements,
+) : BlockWithParams(element) {
     init {
         runChecks()
     }
 
-    override fun description() = this.element.getAnnotation(SimpleEvent::class.java).description
+    override val description: String
+        get() {
+            val desc = this.element.getAnnotation(SimpleEvent::class.java).description.let {
+                if (it.isBlank()) {
+                    elementUtils.getDocComment(element) ?: ""
+                } else {
+                    it
+                }
+            }
+            return desc
+        }
 
     override fun runChecks() {
         // Check method name
-        if (!isPascalCase(name())) {
+        if (!isPascalCase(name)) {
             messager.printMessage(
                 Diagnostic.Kind.WARNING,
-                "Simple event \"" + name() + "\" should follow 'PascalCase' naming convention."
+                "Simple event \"$name\" should follow 'PascalCase' naming convention."
             )
         }
 
@@ -29,10 +44,16 @@ class Event(element: Element, private val messager: Messager) : BlockWithParams(
             if (!isCamelCase(it.name)) {
                 messager.printMessage(
                     Diagnostic.Kind.WARNING,
-                    "Parameter \"" + it.name + "\" in simple event \"" + name() + "\" should " +
-                            "follow 'camelCase' naming convention."
+                    "Parameter \"${it.name}\" in simple event \"$name\" should follow 'camelCase' naming convention."
                 )
             }
+        }
+
+        if (description.isBlank()) {
+            messager.printMessage(
+                Diagnostic.Kind.WARNING,
+                "Simple event \"$name\" is missing a description."
+            )
         }
     }
 
@@ -51,9 +72,9 @@ class Event(element: Element, private val messager: Messager) : BlockWithParams(
      */
     override fun asJsonObject(): JSONObject {
         val eventJson = JSONObject()
-            .put("deprecated", this.deprecated().toString())
-            .put("name", name())
-            .put("description", description())
+            .put("deprecated", deprecated.toString())
+            .put("name", name)
+            .put("description", description)
 
         val params = params().map {
             JSONObject()

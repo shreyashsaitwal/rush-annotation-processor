@@ -6,6 +6,7 @@ import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
+import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
 object PropertyAccessType {
@@ -19,6 +20,7 @@ class Property(
     element: Element,
     private val messager: Messager,
     private val priorProperties: MutableList<Property>,
+    private val elementUtils: Elements,
 ) : Block(element) {
     private val accessType: String
 
@@ -27,13 +29,30 @@ class Property(
         accessType = accessType()
     }
 
-    override fun description() = this.element.getAnnotation(SimpleProperty::class.java).description
+    override val description: String
+        get() {
+            val desc = this.element.getAnnotation(SimpleProperty::class.java).description.let {
+                if (it.isBlank()) {
+                    elementUtils.getDocComment(element) ?: ""
+                } else {
+                    it
+                }
+            }
+            return desc
+        }
 
     override fun runChecks() {
-        if (!isPascalCase(name())) {
+        if (!isPascalCase(name)) {
             messager.printMessage(
                 Diagnostic.Kind.WARNING,
-                "Designer property \"" + name() + "\" should follow 'PascalCase' naming convention."
+                "Simple property \"$name\" should follow 'PascalCase' naming convention."
+            )
+        }
+
+        if (description.isBlank()) {
+            messager.printMessage(
+                Diagnostic.Kind.WARNING,
+                "Simple property \"$name\" is missing a description."
             )
         }
 
@@ -44,25 +63,23 @@ class Property(
         if (isSetter && noOfParams != 1) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "The total number of parameters allowed on the setter type simple property \"" +
-                        name() + "\" is: 1"
+                "The total number of parameters allowed on the setter type simple property \"$name\" is: 1"
             )
         } else if (!isSetter && noOfParams != 0) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "The total number of parameters allowed on the getter type simple property \"" +
-                        name() + "\" is: 0"
+                "The total number of parameters allowed on the getter type simple property \"$name\" is: 0"
             )
         }
 
         val partnerProp = priorProperties.firstOrNull {
-            it.name() == name() && it !== this
+            it.name == name && it !== this
         }
         // Return types of getters and setters must match
         if (partnerProp != null && partnerProp.returnType() != returnType()) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Inconsistent types across getter and setter for simple property \"" + name() + "\"."
+                "Inconsistent types across getter and setter for simple property \"$name\"."
             )
         }
     }
@@ -95,13 +112,15 @@ class Property(
      * }
      */
     override fun asJsonObject(): JSONObject = JSONObject()
-        .put("name", name())
-        .put("description", description())
-        .put("deprecated", deprecated().toString())
+        .put("name", name)
+        .put("description", description)
+        .put("deprecated", deprecated.toString())
         .put("type", returnType())
         .put("rw", accessType)
 
-    /** @return The access type of the current property. */
+    /**
+     * @return The access type of the current property.
+     * */
     private fun accessType(): String {
         val invisible = !this.element.getAnnotation(SimpleProperty::class.java).userVisible
         if (invisible) {
@@ -116,7 +135,7 @@ class Property(
 
         // If the current property is a setter, this could be a getter and vice versa.
         val partnerProp = priorProperties.firstOrNull {
-            it.name() == name() && it !== this
+            it.name == name && it !== this
         }
 
         // If the partner prop exists and is not invisible, then it means that both getter and setter

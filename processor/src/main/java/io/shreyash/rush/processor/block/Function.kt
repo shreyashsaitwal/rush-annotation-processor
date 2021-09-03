@@ -6,21 +6,36 @@ import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
+import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
-class Function(element: Element, private val messager: Messager) : BlockWithParams(element) {
+class Function(
+    element: Element,
+    private val messager: Messager,
+    private val elementUtils: Elements,
+) : BlockWithParams(element) {
     init {
         runChecks()
     }
 
-    override fun description() = this.element.getAnnotation(SimpleFunction::class.java).description
+    override val description: String
+        get() {
+            val desc = this.element.getAnnotation(SimpleFunction::class.java).description.let {
+                if (it.isBlank()) {
+                    elementUtils.getDocComment(element) ?: ""
+                } else {
+                    it
+                }
+            }
+            return desc
+        }
 
     override fun runChecks() {
         // Check method name
-        if (!isPascalCase(name())) {
+        if (!isPascalCase(name)) {
             messager.printMessage(
                 Diagnostic.Kind.WARNING,
-                "Simple function \"" + name() + "\" should follow 'PascalCase' naming convention."
+                "Simple function \"$name\" should follow 'PascalCase' naming convention."
             )
         }
 
@@ -29,10 +44,16 @@ class Function(element: Element, private val messager: Messager) : BlockWithPara
             if (!isCamelCase(it.name)) {
                 messager.printMessage(
                     Diagnostic.Kind.WARNING,
-                    "Parameter \"" + it.name + "\" in simple function \"" + name() + "\" should " +
-                            "follow 'camelCase' naming convention."
+                    "Parameter \"${it.name}\" in simple function \"$name\" should follow 'camelCase' naming convention."
                 )
             }
+        }
+
+        if (description.isBlank()) {
+            messager.printMessage(
+                Diagnostic.Kind.WARNING,
+                "Simple function \"$name\" is missing a description."
+            )
         }
     }
 
@@ -50,14 +71,14 @@ class Function(element: Element, private val messager: Messager) : BlockWithPara
      */
     override fun asJsonObject(): JSONObject {
         val methodJson = JSONObject()
-            .put("name", name())
-            .put("description", description())
-            .put("deprecated", this.deprecated().toString())
+            .put("name", name)
+            .put("description", description)
+            .put("deprecated", deprecated.toString())
 
         // Here, null represents the return type is void. Return type for void methods don't need to
-        // be specified
-        if (returnType() != null) {
-            methodJson.put("returnType", returnType())
+        // be specified.
+        returnType()?.apply {
+            methodJson.put("returnType", this)
         }
 
         val params = params().map {

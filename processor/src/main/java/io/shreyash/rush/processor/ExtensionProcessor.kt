@@ -31,64 +31,66 @@ class ExtensionProcessor : AbstractProcessor() {
     private var isFirstRound = true
 
     private lateinit var messager: Messager
-    private lateinit var elementUtil: Elements
+    private lateinit var elementUtils: Elements
 
     @Synchronized
     override fun init(processingEnv: ProcessingEnvironment) {
         super.init(processingEnv)
         messager = processingEnv.messager
-        elementUtil = processingEnv.elementUtils
+        elementUtils = processingEnv.elementUtils
     }
 
     override fun process(annotations: Set<TypeElement?>, roundEnv: RoundEnvironment): Boolean {
-        if (!this.isFirstRound) {
+        if (!isFirstRound) {
             return true
         }
-        this.isFirstRound = false
+        isFirstRound = false
 
         val elements = roundEnv.getElementsAnnotatedWith(Meta::class.java)
-        elements.groupBy { elementUtil.getPackageOf(it).qualifiedName }.apply {
-            if (this.size > 1) {
-                val classes = this.map {
-                    val sb = StringBuilder()
-                    it.value.forEach { el ->
-                        sb.append("  - ${it.key}.${el.simpleName}\n")
-                    }
-                    sb.toString()
-                }.joinToString("\n")
+        elements
+            .groupBy { elementUtils.getPackageOf(it).qualifiedName }
+            .apply {
+                if (this.size > 1) {
+                    val classes = this.map {
+                        val sb = StringBuilder()
+                        it.value.forEach { el ->
+                            sb.append("  - ${it.key}.${el.simpleName}\n")
+                        }
+                        sb.toString()
+                    }.joinToString("\n")
 
-                messager.printMessage(
-                    Diagnostic.Kind.ERROR,
-                    """
+                    messager.printMessage(
+                        Diagnostic.Kind.ERROR,
+                        """
                     |Classes annotated with @Meta annotation must reside in the same package.
                     |The following classes have different packages:
                     |$classes
                     |NOTE Try moving all the above classes under the same package.
                     """.trimMargin("|")
-                )
+                    )
+                }
             }
-        }
 
         val extensions = elements.map {
-            processExtensionElement(it)
+            processExtensionElement(it, elementUtils)
         }
         generateInfoFiles(extensions)
 
         return false
     }
 
-    private fun processExtensionElement(element: Element): Extension {
+    private fun processExtensionElement(element: Element, elementUtils: Elements): Extension {
         // Process simple events
         val events = element.enclosedElements
             .filter {
                 it.getAnnotation(SimpleEvent::class.java) != null && isPublic(it)
-            }.map { Event(it, this.messager) }
+            }.map { Event(it, messager, elementUtils) }
 
         // Process simple functions
         val functions = element.enclosedElements
             .filter {
                 it.getAnnotation(SimpleFunction::class.java) != null && isPublic(it)
-            }.map { Function(it, messager) }
+            }.map { Function(it, messager, elementUtils) }
 
         // Process simple properties
         val processedProperties = mutableListOf<Property>()
@@ -96,7 +98,7 @@ class ExtensionProcessor : AbstractProcessor() {
             .filter {
                 it.getAnnotation(SimpleProperty::class.java) != null && isPublic(it)
             }.map {
-                val property = Property(it, this.messager, processedProperties)
+                val property = Property(it, messager, processedProperties, elementUtils)
                 processedProperties.add(property)
                 property
             }
@@ -107,10 +109,10 @@ class ExtensionProcessor : AbstractProcessor() {
                 it.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty::class.java) != null
                         && isPublic(it)
             }.map {
-                DesignerProperty(it, this.messager, properties)
+                DesignerProperty(it, messager, properties)
             }
 
-        val packageName = this.elementUtil.getPackageOf(element).qualifiedName.toString()
+        val packageName = elementUtils.getPackageOf(element).qualifiedName.toString()
         val fqcn = "$packageName.${element.simpleName}"
 
         return Extension(
