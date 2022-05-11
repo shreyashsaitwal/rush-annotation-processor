@@ -1,11 +1,10 @@
 package io.shreyash.rush.processor.model
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 enum class DepScope(val value: String) {
-    IMPLEMENT("runtime"),
-    COMPILE_ONLY("compile");
+    RUNTIME("runtime"),
+    COMPILE("compile");
 
     companion object {
         private val map = DepScope.values().associateBy(DepScope::value)
@@ -15,28 +14,28 @@ enum class DepScope(val value: String) {
 
 @Serializable
 data class DepEntry(
-    val implement: String? = null,
-    @SerialName("compile_only") val compileOnly: String? = null,
+    val runtime: String? = null,
+    val compile: String? = null,
     val exclude: List<String> = listOf(),
 ) {
     init {
         // TODO: Add error message
-        require(implement != null || compileOnly != null)
-        if (implement != null) require(compileOnly == null)
-        if (compileOnly != null) require(implement == null)
+        require(runtime != null || compile != null)
+        if (runtime != null) require(compile == null)
+        if (compile != null) require(runtime == null)
     }
 
     val scope: DepScope
-        get() = if (implement != null) {
-            DepScope.IMPLEMENT
+        get() = if (runtime != null) {
+            DepScope.RUNTIME
         } else {
-            DepScope.COMPILE_ONLY
+            DepScope.COMPILE
         }
 
     val value: String
-        get() = if (scope == DepScope.COMPILE_ONLY) {
-            compileOnly!!
+        get() = if (scope == DepScope.COMPILE) {
+            compile!!
         } else {
-            implement!!
+            runtime!!
         }
 }
