@@ -6,17 +6,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RushYaml(
     val version: String,
-
     val license: String = "",
     val homepage: String = "",
-
+    val desugar: Boolean = false,
     val assets: List<String> = listOf(),
     val authors: List<String> = listOf(),
-
     val deps: List<DepEntry> = listOf(),
     val android: Android = Android(),
     val kotlin: Kotlin = Kotlin(false),
-    val desugar: Desugar = Desugar(false),
 )
 
 @Serializable
@@ -29,10 +26,4 @@ data class Android(
 data class Kotlin(
     val enable: Boolean,
     val version: String = "latest-stable",
-)
-
-@Serializable
-data class Desugar(
-    @SerialName("src_files") val srcFile: Boolean,
-    val deps: Boolean = false,
 )

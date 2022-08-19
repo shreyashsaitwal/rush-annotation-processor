@@ -1,8 +1,8 @@
 package com.google.appinventor.components.annotations
 
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class Meta(
+annotation class ExtensionComponent(
     val name: String,
     val description: String = "",
     val icon: String = "",

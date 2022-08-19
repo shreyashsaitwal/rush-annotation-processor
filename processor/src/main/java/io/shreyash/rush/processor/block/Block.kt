@@ -18,7 +18,7 @@ abstract class Block(element: Element) {
     /** The description of this block */
     abstract val description: String?
 
-    /** Whether or not this block is deprecated */
+    /** Whether this block is deprecated */
     val deprecated: Boolean
         get() = element.getAnnotation(Deprecated::class.java) != null
 
@@ -41,3 +41,22 @@ abstract class Block(element: Element) {
         null
     }
 }
+
+abstract class BlockWithParams(element: Element) : Block(element) {
+    /**
+     * @return The parameters (or arguments) of this block.
+     */
+    fun params(): List<BlockParam> {
+        val params = this.element.parameters
+        return params.map {
+            BlockParam(it.simpleName.toString(), convert(it.asType().toString()))
+        }
+    }
+}
+
+data class BlockParam(
+    // Name of this parameter
+    val name: String,
+    // YAIL type of this parameter
+    val type: String
+)
