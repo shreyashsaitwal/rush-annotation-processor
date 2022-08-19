@@ -10,6 +10,5 @@ buildscript {
 
 rootProject.name = 'rush-annotation-processor'
 include ':annotations'
-include ':migrator'
 include ':processor'
 include ':runtime'
