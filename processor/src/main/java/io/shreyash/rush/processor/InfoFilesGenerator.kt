@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
+import kotlin.io.path.createDirectories
 import kotlin.io.path.createDirectory
 import kotlin.io.path.exists
 
@@ -150,7 +151,8 @@ class InfoFilesGenerator(
         }
         buildInfoJsonArray.getJSONObject(0).put("permissions", permissions)
 
-        val buildInfoJsonFile = Paths.get(rawBuildDir.toString(), "files", "component_build_infos.json").toFile()
+        val buildInfoJsonFile =
+            Paths.get(rawBuildDir.toString(), "files", "component_build_infos.json").toFile().apply { this.mkdirs() }
         buildInfoJsonFile.writeText(buildInfoJsonArray.toString())
     }
 
