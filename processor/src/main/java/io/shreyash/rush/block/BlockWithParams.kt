@@ -13,12 +13,18 @@ abstract class BlockWithParams protected constructor(element: Element) : Block(e
     fun params(): List<BlockParam> {
         val params = this.element.parameters
         return params.map {
-            BlockParam(it.simpleName.toString(), convert(it.asType().toString()))
+            val annotate = it.getAnnotation(io.shreyash.rush.Rename::class.java)
+            val simpleName = it.simpleName.toString()
+
+            val name: String = annotate?.name ?: simpleName
+            BlockParam(simpleName, name, convert(it.asType().toString()))
         }
     }
 }
 
 data class BlockParam(
+    // Original name of the parameter
+    val originalName: String,
     // Name of this parameter
     val name: String,
     // YAIL type of this parameter

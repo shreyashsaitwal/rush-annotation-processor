@@ -27,7 +27,7 @@ import io.shreyash.rush.block.Property
     "com.google.appinventor.components.annotations.SimpleEvent",
     "com.google.appinventor.components.annotations.SimpleFunction",
     "com.google.appinventor.components.annotations.SimpleProperty",
-    "com.google.appinventor.components.annotations.DesignerProperty"
+    "com.google.appinventor.components.annotations.DesignerProperty",
 )
 class ExtensionProcessor : AbstractProcessor() {
     private val store = BlockStore.instance
@@ -83,7 +83,6 @@ class ExtensionProcessor : AbstractProcessor() {
             }.map {
                 store.putDesignerProperty(DesignerProperty(it, messager))
             }
-
         generateInfoFiles()
         return false
     }
