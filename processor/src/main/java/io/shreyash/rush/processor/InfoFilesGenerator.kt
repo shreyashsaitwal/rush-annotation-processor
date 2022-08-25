@@ -152,7 +152,9 @@ class InfoFilesGenerator(
         buildInfoJsonArray.getJSONObject(0).put("permissions", permissions)
 
         val buildInfoJsonFile =
-            Paths.get(rawBuildDir.toString(), "files", "component_build_infos.json").toFile().apply { this.mkdirs() }
+            Paths.get(rawBuildDir.toString(), "files", "component_build_infos.json").toFile().apply {
+                this.parentFile.mkdirs()
+            }
         buildInfoJsonFile.writeText(buildInfoJsonArray.toString())
     }
 
