@@ -1,6 +1,5 @@
 package io.shreyash.rush.processor.block
 
-import io.shreyash.rush.Rename
 import io.shreyash.rush.processor.util.convert
 import shaded.org.json.JSONObject
 import java.lang.Deprecated
@@ -50,17 +49,13 @@ abstract class BlockWithParams(element: Element) : Block(element) {
     fun params(): List<BlockParam> {
         val params = this.element.parameters
         return params.map {
-            val originalName = it.simpleName.toString()
-            val name = it.getAnnotation(Rename::class.java)?.name ?: originalName
-            BlockParam(originalName, name, convert(it.asType().toString()))
+            BlockParam(it.simpleName.toString(), convert(it.asType().toString()))
         }
     }
 }
 
 data class BlockParam(
-    // Original name of this parameter
-    val originalName: String,
-    // User facing name of this parameter
+    // Name of this parameter
     val name: String,
     // YAIL type of this parameter
     val type: String

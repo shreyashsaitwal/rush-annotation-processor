@@ -27,7 +27,7 @@ import kotlin.io.path.toPath
     "com.google.appinventor.components.annotations.SimpleEvent",
     "com.google.appinventor.components.annotations.SimpleFunction",
     "com.google.appinventor.components.annotations.SimpleProperty",
-    "com.google.appinventor.components.annotations.DesignerProperty",
+    "com.google.appinventor.components.annotations.DesignerProperty"
 )
 class ExtensionProcessor : AbstractProcessor() {
     private var isFirstRound = true
