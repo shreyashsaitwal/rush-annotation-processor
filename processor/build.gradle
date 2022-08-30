@@ -1,6 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
     id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 compileKotlin {
@@ -34,4 +35,10 @@ configurations.implementation.setCanBeResolved(true)
 task copyImpl(type: Copy) {
     from configurations.implementation
     into 'build/implementation'
+}
+
+shadowJar {
+    archiveBaseName.set('processor-uber')
+    archiveClassifier.set('')
+    minimize()
 }

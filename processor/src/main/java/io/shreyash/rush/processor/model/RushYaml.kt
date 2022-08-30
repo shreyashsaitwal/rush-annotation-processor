@@ -11,7 +11,7 @@ data class RushYaml(
     val desugar: Boolean = false,
     val assets: List<String> = listOf(),
     val authors: List<String> = listOf(),
-    val deps: List<DepEntry> = listOf(),
+    val runtimeDeps: List<String> = listOf(),
     val android: Android = Android(),
     val kotlin: Kotlin = Kotlin(false),
 )
