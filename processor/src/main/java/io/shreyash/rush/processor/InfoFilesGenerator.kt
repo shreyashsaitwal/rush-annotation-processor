@@ -20,14 +20,13 @@ import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
-import kotlin.io.path.createDirectories
 import kotlin.io.path.createDirectory
 import kotlin.io.path.exists
 
 class InfoFilesGenerator(
-    private val projectRoot: String,
     private val extensions: List<Extension>,
 ) {
+    private val projectRoot = System.getenv("RUSH_PROJECT_ROOT")
     private val rawBuildDir = Paths.get(projectRoot, ".rush", "build", "raw").apply {
         if (!this.exists()) this.createDirectory()
     }

@@ -3,6 +3,7 @@ package io.shreyash.rush.processor.block
 import com.google.appinventor.components.annotations.SimpleFunction
 import io.shreyash.rush.processor.util.isCamelCase
 import io.shreyash.rush.processor.util.isPascalCase
+import shaded.org.json.JSONArray
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
@@ -13,7 +14,7 @@ class Function(
     element: Element,
     private val messager: Messager,
     private val elementUtils: Elements,
-) : BlockWithParams(element) {
+) : ParameterizedBlock(element) {
     init {
         runChecks()
     }
@@ -21,10 +22,8 @@ class Function(
     override val description: String
         get() {
             val desc = this.element.getAnnotation(SimpleFunction::class.java).description.let {
-                if (it.isBlank()) {
+                it.ifBlank {
                     elementUtils.getDocComment(element) ?: ""
-                } else {
-                    it
                 }
             }
             return desc
@@ -77,14 +76,22 @@ class Function(
 
         // Here, null represents the return type is void. Return type for void methods don't need to
         // be specified.
-        returnType()?.apply {
+        returnType?.apply {
             methodJson.put("returnType", this)
         }
 
-        val params = params().map {
-            JSONObject()
-                .put("name", it.name)
-                .put("type", it.type)
+        helper()?.apply {
+            methodJson.put("helper", this.toJson())
+        }
+
+        val params = JSONArray()
+        for (p in params()) {
+            params.put(
+                JSONObject()
+                    .put("name", p.name)
+                    .put("type", p.type)
+                    .put("helper", p.helper?.toJson())
+            )
         }
         methodJson.put("params", params)
 

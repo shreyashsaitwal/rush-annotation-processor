@@ -17,17 +17,15 @@ import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
-import javax.tools.StandardLocation
-import kotlin.io.path.toPath
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes(
-    "com.google.appinventor.components.annotations.Meta",
+    "com.google.appinventor.components.annotations.ExtensionComponent",
     "com.google.appinventor.components.annotations.SimpleEvent",
     "com.google.appinventor.components.annotations.SimpleFunction",
     "com.google.appinventor.components.annotations.SimpleProperty",
-    "com.google.appinventor.components.annotations.DesignerProperty"
+    "com.google.appinventor.components.annotations.DesignerProperty",
 )
 class ExtensionProcessor : AbstractProcessor() {
     private var isFirstRound = true
@@ -129,20 +127,13 @@ class ExtensionProcessor : AbstractProcessor() {
 
     /** Generates the component info files (JSON). */
     private fun generateInfoFiles(extensions: List<Extension>) {
-        val generator = InfoFilesGenerator(projectRootPath(), extensions)
+        val generator = InfoFilesGenerator(extensions)
         try {
             generator.generateComponentsJson()
             generator.generateBuildInfoJson()
         } catch (e: Throwable) {
             messager.printMessage(Diagnostic.Kind.ERROR, e.message ?: e.stackTraceToString())
         }
-    }
-
-    private fun projectRootPath(): String {
-        val classesDir =
-            processingEnv.filer.getResource(StandardLocation.CLASS_OUTPUT, "", "null").toUri().toPath().parent
-        // classes dir: {root}/.rush/build/classes
-        return classesDir.parent.parent.parent.toString()
     }
 
     /** @returns `true` if [element] is a public element. */

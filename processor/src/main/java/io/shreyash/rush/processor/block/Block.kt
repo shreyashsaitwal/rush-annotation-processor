@@ -1,12 +1,14 @@
 package io.shreyash.rush.processor.block
 
-import io.shreyash.rush.processor.util.convert
+import com.google.appinventor.components.annotations.Asset
+import io.shreyash.rush.processor.util.yailTypeOf
 import shaded.org.json.JSONObject
 import java.lang.Deprecated
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import kotlin.Boolean
 import kotlin.String
+import kotlin.apply
 
 abstract class Block(element: Element) {
     val element = element as ExecutableElement
@@ -17,6 +19,47 @@ abstract class Block(element: Element) {
 
     /** The description of this block */
     abstract val description: String?
+
+    /**
+     * [Element] that should be used to create [Helper] from. This is always same as [element] except
+     * in the case of [Property] setter block. This is because the setter type block is always void
+     * and its it's first parameter that defines its type.
+     */
+    var helperElement: Element = element
+
+    fun helper(): Helper? {
+        if (returnType == null) return null
+        val helperType = HelperType.tryFrom(helperElement)
+        return when (helperType) {
+            HelperType.ASSET -> {
+                Helper(
+                    type = helperType,
+                    data = AssetData(helperElement.getAnnotation(Asset::class.java).value)
+                )
+            }
+
+            HelperType.OPTION_LIST -> {
+                val optionListEnumName = if (helperElement is ExecutableElement)
+                    (helperElement as ExecutableElement).returnType.toString()
+                else
+                    helperElement.asType().toString()
+
+                val data = if (optionListCache.containsKey(optionListEnumName)) {
+                    optionListCache[optionListEnumName]!!
+                } else {
+                    OptionListData(helperElement).apply {
+                        optionListCache.putIfAbsent(optionListEnumName, this)
+                    }
+                }
+                Helper(
+                    type = helperType,
+                    data = data
+                )
+            }
+
+            else -> null
+        }
+    }
 
     /** Whether this block is deprecated */
     val deprecated: Boolean
@@ -34,22 +77,47 @@ abstract class Block(element: Element) {
     /**
      * @return YAIL equivalent of the return type of this block.
      */
-    open fun returnType() = if (element.returnType.toString() != "void") {
-        // TODO Handle the exception
-        convert(element.returnType.toString())
-    } else {
-        null
-    }
+    open val returnType: String?
+        get() = if (element.returnType.toString() != "void") {
+            yailTypeOf(element)
+        } else {
+            null
+        }
 }
 
-abstract class BlockWithParams(element: Element) : Block(element) {
+abstract class ParameterizedBlock(element: Element) : Block(element) {
     /**
      * @return The parameters (or arguments) of this block.
      */
     fun params(): List<BlockParam> {
-        val params = this.element.parameters
-        return params.map {
-            BlockParam(it.simpleName.toString(), convert(it.asType().toString()))
+        return this.element.parameters.map {
+            val helper = when (val helperType = HelperType.tryFrom(it)) {
+                HelperType.ASSET -> {
+                    Helper(
+                        type = helperType,
+                        data = AssetData(it.getAnnotation(Asset::class.java).value)
+                    )
+                }
+
+                HelperType.OPTION_LIST -> {
+                    val optionListEnumName = it.asType().toString()
+                    val data = if (optionListCache.containsKey(optionListEnumName)) {
+                        optionListCache[optionListEnumName]!!
+                    } else {
+                        OptionListData(it).apply {
+                            optionListCache.putIfAbsent(optionListEnumName, this)
+                        }
+                    }
+                    Helper(
+                        type = helperType,
+                        data = data
+                    )
+                }
+
+                else -> null
+            }
+
+            BlockParam(it.simpleName.toString(), yailTypeOf(it), helper)
         }
     }
 }
@@ -57,6 +125,9 @@ abstract class BlockWithParams(element: Element) : Block(element) {
 data class BlockParam(
     // Name of this parameter
     val name: String,
+
     // YAIL type of this parameter
-    val type: String
+    val type: String,
+
+    val helper: Helper?,
 )

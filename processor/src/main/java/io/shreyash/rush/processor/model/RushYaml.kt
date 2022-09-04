@@ -11,7 +11,8 @@ data class RushYaml(
     val desugar: Boolean = false,
     val assets: List<String> = listOf(),
     val authors: List<String> = listOf(),
-    val runtimeDeps: List<String> = listOf(),
+    @SerialName("dependencies") val runtimeDeps: List<String> = listOf(),
+    @SerialName("comptime_dependencies") val compileDeps: List<String> = listOf(),
     val android: Android = Android(),
     val kotlin: Kotlin = Kotlin(false),
 )

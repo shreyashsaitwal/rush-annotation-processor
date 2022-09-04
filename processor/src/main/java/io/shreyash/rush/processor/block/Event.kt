@@ -13,7 +13,7 @@ class Event(
     element: Element,
     private val messager: Messager,
     private val elementUtils: Elements,
-) : BlockWithParams(element) {
+) : ParameterizedBlock(element) {
     init {
         runChecks()
     }
@@ -21,10 +21,8 @@ class Event(
     override val description: String
         get() {
             val desc = this.element.getAnnotation(SimpleEvent::class.java).description.let {
-                if (it.isBlank()) {
+                it.ifBlank {
                     elementUtils.getDocComment(element) ?: ""
-                } else {
-                    it
                 }
             }
             return desc
@@ -77,9 +75,13 @@ class Event(
             .put("description", description)
 
         val params = params().map {
-            JSONObject()
+            val obj = JSONObject()
                 .put("name", it.name)
                 .put("type", it.type)
+            it.helper?.apply {
+                obj.put("helper", this.data.toJson())
+            }
+            obj
         }
         eventJson.put("params", params)
 

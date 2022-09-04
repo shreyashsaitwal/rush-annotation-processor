@@ -1,11 +1,12 @@
 package io.shreyash.rush.processor.block
 
 import com.google.appinventor.components.annotations.SimpleProperty
-import io.shreyash.rush.processor.util.convert
 import io.shreyash.rush.processor.util.isPascalCase
+import io.shreyash.rush.processor.util.yailTypeOf
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
+import javax.lang.model.type.DeclaredType
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
@@ -32,10 +33,8 @@ class Property(
     override val description: String
         get() {
             val desc = this.element.getAnnotation(SimpleProperty::class.java).description.let {
-                if (it.isBlank()) {
+                it.ifBlank {
                     elementUtils.getDocComment(element) ?: ""
-                } else {
-                    it
                 }
             }
             return desc
@@ -76,7 +75,7 @@ class Property(
             it.name == name && it !== this
         }
         // Return types of getters and setters must match
-        if (partnerProp != null && partnerProp.returnType() != returnType()) {
+        if (partnerProp != null && partnerProp.returnType != returnType) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
                 "Inconsistent types across getter and setter for simple property \"$name\"."
@@ -88,18 +87,22 @@ class Property(
      * @return If this is a setter type property, the type of the value it accepts, else if it is a
      * getter, it's return type.
      */
-    override fun returnType(): String {
-        val returnType = this.element.returnType.toString()
-
-        // If the property is of type setter, the JSON property "type" is equal to the type of
-        // parameter the setter expects.
-        return if (returnType == "void") {
-            val type = this.element.parameters[0].asType().toString()
-            convert(type)
-        } else {
-            convert(returnType)
+    override val returnType: String
+        get() {
+            val returnType = this.element.returnType
+            // If the property is of setter type, the JSON property "type" is equal to the type of
+            // parameter the setter expects.
+            val element = if (returnType.toString() == "void") {
+                this.element.parameters[0]
+            } else {
+                (element.returnType as DeclaredType).asElement()
+            }
+            val yailType = yailTypeOf(element)
+            if (yailType.endsWith("Enum")) {
+                this.helperElement = element
+            }
+            return yailType
         }
-    }
 
     /**
      * @return JSON representation of this property.
@@ -115,8 +118,9 @@ class Property(
         .put("name", name)
         .put("description", description)
         .put("deprecated", deprecated.toString())
-        .put("type", returnType())
+        .put("type", returnType)
         .put("rw", accessType)
+        .put("helper", helper()?.toJson())
 
     /**
      * @return The access type of the current property.
@@ -146,7 +150,7 @@ class Property(
         }
 
         // Remove the partner prop from the prior props lst. This is necessary because AI2 doesn't
-        // expects getter and setter to be defined separately. It checks the access type to decide
+        // expect getter and setter to be defined separately. It checks the access type to decide
         // whether to generate getter (read-only), setter (write-only), both (read-write) or none
         // (invisible).
         priorProperties.remove(partnerProp)
