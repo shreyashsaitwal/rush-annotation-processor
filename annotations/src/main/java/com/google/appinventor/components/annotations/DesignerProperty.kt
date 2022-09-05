@@ -10,7 +10,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants
  * annotation.
  *
  */
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 @Target(
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,

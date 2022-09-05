@@ -135,8 +135,6 @@ fun yailTypeOf(element: Element): String {
         return "list"
     } else if (componentTypes.contains(name)) {
         return "component"
-    } else if (HelperType.tryFrom(element) != null) {
-        return name + "Enum"
     }
 
     return when (name) {
@@ -148,6 +146,10 @@ fun yailTypeOf(element: Element): String {
         "com.google.appinventor.components.runtime.util.YailList" -> "list"
         "com.google.appinventor.components.runtime.util.YailObject" -> "yailobject"
         "com.google.appinventor.components.runtime.util.YailDictionary" -> "dictionary"
-        else -> throw IllegalStateException()
+        else -> if (HelperType.tryFrom(element) != null) {
+            name + "Enum"
+        } else {
+            throw Exception("Can't convert type $name to YAIL type")
+        }
     }
 }

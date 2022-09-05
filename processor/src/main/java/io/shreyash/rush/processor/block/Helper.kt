@@ -1,6 +1,7 @@
 package io.shreyash.rush.processor.block
 
 import com.google.appinventor.components.annotations.Asset
+import com.google.appinventor.components.annotations.Options
 import com.google.appinventor.components.common.Default
 import shaded.org.json.JSONArray
 import shaded.org.json.JSONObject
@@ -11,6 +12,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeMirror
 
@@ -22,6 +24,8 @@ enum class HelperType {
             val type = if (element is ExecutableElement) element.returnType else element.asType()
             return if (element.getAnnotation(Asset::class.java) != null) {
                 ASSET
+            } else if (element.getAnnotation(Options::class.java) != null) {
+                OPTION_LIST
             } else if (type.kind == TypeKind.DECLARED) {
                 val el = (type as DeclaredType).asElement() as TypeElement
                 val isOptionList = el.interfaces.any {
@@ -44,6 +48,53 @@ data class Helper(
         return JSONObject()
             .put("type", type.toString())
             .put("data", data.toJson())
+    }
+
+    companion object {
+        fun tryFrom(element: Element): Pair<Helper?, Element> {
+            val helperType = HelperType.tryFrom(element)
+            return when (helperType) {
+                HelperType.ASSET -> {
+                    val helper = Helper(
+                        type = helperType,
+                        data = AssetData(element.getAnnotation(Asset::class.java).value)
+                    )
+                    Pair(helper, element)
+                }
+
+                HelperType.OPTION_LIST -> {
+                    var newElement = element
+                    val optionsAnnotation = newElement.getAnnotation(Options::class.java)
+
+                    val optionListEnumName = if (optionsAnnotation != null) {
+                        try {
+                            // This will always throw. For more info: https://stackoverflow.com/a/10167558/12401482
+                            optionsAnnotation.value
+                        } catch (e: MirroredTypeException) {
+                            newElement = (e.typeMirror as DeclaredType).asElement()
+                        }
+                        newElement.asType().toString()
+                    } else if (newElement is ExecutableElement) {
+                        newElement.returnType.toString()
+                    } else {
+                        newElement.asType().toString()
+                    }
+
+                    val data = if (optionListCache.containsKey(optionListEnumName)) {
+                        optionListCache[optionListEnumName]!!
+                    } else {
+                        OptionListData(newElement).apply {
+                            optionListCache.putIfAbsent(optionListEnumName, this)
+                        }
+                    }
+
+                    val helper = Helper(helperType, data)
+                    Pair(helper, newElement)
+                }
+
+                else -> Pair(null, element)
+            }
+        }
     }
 }
 
