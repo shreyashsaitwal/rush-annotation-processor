@@ -51,13 +51,17 @@ abstract class HelperData {
     abstract fun toJson(): JSONObject
 }
 
-class AssetData(private val fileExtensions: Array<String>) : HelperData() {
-    override fun toJson(): JSONObject = JSONObject()
-        .put("filter", JSONArray().apply {
-            for (ext in fileExtensions) {
-                this.put(ext)
-            }
-        })
+class AssetData(private val fileExtensions: Array<String> = arrayOf()) : HelperData() {
+    override fun toJson(): JSONObject {
+        return if (fileExtensions.isEmpty())
+            JSONObject()
+        else
+            JSONObject().put("filter", JSONArray().apply {
+                for (ext in fileExtensions) {
+                    this.put(ext)
+                }
+            })
+    }
 }
 
 /**
