@@ -44,10 +44,10 @@ data class Helper(
     val type: HelperType,
     val data: HelperData,
 ) {
-    fun toJson(): JSONObject {
+    fun asJsonObject(): JSONObject {
         return JSONObject()
             .put("type", type.toString())
-            .put("data", data.toJson())
+            .put("data", data.asJsonObject())
     }
 
     companion object {
@@ -80,11 +80,11 @@ data class Helper(
                         newElement.asType().toString()
                     }
 
-                    val data = if (optionListCache.containsKey(optionListEnumName)) {
-                        optionListCache[optionListEnumName]!!
+                    val data = if (HelperSingleton.optionListCache.containsKey(optionListEnumName)) {
+                        HelperSingleton.optionListCache[optionListEnumName]!!
                     } else {
                         OptionListData(newElement).apply {
-                            optionListCache.putIfAbsent(optionListEnumName, this)
+                            HelperSingleton.optionListCache.putIfAbsent(optionListEnumName, this)
                         }
                     }
 
@@ -99,11 +99,11 @@ data class Helper(
 }
 
 abstract class HelperData {
-    abstract fun toJson(): JSONObject
+    abstract fun asJsonObject(): JSONObject
 }
 
 class AssetData(private val fileExtensions: Array<String> = arrayOf()) : HelperData() {
-    override fun toJson(): JSONObject {
+    override fun asJsonObject(): JSONObject {
         return if (fileExtensions.isEmpty())
             JSONObject()
         else
@@ -115,10 +115,32 @@ class AssetData(private val fileExtensions: Array<String> = arrayOf()) : HelperD
     }
 }
 
-/**
- * This stores [OptionListData]s of enums that have already been processed.
- */
-val optionListCache = mutableMapOf<String, OptionListData>()
+private object HelperSingleton {
+    /**
+     * This stores [OptionListData]s of enums that have already been processed.
+     */
+    val optionListCache = mutableMapOf<String, OptionListData>()
+
+    val loader: ClassLoader
+
+    init {
+        val classesDir = Paths.get(System.getenv("RUSH_PROJECT_ROOT"), ".rush", "build", "classes")
+        val libDir = Paths.get(System.getenv("RUSH_HOME"), "libs")
+
+        val annotationsJar = Paths.get(libDir.toString(), "annotations.jar")
+        val runtimeJar = Paths.get(libDir.toString(), "runtime.jar")
+
+        // TODO: Should the external dependencies be added as well?
+
+        loader = URLClassLoader(
+            arrayOf(
+                classesDir.toUri().toURL(),
+                annotationsJar.toUri().toURL(),
+                runtimeJar.toUri().toURL()
+            )
+        )
+    }
+}
 
 class OptionListData(private val element: Element) : HelperData() {
 
@@ -127,7 +149,7 @@ class OptionListData(private val element: Element) : HelperData() {
         val name: String,
         val value: String,
     ) {
-        fun toJson(): JSONObject {
+        fun asJsonObject(): JSONObject {
             return JSONObject()
                 .put("name", name)
                 .put("deprecated", deprecated)
@@ -148,26 +170,10 @@ class OptionListData(private val element: Element) : HelperData() {
 
     private fun options(): List<JSONObject> {
         val optionListEnumName = elementType.toString()
-
-        val classesDir = Paths.get(System.getenv("RUSH_PROJECT_ROOT"), ".rush", "build", "classes")
-        val libDir = Paths.get(System.getenv("RUSH_HOME"), "libs")
-        val annotationsJar = Paths.get(libDir.toString(), "annotations.jar")
-        val runtimeJar = Paths.get(libDir.toString(), "runtime.jar")
-
-        // TODO: Should the external dependencies be added as well?
-
-        val loader = URLClassLoader(
-            arrayOf(
-                classesDir.toUri().toURL(),
-                annotationsJar.toUri().toURL(),
-                runtimeJar.toUri().toURL()
-            )
-        )
-
         val optionListEnum: Class<*>
         val toValueMethod: Method
         try {
-            optionListEnum = loader.loadClass(optionListEnumName)
+            optionListEnum = HelperSingleton.loader.loadClass(optionListEnumName)
             toValueMethod = optionListEnum.getDeclaredMethod("toUnderlyingValue")
         } catch (e: Exception) {
             throw e
@@ -196,11 +202,11 @@ class OptionListData(private val element: Element) : HelperData() {
                 deprecated = element.getAnnotation(Deprecated::class.java) != null,
                 name = it.key,
                 value = it.value,
-            ).toJson()
+            ).asJsonObject()
         }
     }
 
-    override fun toJson(): JSONObject {
+    override fun asJsonObject(): JSONObject {
         val enumName = elementType.toString().split(".").last()
         return JSONObject()
             .put("className", elementType.toString())

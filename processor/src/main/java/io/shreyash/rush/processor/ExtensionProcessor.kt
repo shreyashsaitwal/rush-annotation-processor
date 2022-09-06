@@ -13,6 +13,7 @@ import io.shreyash.rush.processor.model.Extension
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
@@ -26,6 +27,9 @@ import javax.tools.Diagnostic
     "com.google.appinventor.components.annotations.SimpleFunction",
     "com.google.appinventor.components.annotations.SimpleProperty",
     "com.google.appinventor.components.annotations.DesignerProperty",
+    "com.google.appinventor.components.annotations.Asset",
+    "com.google.appinventor.components.annotations.Options",
+    "com.google.appinventor.components.common.Default",
 )
 class ExtensionProcessor : AbstractProcessor() {
     private var isFirstRound = true
@@ -82,23 +86,20 @@ class ExtensionProcessor : AbstractProcessor() {
     private fun processExtensionElement(element: Element, elementUtils: Elements): Extension {
         // Process simple events
         val events = element.enclosedElements
-            .filter {
-                it.getAnnotation(SimpleEvent::class.java) != null && isPublic(it)
-            }.map { Event(it, messager, elementUtils) }
+            .filter { it.getAnnotation(SimpleEvent::class.java) != null && isPublic(it) }
+            .map { Event(it as ExecutableElement, messager, elementUtils) }
 
         // Process simple functions
         val functions = element.enclosedElements
-            .filter {
-                it.getAnnotation(SimpleFunction::class.java) != null && isPublic(it)
-            }.map { Function(it, messager, elementUtils) }
+            .filter { it.getAnnotation(SimpleFunction::class.java) != null && isPublic(it) }
+            .map { Function(it as ExecutableElement, messager, elementUtils) }
 
         // Process simple properties
         val processedProperties = mutableListOf<Property>()
         val properties = element.enclosedElements
-            .filter {
-                it.getAnnotation(SimpleProperty::class.java) != null && isPublic(it)
-            }.map {
-                val property = Property(it, messager, processedProperties, elementUtils)
+            .filter { it.getAnnotation(SimpleProperty::class.java) != null && isPublic(it) }
+            .map {
+                val property = Property(it as ExecutableElement, messager, processedProperties, elementUtils)
                 processedProperties.add(property)
                 property
             }
@@ -108,9 +109,7 @@ class ExtensionProcessor : AbstractProcessor() {
             .filter {
                 it.getAnnotation(com.google.appinventor.components.annotations.DesignerProperty::class.java) != null
                         && isPublic(it)
-            }.map {
-                DesignerProperty(it, messager, properties)
-            }
+            }.map { DesignerProperty(it as ExecutableElement, messager, properties) }
 
         val packageName = elementUtils.getPackageOf(element).qualifiedName.toString()
         val fqcn = "$packageName.${element.simpleName}"

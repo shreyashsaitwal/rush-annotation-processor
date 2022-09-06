@@ -6,11 +6,9 @@ import shaded.org.json.JSONObject
 import java.lang.Deprecated
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
-import kotlin.Boolean
 import kotlin.String
 
-abstract class Block(element: Element) {
-    val element = element as ExecutableElement
+abstract class Block(val element: ExecutableElement) {
 
     /** Name of this block. */
     val name: String
@@ -18,6 +16,15 @@ abstract class Block(element: Element) {
 
     /** The description of this block */
     abstract val description: String?
+
+    /**
+     * @return YAIL equivalent of the return type of this block.
+     */
+    open val returnType = if (element.returnType.toString() != "void") {
+        yailTypeOf(element)
+    } else {
+        null
+    }
 
     /**
      * [Element] from which [Helper] should be created. This is always same as [element] except
@@ -30,7 +37,6 @@ abstract class Block(element: Element) {
     var helperElement: Element = element
 
     fun helper(): Helper? {
-        if (returnType == null) return null
         val (helper, newHelperElement) = Helper.tryFrom(helperElement)
 
         // [newHelperElement] won't always be different; see comment on [helperElement] for more info.
@@ -39,8 +45,7 @@ abstract class Block(element: Element) {
     }
 
     /** Whether this block is deprecated */
-    val deprecated: Boolean
-        get() = element.getAnnotation(Deprecated::class.java) != null
+    val deprecated = element.getAnnotation(Deprecated::class.java) != null
 
     /** Checks that are supposed to be performed on this block */
     abstract fun runChecks()
@@ -50,27 +55,15 @@ abstract class Block(element: Element) {
      * descriptor file.
      */
     abstract fun asJsonObject(): JSONObject
-
-    /**
-     * @return YAIL equivalent of the return type of this block.
-     */
-    open val returnType: String?
-        get() = if (element.returnType.toString() != "void") {
-            yailTypeOf(element)
-        } else {
-            null
-        }
 }
 
-abstract class ParameterizedBlock(element: Element) : Block(element) {
+abstract class ParameterizedBlock(element: ExecutableElement) : Block(element) {
     /**
      * @return The parameters (or arguments) of this block.
      */
-    fun params(): List<BlockParam> {
-        return this.element.parameters.map {
-            val (helper, _) = Helper.tryFrom(it)
-            BlockParam(it.simpleName.toString(), yailTypeOf(it), helper)
-        }
+    val params = this.element.parameters.map {
+        val (helper, _) = Helper.tryFrom(it)
+        BlockParam(it.simpleName.toString(), yailTypeOf(it), helper)
     }
 }
 
@@ -78,4 +71,9 @@ data class BlockParam(
     val name: String,
     val type: String,
     val helper: Helper?,
-)
+) {
+    fun asJsonObject(): JSONObject = JSONObject()
+        .put("name", name)
+        .put("type", type)
+        .put("helper", helper?.data?.asJsonObject())
+}

@@ -5,12 +5,12 @@ import io.shreyash.rush.processor.util.isCamelCase
 import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
-import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
 class Event(
-    element: Element,
+    element: ExecutableElement,
     private val messager: Messager,
     private val elementUtils: Elements,
 ) : ParameterizedBlock(element) {
@@ -38,7 +38,7 @@ class Event(
         }
 
         // Check param names
-        params().forEach {
+        params.forEach {
             if (!isCamelCase(it.name)) {
                 messager.printMessage(
                     Diagnostic.Kind.WARNING,
@@ -68,23 +68,9 @@ class Event(
      *  ]
      * }
      */
-    override fun asJsonObject(): JSONObject {
-        val eventJson = JSONObject()
-            .put("deprecated", deprecated.toString())
-            .put("name", name)
-            .put("description", description)
-
-        val params = params().map {
-            val obj = JSONObject()
-                .put("name", it.name)
-                .put("type", it.type)
-            it.helper?.apply {
-                obj.put("helper", this.data.toJson())
-            }
-            obj
-        }
-        eventJson.put("params", params)
-
-        return eventJson
-    }
+    override fun asJsonObject(): JSONObject = JSONObject()
+        .put("deprecated", deprecated.toString())
+        .put("name", name)
+        .put("description", description)
+        .put("params", params.map { it.asJsonObject() })
 }

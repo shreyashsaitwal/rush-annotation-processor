@@ -6,6 +6,7 @@ import io.shreyash.rush.processor.util.yailTypeOf
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
@@ -18,7 +19,7 @@ object PropertyAccessType {
 }
 
 class Property(
-    element: Element,
+    element: ExecutableElement,
     private val messager: Messager,
     private val priorProperties: MutableList<Property>,
     private val elementUtils: Elements,
@@ -120,7 +121,7 @@ class Property(
         .put("deprecated", deprecated.toString())
         .put("type", returnType)
         .put("rw", accessType)
-        .put("helper", helper()?.toJson())
+        .put("helper", helper()?.asJsonObject())
 
     /**
      * @return The access type of the current property.

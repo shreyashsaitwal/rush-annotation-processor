@@ -3,15 +3,14 @@ package io.shreyash.rush.processor.block
 import com.google.appinventor.components.annotations.SimpleFunction
 import io.shreyash.rush.processor.util.isCamelCase
 import io.shreyash.rush.processor.util.isPascalCase
-import shaded.org.json.JSONArray
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
-import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
 class Function(
-    element: Element,
+    element: ExecutableElement,
     private val messager: Messager,
     private val elementUtils: Elements,
 ) : ParameterizedBlock(element) {
@@ -39,7 +38,7 @@ class Function(
         }
 
         // Check param names
-        params().forEach {
+        params.forEach {
             if (!isCamelCase(it.name)) {
                 messager.printMessage(
                     Diagnostic.Kind.WARNING,
@@ -68,33 +67,11 @@ class Function(
      *  ]
      * }
      */
-    override fun asJsonObject(): JSONObject {
-        val methodJson = JSONObject()
-            .put("name", name)
-            .put("description", description)
-            .put("deprecated", deprecated.toString())
-
-        // Here, null represents the return type is void. Return type for void methods don't need to
-        // be specified.
-        returnType?.apply {
-            methodJson.put("returnType", this)
-        }
-
-        helper()?.apply {
-            methodJson.put("helper", this.toJson())
-        }
-
-        val params = JSONArray()
-        for (p in params()) {
-            params.put(
-                JSONObject()
-                    .put("name", p.name)
-                    .put("type", p.type)
-                    .put("helper", p.helper?.toJson())
-            )
-        }
-        methodJson.put("params", params)
-
-        return methodJson
-    }
+    override fun asJsonObject(): JSONObject = JSONObject()
+        .put("name", name)
+        .put("description", description)
+        .put("deprecated", deprecated.toString())
+        .put("params", this.params.map { it.asJsonObject() })
+        .put("returnType", returnType)
+        .put("helper", helper())
 }
