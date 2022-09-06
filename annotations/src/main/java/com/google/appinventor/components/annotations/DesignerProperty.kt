@@ -11,11 +11,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants
  *
  */
 @Retention(AnnotationRetention.RUNTIME)
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
+@Target(AnnotationTarget.FUNCTION)
 annotation class DesignerProperty(
     /**
      * Determines the property editor used in the designer.

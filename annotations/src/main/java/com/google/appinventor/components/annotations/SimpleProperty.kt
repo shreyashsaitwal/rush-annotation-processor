@@ -7,11 +7,7 @@ package com.google.appinventor.components.annotations
  * with this annotation.
  */
 @Retention(AnnotationRetention.RUNTIME)
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
+@Target(AnnotationTarget.FUNCTION)
 annotation class SimpleProperty(
     /**
      * If non-empty, description to use in user-level documentation.
