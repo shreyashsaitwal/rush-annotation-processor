@@ -98,11 +98,10 @@ class Property(
             } else {
                 (element.returnType as DeclaredType).asElement()
             }
-            val yailType = yailTypeOf(element)
-            if (yailType.endsWith("Enum")) {
-                this.helperElement = element
+            HelperType.tryFrom(element)?.apply {
+                this@Property.helperElement = element
             }
-            return yailType
+            return yailTypeOf(helperElement)
         }
 
     /**

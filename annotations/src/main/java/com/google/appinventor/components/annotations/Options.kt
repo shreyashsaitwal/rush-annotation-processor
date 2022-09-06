@@ -1,5 +1,6 @@
 package com.google.appinventor.components.annotations
 
+import com.google.appinventor.components.common.OptionList
 import kotlin.reflect.KClass
 
 /**
@@ -18,7 +19,7 @@ import kotlin.reflect.KClass
  * </code>
  */
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.TYPE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.VALUE_PARAMETER)
 annotation class Options(
-    val value: KClass<*>
+    val value: KClass<out OptionList<*>>
 )

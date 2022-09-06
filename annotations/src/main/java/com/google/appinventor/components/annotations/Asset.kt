@@ -6,7 +6,7 @@ package com.google.appinventor.components.annotations
  * in new components.
  */
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.TYPE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.VALUE_PARAMETER)
 annotation class Asset(
     val value: Array<String> = []
 )
