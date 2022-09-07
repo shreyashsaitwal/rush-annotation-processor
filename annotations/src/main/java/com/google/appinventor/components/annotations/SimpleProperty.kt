@@ -5,14 +5,9 @@ package com.google.appinventor.components.annotations
  *
  * Both the getter and the setter method of the property need to be marked
  * with this annotation.
- *
  */
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION)
 annotation class SimpleProperty(
     /**
      * If non-empty, description to use in user-level documentation.

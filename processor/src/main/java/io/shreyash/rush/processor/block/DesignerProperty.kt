@@ -4,10 +4,11 @@ import com.google.appinventor.components.annotations.DesignerProperty
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.tools.Diagnostic
 
 class DesignerProperty(
-    element: Element,
+    element: ExecutableElement,
     private val messager: Messager,
     private val properties: List<Property>,
 ) : Block(element) {

@@ -5,15 +5,15 @@ import io.shreyash.rush.processor.util.isCamelCase
 import io.shreyash.rush.processor.util.isPascalCase
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
-import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
 class Function(
-    element: Element,
+    element: ExecutableElement,
     private val messager: Messager,
     private val elementUtils: Elements,
-) : BlockWithParams(element) {
+) : ParameterizedBlock(element) {
     init {
         runChecks()
     }
@@ -21,10 +21,8 @@ class Function(
     override val description: String
         get() {
             val desc = this.element.getAnnotation(SimpleFunction::class.java).description.let {
-                if (it.isBlank()) {
+                it.ifBlank {
                     elementUtils.getDocComment(element) ?: ""
-                } else {
-                    it
                 }
             }
             return desc
@@ -40,7 +38,7 @@ class Function(
         }
 
         // Check param names
-        params().forEach {
+        params.forEach {
             if (!isCamelCase(it.name)) {
                 messager.printMessage(
                     Diagnostic.Kind.WARNING,
@@ -69,25 +67,11 @@ class Function(
      *  ]
      * }
      */
-    override fun asJsonObject(): JSONObject {
-        val methodJson = JSONObject()
-            .put("name", name)
-            .put("description", description)
-            .put("deprecated", deprecated.toString())
-
-        // Here, null represents the return type is void. Return type for void methods don't need to
-        // be specified.
-        returnType()?.apply {
-            methodJson.put("returnType", this)
-        }
-
-        val params = params().map {
-            JSONObject()
-                .put("name", it.name)
-                .put("type", it.type)
-        }
-        methodJson.put("params", params)
-
-        return methodJson
-    }
+    override fun asJsonObject(): JSONObject = JSONObject()
+        .put("name", name)
+        .put("description", description)
+        .put("deprecated", deprecated.toString())
+        .put("params", this.params.map { it.asJsonObject() })
+        .put("returnType", returnType)
+        .put("helper", helper())
 }

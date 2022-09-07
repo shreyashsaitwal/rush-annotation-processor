@@ -1,5 +1,9 @@
 package io.shreyash.rush.processor.util
 
+import io.shreyash.rush.processor.block.HelperType
+import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
+
 private val componentTypes = listOf(
     "com.google.appinventor.components.runtime.AccelerometerSensor",
     "com.google.appinventor.components.runtime.ActivityStarter",
@@ -120,18 +124,21 @@ private val componentTypes = listOf(
 )
 
 /**
- * Converts [type] into equivalent YAIL type.
+ * Returns YAIL type of [element].
  */
 @Throws(IllegalStateException::class)
-fun convert(type: String): String {
-    if (type.startsWith("java.util.List")) {
+fun yailTypeOf(element: Element): String {
+    val type = if (element is ExecutableElement) element.returnType else element.asType()
+    val name = type.toString()
+
+    if (name.startsWith("java.util.List")) {
         return "list"
-    } else if (componentTypes.contains(type)) {
+    } else if (componentTypes.contains(name)) {
         return "component"
     }
 
-    return when (type) {
-        "boolean" -> type
+    return when (name) {
+        "boolean" -> "boolean"
         "java.lang.Object" -> "any"
         "java.lang.String" -> "text"
         "java.util.Calendar" -> "InstantInTime"
@@ -139,6 +146,10 @@ fun convert(type: String): String {
         "com.google.appinventor.components.runtime.util.YailList" -> "list"
         "com.google.appinventor.components.runtime.util.YailObject" -> "yailobject"
         "com.google.appinventor.components.runtime.util.YailDictionary" -> "dictionary"
-        else -> throw IllegalStateException()
+        else -> if (HelperType.tryFrom(element) != null) {
+            name + "Enum"
+        } else {
+            throw Exception("Can't convert type $name to YAIL type")
+        }
     }
 }

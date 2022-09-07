@@ -10,12 +10,8 @@ import com.google.appinventor.components.common.PropertyTypeConstants
  * annotation.
  *
  */
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION)
 annotation class DesignerProperty(
     /**
      * Determines the property editor used in the designer.
