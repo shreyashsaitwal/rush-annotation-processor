@@ -51,7 +51,7 @@ data class Helper(
     }
 
     companion object {
-        fun tryFrom(element: Element): Pair<Helper?, Element> {
+        fun tryFrom(element: Element): Helper? {
             val helperType = HelperType.tryFrom(element)
             return when (helperType) {
                 HelperType.ASSET -> {
@@ -59,40 +59,42 @@ data class Helper(
                         type = helperType,
                         data = AssetData(element.getAnnotation(Asset::class.java).value)
                     )
-                    Pair(helper, element)
+                    helper
                 }
 
                 HelperType.OPTION_LIST -> {
-                    var newElement = element
-                    val optionsAnnotation = newElement.getAnnotation(Options::class.java)
+                    val optionsAnnotation = element.getAnnotation(Options::class.java)
 
                     val optionListEnumName = if (optionsAnnotation != null) {
+                        var elem: Element? = null
                         try {
                             // This will always throw. For more info: https://stackoverflow.com/a/10167558/12401482
                             optionsAnnotation.value
                         } catch (e: MirroredTypeException) {
-                            newElement = (e.typeMirror as DeclaredType).asElement()
+                            elem = (e.typeMirror as DeclaredType).asElement()
                         }
-                        newElement.asType().toString()
-                    } else if (newElement is ExecutableElement) {
-                        newElement.returnType.toString()
+
+                        // This will never be null, don't listen to IntelliJ
+                        elem!!.asType().toString()
+                    } else if (element is ExecutableElement) {
+                        element.returnType.toString()
                     } else {
-                        newElement.asType().toString()
+                        element.asType().toString()
                     }
 
                     val data = if (HelperSingleton.optionListCache.containsKey(optionListEnumName)) {
                         HelperSingleton.optionListCache[optionListEnumName]!!
                     } else {
-                        OptionListData(newElement).apply {
+                        OptionListData(element).apply {
                             HelperSingleton.optionListCache.putIfAbsent(optionListEnumName, this)
                         }
                     }
 
                     val helper = Helper(helperType, data)
-                    Pair(helper, newElement)
+                    helper
                 }
 
-                else -> Pair(null, element)
+                else -> null
             }
         }
     }

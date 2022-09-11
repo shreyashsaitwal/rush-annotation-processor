@@ -5,7 +5,6 @@ import io.shreyash.rush.processor.util.isPascalCase
 import io.shreyash.rush.processor.util.yailTypeOf
 import shaded.org.json.JSONObject
 import javax.annotation.processing.Messager
-import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.util.Elements
@@ -93,15 +92,22 @@ class Property(
             val returnType = this.element.returnType
             // If the property is of setter type, the JSON property "type" is equal to the type of
             // parameter the setter expects.
-            val element = if (returnType.toString() == "void") {
+            val elem = if (returnType.toString() == "void") {
                 this.element.parameters[0]
+            } else if (returnType is DeclaredType) {
+                returnType.asElement()
             } else {
-                (element.returnType as DeclaredType).asElement()
+                element
             }
-            HelperType.tryFrom(element)?.apply {
-                this@Property.helperElement = element
+
+            // Primitive types when converted to string seem to have () in-front of them. This only
+            // happens when `elem` is set using `returnType.asElement()` above.
+            val typeName = elem.asType().toString().replace("()", "")
+
+            HelperType.tryFrom(elem)?.apply {
+                return yailTypeOf(typeName, true)
             }
-            return yailTypeOf(helperElement)
+            return yailTypeOf(typeName, false)
         }
 
     /**
@@ -120,7 +126,7 @@ class Property(
         .put("deprecated", deprecated.toString())
         .put("type", returnType)
         .put("rw", accessType)
-        .put("helper", helper()?.asJsonObject())
+        .put("helper", helper?.asJsonObject())
 
     /**
      * @return The access type of the current property.

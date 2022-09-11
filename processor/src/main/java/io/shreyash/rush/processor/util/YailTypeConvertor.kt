@@ -124,13 +124,10 @@ private val componentTypes = listOf(
 )
 
 /**
- * Returns YAIL type of [element].
+ * Returns a YAIL type from given [name] of a type.
  */
 @Throws(IllegalStateException::class)
-fun yailTypeOf(element: Element): String {
-    val type = if (element is ExecutableElement) element.returnType else element.asType()
-    val name = type.toString()
-
+fun yailTypeOf(name: String, isHelper: Boolean): String {
     if (name.startsWith("java.util.List")) {
         return "list"
     } else if (componentTypes.contains(name)) {
@@ -146,7 +143,7 @@ fun yailTypeOf(element: Element): String {
         "com.google.appinventor.components.runtime.util.YailList" -> "list"
         "com.google.appinventor.components.runtime.util.YailObject" -> "yailobject"
         "com.google.appinventor.components.runtime.util.YailDictionary" -> "dictionary"
-        else -> if (HelperType.tryFrom(element) != null) {
+        else -> if (isHelper) {
             name + "Enum"
         } else {
             throw Exception("Can't convert type $name to YAIL type")
